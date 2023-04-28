@@ -16,4 +16,8 @@
 #define FIFO_TRADER "/tmp/pe_trader_%d"
 #define FEE_PERCENTAGE 1
 
+#define FILEPATH_LEN 100 // enough space to hold any filepath string
+#define MESSAGE_LEN 100
+#define PRODUCT_STR_LEN (16 + 1) // + 1 for null terminator
+
 #endif
