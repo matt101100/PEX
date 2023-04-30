@@ -8,6 +8,11 @@
 #include "pe_exchange.h"
 
 int main(int argc, char **argv) {
-	printf("TODO\n");
+	if (argc < 2) {
+		printf("Invalid number of arguments provided.\n");
+		return 1;
+	}
+
+	printf("%s Starting\n", LOG_PREFIX);
 	return 0;
 }
