@@ -1,7 +1,8 @@
 /**
  * comp2017 - assignment 3
- * <your name>
- * <your unikey>
+ * Matthew Lazar
+ * mlaz7837
+ * 490431454
  */
 
 #include "pe_exchange.h"

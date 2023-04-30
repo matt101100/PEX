@@ -18,6 +18,6 @@
 
 #define FILEPATH_LEN 100 // enough space to hold any filepath string
 #define MESSAGE_LEN 100
-#define PRODUCT_STR_LEN (16 + 1) // + 1 for null terminator
+#define PRODUCT_STR_LEN 17 // + 1 for null terminator
 
 #endif
