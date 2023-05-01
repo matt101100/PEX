@@ -30,4 +30,51 @@ struct order_book {
     order *sell_orders;
 };
 
+/*
+ * Desc: 
+ * Fields: 
+ */
+typedef struct trader trader;
+struct trader {
+    int trader_id;
+    order_book *ob;
+    order *min_sell;
+    order *max_buy;
+    trader *next;
+};
+
+/*
+ * Desc: Holds the list of products that the exchange will trade.
+ * Fields: An int representing the number of products that will be traded and
+           a pointer to a list of string pointers, where the strings will be the
+           product names.
+ */
+typedef struct products products;
+struct products {
+    int size;
+    char **product_strings; // pointer to a list of string pointers
+};
+
+/*
+ * Desc: Reads the provided product file and initializes a products struct
+         with the information in that file. This functions gets the number of
+         products our exchange will trade as well as the names of each product.
+ * Params: The path to the product file.
+ * Return: A pointer to the products struct.
+ */
+int initialize_product_list(char product_file[], products *prods);
+
+/*
+ * Desc: calls all free functions to free allocated memory used for the 
+         corresponding structs.
+ * Params: pointers to all structs
+ */
+void free_structs(products *prods);
+
+/*
+ * Desc: frees the memory used by the products struct.
+ * Param: a pointer to the products struct.
+ */
+void free_products_list(products *prods);
+
 #endif
