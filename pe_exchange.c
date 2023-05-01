@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 	printf("%s Starting\n", LOG_PREFIX);
 	printf("%s Trading %d products: ");
 	for (int i = 0; i < products.size; i++) {
-		printf("%s", products[i]);
+		printf("%s", products.product_strings[i]);
 	}
 	printf("\n");
 	// todo
