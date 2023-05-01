@@ -24,9 +24,9 @@ int main(int argc, char **argv) {
 	}
 
 	printf("%s Starting\n", LOG_PREFIX);
-	printf("%s Trading %d products: ", LOG_PREFIX, products.size);
+	printf("%s Trading %d products:", LOG_PREFIX, products.size);
 	for (int i = 0; i < products.size; i++) {
-		printf("%s ", products.product_strings[i]);
+		printf(" %s", products.product_strings[i]);
 	}
 	printf("\n");
 	// todo
