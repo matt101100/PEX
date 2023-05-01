@@ -42,11 +42,16 @@ int initialize_product_list(char products_file[], products *prods) {
 		return 1;
 	}
 
-	fscanf(fp, "%d", &(prods->size)); // read first line of file
+	// read first line of file
+	if (fscanf(fp, "%d\n", &(prods->size)) != 1) {
+		fclose(fp);
+		return 1;
+	}
+
 	char line[PRODUCT_STR_LEN]; // holds a single product string
 	int count = 0;
+	prods->product_strings = malloc(prods->size * sizeof(char*));
 	// read each product string into array
-	prods->product_strings = NULL;
 	while (fgets(line, PRODUCT_STR_LEN, fp) != NULL) {
 		line[strcspn(line, "\n")] = '\0'; // remove trailing newline
 
@@ -57,7 +62,7 @@ int initialize_product_list(char products_file[], products *prods) {
 		prods->product_strings[count] = new_line;
 		count++;
 	}
-
+	fclose(fp);
 	return 0;
 }
 
@@ -66,7 +71,7 @@ void free_structs(products *prods) {
 }
 
 void free_products_list(products *prods) {
-	for (int i = 0; i < prods->size + 1; i++) { // idk why i have to +1 here
+	for (int i = 0; i < prods->size; i++) {
 		free(prods->product_strings[i]);
 	}
 	free(prods->product_strings);
