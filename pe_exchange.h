@@ -86,7 +86,7 @@ int initialize_product_list(char product_file[], products *prods);
  * Params: The number of traders to spawn, a path to the exchange and trader fifos
  * Return: 
  */
-int spawn_and_communicate(int num_of_traders, char **exchange_fifo_path, char **trader_fifo_path);
+int spawn_and_communicate(int num_of_traders);
 
 /*
  * Desc: calls all free functions to free allocated memory used for the 

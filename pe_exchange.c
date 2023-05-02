@@ -26,9 +26,7 @@ int main(int argc, char **argv) {
 		goto cleanup;
 	}
 
-	char *exchange_fifo_path = NULL;
-	char *trader_fifo_path = NULL;
-	res = spawn_and_communicate(argc - TRADERS_START, &exchange_fifo_path, &trader_fifo_path);
+	res = spawn_and_communicate(argc - TRADERS_START);
 	if (res) {
 		printf("Error: %s\n", strerror(errno));
 		goto cleanup;
@@ -87,39 +85,41 @@ int initialize_product_list(char products_file[], products *prods) {
 	return 0;
 }
 
-int spawn_and_communicate(int num_of_traders, char **exchange_fifo_path, char **trader_fifo_path) {
+int spawn_and_communicate(int num_of_traders) {
 	int trader_id = 0;
 	int exchange_path_len = 0;
 	int trader_path_len = 0;
+	char *exchange_fifo_path = NULL;
+	char *trader_fifo_path = NULL;
 	for (trader_id = 0; trader_id < num_of_traders; trader_id++) {
 		// get the length of each path
 		exchange_path_len = snprintf(NULL, 0, FIFO_EXCHANGE, trader_id);
 		trader_path_len = snprintf(NULL, 0, FIFO_TRADER, trader_id);
 
 		// allocate memory based on the len we got above
-		*exchange_fifo_path = malloc(exchange_path_len + 1);
-		*trader_fifo_path = malloc(trader_path_len + 1);
+		exchange_fifo_path = malloc(exchange_path_len + 1);
+		trader_fifo_path = malloc(trader_path_len + 1);
 
 		// format strings and store in correspondingly labelled areas
-		snprintf(*exchange_fifo_path, exchange_path_len + 1, FIFO_EXCHANGE, trader_id);
-		snprintf(*trader_fifo_path, trader_path_len + 1, FIFO_TRADER, trader_id);
+		snprintf(exchange_fifo_path, exchange_path_len + 1, FIFO_EXCHANGE, trader_id);
+		snprintf(trader_fifo_path, trader_path_len + 1, FIFO_TRADER, trader_id);
 
 		// create the fifos and print corresponding creation notification
-		int res = mkfifo(*exchange_fifo_path, 0666);
+		int res = mkfifo(exchange_fifo_path, 0666);
 		if (res < 0) {
 			return 1;
 		}
-		printf("%s Created FIFO %s\n", LOG_PREFIX, *exchange_fifo_path);
+		printf("%s Created FIFO %s\n", LOG_PREFIX, exchange_fifo_path);
 
-		res = mkfifo(*trader_fifo_path, 0666);
+		res = mkfifo(trader_fifo_path, 0666);
 		if (res < 0) {
 			return 1;
 		}
-		printf("%s Created FIFO %s\n", LOG_PREFIX, *trader_fifo_path);
+		printf("%s Created FIFO %s\n", LOG_PREFIX, trader_fifo_path);
 
 
-		free(*exchange_fifo_path);
-		free(*trader_fifo_path);
+		free(exchange_fifo_path);
+		free(trader_fifo_path);
 	}
 
 	return 0;
