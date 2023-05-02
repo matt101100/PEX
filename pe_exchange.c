@@ -38,14 +38,14 @@ int main(int argc, char **argv) {
 	// clean-up after successful execution
 	cleanup_fifos(argc - TRADERS_START);
 	free_structs(&prods);
-	free_strings(exchange_fifo_path, trader_fifo_path);
+	// free_strings(exchange_fifo_path, trader_fifo_path);
 	return 0;
 
 	cleanup:
 		// free all allocated memory and return 1 as an error code
 		cleanup_fifos(argc - TRADERS_START);
 		free_structs(&prods);
-		free_strings(exchange_fifo_path, trader_fifo_path);
+		// free_strings(exchange_fifo_path, trader_fifo_path);
 		return 1;
 }
 
@@ -118,6 +118,8 @@ int spawn_and_communicate(int num_of_traders, char **exchange_fifo_path, char **
 		printf("%s Created FIFO %s\n", LOG_PREFIX, *trader_fifo_path);
 
 
+		free(*exchange_fifo_path);
+		free(*trader_fifo_path);
 	}
 
 	return 0;
