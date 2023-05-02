@@ -83,10 +83,10 @@ int initialize_product_list(char product_file[], products *prods);
  * Desc: Creates named pipes, launches trader process and connects to the
          corresponding named pipes, based on trader ID. Also prints the 
          necessary messages to stdout.
- * Params: The number of traders to spawn, a path to the exchange and trader fifos
+ * Params: The number of traders to spawn
  * Return: 
  */
-int spawn_and_communicate(int num_of_traders);
+int spawn_and_communicate(int num_of_traders, char **argv);
 
 /*
  * Desc: calls all free functions to free allocated memory used for the 

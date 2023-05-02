@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 		goto cleanup;
 	}
 
-	res = spawn_and_communicate(argc - TRADERS_START);
+	res = spawn_and_communicate(argc - TRADERS_START, argv);
 	if (res) {
 		printf("Error: %s\n", strerror(errno));
 		goto cleanup;
@@ -85,12 +85,13 @@ int initialize_product_list(char products_file[], products *prods) {
 	return 0;
 }
 
-int spawn_and_communicate(int num_of_traders) {
+int spawn_and_communicate(int num_of_traders, char **argv) {
 	int trader_id = 0;
 	int exchange_path_len = 0;
 	int trader_path_len = 0;
 	char *exchange_fifo_path = NULL;
 	char *trader_fifo_path = NULL;
+	pid_t pid = -1;
 	for (trader_id = 0; trader_id < num_of_traders; trader_id++) {
 		// get the length of each path
 		exchange_path_len = snprintf(NULL, 0, FIFO_EXCHANGE, trader_id);
@@ -116,6 +117,23 @@ int spawn_and_communicate(int num_of_traders) {
 			return 1;
 		}
 		printf("%s Created FIFO %s\n", LOG_PREFIX, trader_fifo_path);
+
+		// fork and exec the trader after creating its fifos
+		printf("%s Starting trader %d ", LOG_PREFIX, trader_id);
+		printf("./bin/%s\n", argv[TRADERS_START + trader_id]);
+		pid = fork();
+		if (pid < 0) {
+			return 1;
+		} else if (pid == 0) {
+			// exec trader binaries from child process
+			// first, convert trader ID into a string
+			int tid_len = snprintf(NULL, 0, "%d", trader_id);
+			char *tid_str = malloc(tid_len + 1);
+			snprintf(tid_str, tid_len + 1, "%d", trader_id);
+			char *args[] = {argv[TRADERS_START + trader_id], tid_str, NULL};
+			execv(args[0], args);
+			return 1; // should never reach here, so return error code if we do
+		}
 
 
 		free(exchange_fifo_path);
