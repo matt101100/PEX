@@ -120,7 +120,7 @@ int spawn_and_communicate(int num_of_traders, char **argv) {
 
 		// fork and exec the trader after creating its fifos
 		printf("%s Starting trader %d ", LOG_PREFIX, trader_id);
-		printf("./bin/%s\n", argv[TRADERS_START + trader_id]);
+		printf("%s\n", argv[TRADERS_START + trader_id]);
 		pid = fork();
 		if (pid < 0) {
 			return 1;
