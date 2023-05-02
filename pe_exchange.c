@@ -13,6 +13,7 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+
 	int res; // stores result of init functions for error checking
 
 	printf("%s Starting\n", LOG_PREFIX);
@@ -25,16 +26,26 @@ int main(int argc, char **argv) {
 		goto cleanup;
 	}
 
-	
-	// todo
+	char *exchange_fifo_path = NULL;
+	char *trader_fifo_path = NULL;
+	res = spawn_and_communicate(argc - TRADERS_START, &exchange_fifo_path, &trader_fifo_path);
+	if (res) {
+		printf("Error: %s\n", strerror(errno));
+		goto cleanup;
+	}
+
 
 	// clean-up after successful execution
+	cleanup_fifos(argc - TRADERS_START);
 	free_structs(&prods);
+	free_strings(exchange_fifo_path, trader_fifo_path);
 	return 0;
 
 	cleanup:
 		// free all allocated memory and return 1 as an error code
+		cleanup_fifos(argc - TRADERS_START);
 		free_structs(&prods);
+		free_strings(exchange_fifo_path, trader_fifo_path);
 		return 1;
 }
 
@@ -76,20 +87,40 @@ int initialize_product_list(char products_file[], products *prods) {
 	return 0;
 }
 
-int **initialize_fd_matrix(int rows) {
-	int **arr = malloc(rows * sizeof(int*));
+int spawn_and_communicate(int num_of_traders, char **exchange_fifo_path, char **trader_fifo_path) {
+	int trader_id = 0;
+	int exchange_path_len = 0;
+	int trader_path_len = 0;
+	for (trader_id = 0; trader_id < num_of_traders; trader_id++) {
+		// get the length of each path
+		exchange_path_len = snprintf(NULL, 0, FIFO_EXCHANGE, trader_id);
+		trader_path_len = snprintf(NULL, 0, FIFO_TRADER, trader_id);
 
-	// allocate memory for each row
-	for (int i = 0; i < rows; i++) {
-		arr[i] = malloc(2 * sizeof(int));
+		// allocate memory based on the len we got above
+		*exchange_fifo_path = malloc(exchange_path_len + 1);
+		*trader_fifo_path = malloc(trader_path_len + 1);
+
+		// format strings and store in correspondingly labelled areas
+		snprintf(*exchange_fifo_path, exchange_path_len + 1, FIFO_EXCHANGE, trader_id);
+		snprintf(*trader_fifo_path, trader_path_len + 1, FIFO_TRADER, trader_id);
+
+		// create the fifos and print corresponding creation notification
+		int res = mkfifo(*exchange_fifo_path, 0666);
+		if (res < 0) {
+			return 1;
+		}
+		printf("%s Created FIFO %s\n", LOG_PREFIX, *exchange_fifo_path);
+
+		res = mkfifo(*trader_fifo_path, 0666);
+		if (res < 0) {
+			return 1;
+		}
+		printf("%s Created FIFO %s\n", LOG_PREFIX, *trader_fifo_path);
+
+
 	}
 
-	for (int i = 0; i < rows; i++) {
-		arr[i][0] = i; // Assign value to first column
-		arr[i][1] = i * 2; // Assign value to second column
-	}
-
-	return arr;
+	return 0;
 }
 
 void free_structs(products *prods) {
@@ -101,4 +132,40 @@ void free_products_list(products *prods) {
 		free(prods->product_strings[i]);
 	}
 	free(prods->product_strings);
+}
+
+void free_strings(char *exchange_fifo_path, char *trader_fifo_path) {
+	free(exchange_fifo_path);
+	free(trader_fifo_path);
+}
+
+void cleanup_fifos(int number_of_traders) {
+	char *fifo_path = NULL;
+	int path_len = 0;
+	for (int trader_id = 0; trader_id < number_of_traders; trader_id++) {
+		// format the exchange fifo path string
+		path_len = snprintf(NULL, 0, FIFO_EXCHANGE, trader_id);
+		fifo_path = malloc(path_len + 1);
+		snprintf(fifo_path, path_len + 1, FIFO_EXCHANGE, trader_id);
+
+		if (access(fifo_path, F_OK) != -1) {
+			// close and delete exchange fifos
+			// close() once opened
+			unlink(fifo_path);
+		}
+
+		free(fifo_path);
+
+		// format the trader fifo path string
+		path_len = snprintf(NULL, 0, FIFO_TRADER, trader_id);
+		fifo_path = malloc(path_len + 1);
+		snprintf(fifo_path, path_len + 1, FIFO_TRADER, trader_id);
+
+		if (access(fifo_path, F_OK) != -1) {
+			// close and delete trader fifos
+			unlink(fifo_path);
+		}
+
+		free(fifo_path);
+	}
 }

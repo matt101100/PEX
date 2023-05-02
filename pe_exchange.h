@@ -59,6 +59,18 @@ struct products {
 };
 
 /*
+ * Desc: Node struct which holds information regarding each traders set of fds
+ * Fields: the trader ID, the set of fds and a pointer to the next node in list
+ */
+typedef struct pipe_node pipe_node;
+struct pipe_node {
+    int trader_id;
+    int fd[2];
+    pipe_node *next;
+};
+
+
+/*
  * Desc: Reads the provided product file and initializes a products struct
          with the information in that file. This functions gets the number of
          products our exchange will trade as well as the names of each product.
@@ -67,7 +79,14 @@ struct products {
  */
 int initialize_product_list(char product_file[], products *prods);
 
-int **initialize_fd_matrix(int rows);
+/*
+ * Desc: Creates named pipes, launches trader process and connects to the
+         corresponding named pipes, based on trader ID. Also prints the 
+         necessary messages to stdout.
+ * Params: The number of traders to spawn, a path to the exchange and trader fifos
+ * Return: 
+ */
+int spawn_and_communicate(int num_of_traders, char **exchange_fifo_path, char **trader_fifo_path);
 
 /*
  * Desc: calls all free functions to free allocated memory used for the 
@@ -77,9 +96,20 @@ int **initialize_fd_matrix(int rows);
 void free_structs(products *prods);
 
 /*
- * Desc: frees the memory used by the products struct.
+ * Desc: Frees the memory used by the products struct.
  * Param: a pointer to the products struct.
  */
 void free_products_list(products *prods);
+
+/*
+ * Desc: Frees the memory allocated for strings, such as the filepaths
+ * Param: Pointers that were dynamically allocated to hold strings
+ */
+void free_strings(char *exchange_fifo_path, char *trader_fifo_path);
+
+/*
+ * Desc: Closes, flushes and deletes all fifos created. Used during shutdown
+ */
+void cleanup_fifos(int number_of_traders);
 
 #endif
