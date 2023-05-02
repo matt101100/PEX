@@ -6,6 +6,12 @@
 #define BUY "BUY %d %s %d %d;"
 #define SELL "SELL %d %s %d %d;"
 
+// flags representing connection types to named pipes
+enum connection_type {
+    READ = 0,
+    WRITE
+};
+
 /*
  * Desc: Reads from the exchange named pipe and formats the message as a null-
          terminated string
@@ -27,5 +33,14 @@ int format_order(int write_fd, char sell_order[]);
  * Return: The number of bytes written
  */
 int write_to_exchange(int write_fd, char to_write[]);
+
+/*
+ * Desc: Formats the file path with the trader's corresponding trader ID and 
+         opens the named pipe at that location.
+ * Params: Flag representing the type of connection the pipe will be opened for
+           and the trader ID
+ * Return: The file descriptor associated with the named pipe
+ */
+int connect_to_named_pipe(int connection_type, int trader_id);
 
 #endif

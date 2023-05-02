@@ -2,8 +2,11 @@
 #define PE_EXCHANGE_H
 
 #include "pe_common.h"
+#include <sys/epoll.h>
 
 #define LOG_PREFIX "[PEX]"
+
+#define TRADERS_START 2
 
 /*
  * Desc: Generic order struct.
@@ -63,6 +66,8 @@ struct products {
  * Return: A pointer to the products struct.
  */
 int initialize_product_list(char product_file[], products *prods);
+
+int **initialize_fd_matrix(int rows);
 
 /*
  * Desc: calls all free functions to free allocated memory used for the 

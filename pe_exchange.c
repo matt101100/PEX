@@ -13,31 +13,28 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	// initialize structs and prepare for exchange launch
 	int res; // stores result of init functions for error checking
 
-	products products;
-	res = initialize_product_list(argv[1], &products);
+	printf("%s Starting\n", LOG_PREFIX);
+
+	// initialize structs and prepare for exchange launch
+	products prods;
+	res = initialize_product_list(argv[1], &prods);
 	if (res) {
 		printf("Error initializing products list using file %s.\n", argv[1]);
 		goto cleanup;
 	}
 
-	printf("%s Starting\n", LOG_PREFIX);
-	printf("%s Trading %d products:", LOG_PREFIX, products.size);
-	for (int i = 0; i < products.size; i++) {
-		printf(" %s", products.product_strings[i]);
-	}
-	printf("\n");
+	
 	// todo
 
 	// clean-up after successful execution
-	free_structs(&products);
+	free_structs(&prods);
 	return 0;
 
 	cleanup:
 		// free all allocated memory and return 1 as an error code
-		free_structs(&products);
+		free_structs(&prods);
 		return 1;
 }
 
@@ -67,8 +64,32 @@ int initialize_product_list(char products_file[], products *prods) {
 		prods->product_strings[count] = new_line;
 		count++;
 	}
+
+	// print out resulting list of products to be traded
+	printf("%s Trading %d products:", LOG_PREFIX, prods->size);
+	for (int i = 0; i < prods->size; i++) {
+		printf(" %s", prods->product_strings[i]);
+	}
+	printf("\n");
+
 	fclose(fp);
 	return 0;
+}
+
+int **initialize_fd_matrix(int rows) {
+	int **arr = malloc(rows * sizeof(int*));
+
+	// allocate memory for each row
+	for (int i = 0; i < rows; i++) {
+		arr[i] = malloc(2 * sizeof(int));
+	}
+
+	for (int i = 0; i < rows; i++) {
+		arr[i][0] = i; // Assign value to first column
+		arr[i][1] = i * 2; // Assign value to second column
+	}
+
+	return arr;
 }
 
 void free_structs(products *prods) {
