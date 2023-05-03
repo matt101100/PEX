@@ -23,27 +23,22 @@ struct order {
 };
 
 /*
- * Desc: Order book struct.
- * Fields: Holds pointers to the sell_orders struct, which contains all current
-           buy orders and similarly hold a pointer to the sell_orders struct.
- */
-typedef struct order_book order_book;
-struct order_book {
-    order *buy_orders;
-    order *sell_orders;
-};
-
-/*
- * Desc: 
- * Fields: 
+ * Desc: All-encompassing trader struct.
+ * Fields: Tracks the trader ID, process ID of the
+         trader binary, sell and buy orders, the minimum sell and maximum buy
+         orders, the array of file descriptors and a pointer to the next trader
+         in the list.
  */
 typedef struct trader trader;
 struct trader {
-    int trader_id;
-    order_book *ob;
+    int trader_id; // main identifier
+    pid_t process_id; // get this from the fork() call
+    order *buy_orders;
+    order *sell_orders;
     order *min_sell;
     order *max_buy;
-    trader *next;
+    int fd[2]; // fd[0] = trader fifo, fd[1] = exchange fifo
+    trader *next; // has a linked-list structure
 };
 
 /*
@@ -59,18 +54,6 @@ struct products {
 };
 
 /*
- * Desc: Node struct which holds information regarding each traders set of fds
- * Fields: the trader ID, the set of fds and a pointer to the next node in list
- */
-typedef struct pipe_node pipe_node;
-struct pipe_node {
-    int trader_id;
-    int fd[2];
-    pipe_node *next;
-};
-
-
-/*
  * Desc: Reads the provided product file and initializes a products struct
          with the information in that file. This functions gets the number of
          products our exchange will trade as well as the names of each product.
@@ -81,20 +64,22 @@ int initialize_product_list(char product_file[], products *prods);
 
 /*
  * Desc: Creates named pipes, launches trader process and connects to the
-         corresponding named pipes, based on trader ID. Also prints the 
+         corresponding named pipes, based on trader ID. Creates and initializes
+         a new trader struct and adds it to the list. Also prints the 
          necessary messages to stdout.
  * Params: The number of traders to spawn, the list of command line args given
-           to pe_exchange and a pointer to the head of the pipe list
+           to pe_exchange and a pointer to a pointer to the head of the 
+           trader list.
  * Return: 
  */
-int spawn_and_communicate(int num_of_traders, char **argv, pipe_node **head);
+int spawn_and_communicate(int num_of_traders, char **argv, trader **head);
 
 /*
  * Desc: calls all free functions to free allocated memory used for the 
          corresponding structs.
  * Params: pointers to structs
  */
-void free_structs(products *prods, pipe_node *head);
+void free_structs(products *prods, trader *head);
 
 /*
  * Desc: Frees the memory used by the products struct.
@@ -103,10 +88,11 @@ void free_structs(products *prods, pipe_node *head);
 void free_products_list(products *prods);
 
 /*
- * Desc: Frees memory used by the pipe linked list.
- * Param: A pointer to the head of the linked list.
+ * Desc: Frees memory used by the trader list, and frees memory used by each
+         trader structure's dynamic fields.
+ * Param: A pointer to the head of the trader linked list.
  */
-void free_pipe_list(pipe_node *head);
+void free_trader_list(trader *head);
 
 /*
  * Desc: Closes, flushes and deletes all fifos created. Used during shutdown
