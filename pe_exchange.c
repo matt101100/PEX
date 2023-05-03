@@ -32,6 +32,8 @@ int main(int argc, char **argv) {
 		goto cleanup;
 	}
 
+	sleep(3);
+
 
 	// clean-up after successful execution
 	cleanup_fifos(argc - TRADERS_START);
@@ -108,19 +110,23 @@ int spawn_and_communicate(int num_of_traders, char **argv) {
 		// create the fifos and print corresponding creation notification
 		int res = mkfifo(exchange_fifo_path, 0666);
 		if (res < 0) {
+			free(exchange_fifo_path);
+			free(trader_fifo_path);
 			return 1;
 		}
 		printf("%s Created FIFO %s\n", LOG_PREFIX, exchange_fifo_path);
 
 		res = mkfifo(trader_fifo_path, 0666);
 		if (res < 0) {
+			free(exchange_fifo_path);
+			free(trader_fifo_path);
 			return 1;
 		}
 		printf("%s Created FIFO %s\n", LOG_PREFIX, trader_fifo_path);
 
 		// fork and exec the trader after creating its fifos
 		printf("%s Starting trader %d ", LOG_PREFIX, trader_id);
-		printf("%s\n", argv[TRADERS_START + trader_id]);
+		printf("(%s)\n", argv[TRADERS_START + trader_id]);
 		pid = fork();
 		if (pid < 0) {
 			return 1;
@@ -128,7 +134,7 @@ int spawn_and_communicate(int num_of_traders, char **argv) {
 			// exec trader binaries from child process
 			// first, convert trader ID into a string
 			int tid_len = snprintf(NULL, 0, "%d", trader_id);
-			char *tid_str = malloc(tid_len + 1);
+			char *tid_str = malloc(tid_len + 1); // no need to free
 			snprintf(tid_str, tid_len + 1, "%d", trader_id);
 			char *args[] = {argv[TRADERS_START + trader_id], tid_str, NULL};
 			execv(args[0], args);
