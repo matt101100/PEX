@@ -26,7 +26,8 @@ int main(int argc, char **argv) {
 		goto cleanup;
 	}
 
-	res = spawn_and_communicate(argc - TRADERS_START, argv);
+	pipe_node *head = NULL;
+	res = spawn_and_communicate(argc - TRADERS_START, argv, &head);
 	if (res) {
 		printf("Error: %s\n", strerror(errno));
 		goto cleanup;
@@ -37,15 +38,13 @@ int main(int argc, char **argv) {
 
 	// clean-up after successful execution
 	cleanup_fifos(argc - TRADERS_START);
-	free_structs(&prods);
-	// free_strings(exchange_fifo_path, trader_fifo_path);
+	free_structs(&prods, head);
 	return 0;
 
 	cleanup:
 		// free all allocated memory and return 1 as an error code
 		cleanup_fifos(argc - TRADERS_START);
-		free_structs(&prods);
-		// free_strings(exchange_fifo_path, trader_fifo_path);
+		free_structs(&prods, head);
 		return 1;
 }
 
@@ -87,7 +86,7 @@ int initialize_product_list(char products_file[], products *prods) {
 	return 0;
 }
 
-int spawn_and_communicate(int num_of_traders, char **argv) {
+int spawn_and_communicate(int num_of_traders, char **argv, pipe_node **head) {
 	int trader_id = 0;
 	int exchange_path_len = 0;
 	int trader_path_len = 0;
@@ -141,6 +140,19 @@ int spawn_and_communicate(int num_of_traders, char **argv) {
 			return 1; // should never reach here, so return error code if we do
 		}
 
+		// connect to named pipes
+		pipe_node *new_node = malloc(sizeof(pipe_node));
+		new_node->fd[1] = open(exchange_fifo_path, O_WRONLY);
+		printf("%s Connected to %s\n", LOG_PREFIX, exchange_fifo_path);
+		new_node->fd[0] = open(trader_fifo_path, O_RDONLY);
+		printf("%s Connected to %s\n", LOG_PREFIX, trader_fifo_path);
+		if (new_node->fd[0] < 0 || new_node->fd[1] < 0) {
+			return 1;
+		}
+		// add the newly opened node to the head of the list
+		new_node->trader_id = trader_id;
+		new_node->next = *head;
+		*head = new_node;
 
 		free(exchange_fifo_path);
 		free(trader_fifo_path);
@@ -149,8 +161,9 @@ int spawn_and_communicate(int num_of_traders, char **argv) {
 	return 0;
 }
 
-void free_structs(products *prods) {
+void free_structs(products *prods, pipe_node *head) {
 	free_products_list(prods);
+	free_pipe_list(head);
 }
 
 void free_products_list(products *prods) {
@@ -160,9 +173,14 @@ void free_products_list(products *prods) {
 	free(prods->product_strings);
 }
 
-void free_strings(char *exchange_fifo_path, char *trader_fifo_path) {
-	free(exchange_fifo_path);
-	free(trader_fifo_path);
+void free_pipe_list(pipe_node *head) {
+	pipe_node *curr = head;
+	pipe_node *next;
+	while (curr != NULL) {
+		next = curr->next;
+		free(curr);
+		curr = next;
+	}
 }
 
 void cleanup_fifos(int number_of_traders) {

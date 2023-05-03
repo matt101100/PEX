@@ -83,17 +83,18 @@ int initialize_product_list(char product_file[], products *prods);
  * Desc: Creates named pipes, launches trader process and connects to the
          corresponding named pipes, based on trader ID. Also prints the 
          necessary messages to stdout.
- * Params: The number of traders to spawn
+ * Params: The number of traders to spawn, the list of command line args given
+           to pe_exchange and a pointer to the head of the pipe list
  * Return: 
  */
-int spawn_and_communicate(int num_of_traders, char **argv);
+int spawn_and_communicate(int num_of_traders, char **argv, pipe_node **head);
 
 /*
  * Desc: calls all free functions to free allocated memory used for the 
          corresponding structs.
- * Params: pointers to all structs
+ * Params: pointers to structs
  */
-void free_structs(products *prods);
+void free_structs(products *prods, pipe_node *head);
 
 /*
  * Desc: Frees the memory used by the products struct.
@@ -102,10 +103,10 @@ void free_structs(products *prods);
 void free_products_list(products *prods);
 
 /*
- * Desc: Frees the memory allocated for strings, such as the filepaths
- * Param: Pointers that were dynamically allocated to hold strings
+ * Desc: Frees memory used by the pipe linked list.
+ * Param: A pointer to the head of the linked list.
  */
-void free_strings(char *exchange_fifo_path, char *trader_fifo_path);
+void free_pipe_list(pipe_node *head);
 
 /*
  * Desc: Closes, flushes and deletes all fifos created. Used during shutdown
