@@ -9,6 +9,8 @@
 
 volatile sig_atomic_t sigusr1 = 0;
 
+int test = 0;
+
 int main(int argc, char **argv) {
 	if (argc < 3) {
 		printf("Invalid number of arguments provided.\n");
@@ -54,6 +56,7 @@ int main(int argc, char **argv) {
 
 	sleep(3);
 
+	printf("%d\n", test);
 
 	// clean-up after successful execution
 	cleanup_fifos(num_traders);
@@ -72,7 +75,7 @@ void signal_handle(int signum, siginfo_t *info, void *context) {
 		// handle SIGUSR1
 	} else if (signum == SIGCHLD) {
 		// handle SIGCHLD
-		printf("here\n");
+		test = 1;
 	}
 }
 
