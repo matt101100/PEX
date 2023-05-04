@@ -7,6 +7,8 @@
 
 #include "pe_exchange.h"
 
+volatile sig_atomic_t sigusr1 = 0;
+
 int main(int argc, char **argv) {
 	if (argc < 3) {
 		printf("Invalid number of arguments provided.\n");
@@ -14,7 +16,10 @@ int main(int argc, char **argv) {
 	}
 
 
-	int res; // stores result of init functions for error checking
+	int res = 0; // stores result of init functions for error checking
+	// int bytes_read = -1;
+	int bytes_written = -1;
+	int num_traders = argc - TRADERS_START;
 
 	printf("%s Starting\n", LOG_PREFIX);
 
@@ -27,23 +32,34 @@ int main(int argc, char **argv) {
 	}
 
 	trader *head = NULL;
-	res = spawn_and_communicate(argc - TRADERS_START, argv, &head);
+	res = spawn_and_communicate(num_traders, argv, &head);
 	if (res) {
 		printf("Error: %s\n", strerror(errno));
 		goto cleanup;
+	}
+
+	// send MARKET OPEN; to all traders and signal SIGUSR1
+	trader *current = head;
+	while (current != NULL) {
+		bytes_written = write(current->fd[1], "MARKET OPEN;", strlen("MARKET OPEN;"));
+		if (bytes_written < 0) {
+			printf("Error: %s\n", strerror(errno));
+		}
+		kill(current->process_id, SIGUSR1);
+		current = current->next;
 	}
 
 	sleep(3);
 
 
 	// clean-up after successful execution
-	cleanup_fifos(argc - TRADERS_START);
+	cleanup_fifos(num_traders);
 	free_structs(&prods, head);
 	return 0;
 
 	cleanup:
 		// free all allocated memory and return 1 as an error code
-		cleanup_fifos(argc - TRADERS_START);
+		cleanup_fifos(num_traders);
 		free_structs(&prods, head);
 		return 1;
 }
@@ -86,14 +102,14 @@ int initialize_product_list(char products_file[], products *prods) {
 	return 0;
 }
 
-int spawn_and_communicate(int num_of_traders, char **argv, trader **head) {
+int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 	int trader_id = 0;
 	int exchange_path_len = 0;
 	int trader_path_len = 0;
 	char *exchange_fifo_path = NULL;
 	char *trader_fifo_path = NULL;
 	pid_t pid = -1;
-	for (trader_id = 0; trader_id < num_of_traders; trader_id++) {
+	for (trader_id = 0; trader_id < num_traders; trader_id++) {
 		// get the length of each path
 		exchange_path_len = snprintf(NULL, 0, FIFO_EXCHANGE, trader_id);
 		trader_path_len = snprintf(NULL, 0, FIFO_TRADER, trader_id);
@@ -185,6 +201,7 @@ void free_trader_list(trader *head) {
 	trader *next;
 	while (current != NULL) {
 		next = current->next;
+		
 		// free the dynamically allocated trader fields
 		if (current->buy_orders != NULL) {
 			free(current->buy_orders);

@@ -24,10 +24,10 @@ struct order {
 
 /*
  * Desc: All-encompassing trader struct.
- * Fields: Tracks the trader ID, process ID of the
-         trader binary, sell and buy orders, the minimum sell and maximum buy
-         orders, the array of file descriptors and a pointer to the next trader
-         in the list.
+ * Fields: Tracks the trader ID, process ID of the trader binary,
+           sell and buy orders, the minimum sell and maximum buy
+           orders, the array of file descriptors and a pointer to the next trader
+           in the list.
  */
 typedef struct trader trader;
 struct trader {
@@ -72,7 +72,7 @@ int initialize_product_list(char product_file[], products *prods);
            trader list.
  * Return: 
  */
-int spawn_and_communicate(int num_of_traders, char **argv, trader **head);
+int spawn_and_communicate(int num_traders, char **argv, trader **head);
 
 /*
  * Desc: calls all free functions to free allocated memory used for the 
