@@ -54,13 +54,25 @@ struct products {
 };
 
 /*
+ * Desc: SIGUSR1 and SIGCHLD handler, used by pe_exchange
+ * Params: The signal, a pointer to the siginfo_t struct and a context pointer
+ */
+void signal_handle(int signum, siginfo_t *info, void *context);
+
+/*
+ * Desc: Initializes the sigaction struct
+ * Params: a pointer to a sigaction struct
+ */
+void init_sigaction(struct sigaction *sa);
+
+/*
  * Desc: Reads the provided product file and initializes a products struct
          with the information in that file. This functions gets the number of
          products our exchange will trade as well as the names of each product.
  * Params: The path to the product file.
  * Return: A pointer to the products struct.
  */
-int initialize_product_list(char product_file[], products *prods);
+int init_product_list(char product_file[], products *prods);
 
 /*
  * Desc: Creates named pipes, launches trader process and connects to the

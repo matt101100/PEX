@@ -15,6 +15,9 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	// setup the sigaction struct
+	struct sigaction sa;
+	init_sigaction(&sa);
 
 	int res = 0; // stores result of init functions for error checking
 	// int bytes_read = -1;
@@ -25,7 +28,7 @@ int main(int argc, char **argv) {
 
 	// initialize structs and prepare for exchange launch
 	products prods;
-	res = initialize_product_list(argv[1], &prods);
+	res = init_product_list(argv[1], &prods);
 	if (res) {
 		printf("Error initializing products list using file %s.\n", argv[1]);
 		goto cleanup;
@@ -64,7 +67,22 @@ int main(int argc, char **argv) {
 		return 1;
 }
 
-int initialize_product_list(char products_file[], products *prods) {
+void signal_handle(int signum, siginfo_t *info, void *context) {
+	if (signum == SIGUSR1) {
+		// handle SIGUSR1
+	} else if (signum == SIGCHLD) {
+		// handle SIGCHLD
+		printf("here\n");
+	}
+}
+
+void init_sigaction(struct sigaction *sa) {
+	sa->sa_sigaction = signal_handle;
+	sigemptyset(&sa->sa_mask);
+    sa->sa_flags = SA_SIGINFO;
+}
+
+int init_product_list(char products_file[], products *prods) {
 	FILE *fp = fopen(products_file, "r");
 	if (fp == NULL) {
 		return 1;
