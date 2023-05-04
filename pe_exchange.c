@@ -20,6 +20,11 @@ int main(int argc, char **argv) {
 	// setup the sigaction struct
 	struct sigaction sa;
 	init_sigaction(&sa);
+	if (sigaction(SIGUSR1, &sa, NULL) == -1 
+		|| sigaction(SIGCHLD, &sa, NULL) == -1) {
+        printf("Error initializing sigaction.\n");
+        return 1;
+    }
 
 	int res = 0; // stores result of init functions for error checking
 	// int bytes_read = -1;
