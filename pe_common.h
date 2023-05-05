@@ -16,7 +16,7 @@
 
 #define FIFO_EXCHANGE "/tmp/pe_exchange_%d"
 #define FIFO_TRADER "/tmp/pe_trader_%d"
-#define FEE_PERCENTAGE 1
+#define FEE_PERCENTAGE 0.01
 
 #define PRODUCT_STR_LEN 17 // + 1 for null terminator
 

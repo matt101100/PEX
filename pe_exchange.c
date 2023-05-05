@@ -8,8 +8,8 @@
 #include "pe_exchange.h"
 
 volatile sig_atomic_t sigusr1 = 0;
-
-int test = 0;
+volatile sig_atomic_t sigchld = 0;
+volatile sig_atomic_t pid = -1; // stores the ID of the trader that last signaled
 
 int main(int argc, char **argv) {
 	if (argc < 3) {
@@ -61,7 +61,23 @@ int main(int argc, char **argv) {
 
 	sleep(3);
 
-	printf("%d\n", test);
+	// event loop
+	int trader_disconnect = 0; // counts number of traders disconnected
+	while (trader_disconnect < num_traders) {
+		while (!sigchld || !sigusr1) {
+			// wait for either signal
+			pause();
+		}
+
+		if (sigusr1) {
+			// parse input of trader that sent sigusr1 and return corresponding output
+
+		} else if (sigchld) {
+			// perform disconnection and cleanup of terminated trader
+			cleanup_trader(pid, &head);
+			trader_disconnect++;
+		}
+	}
 
 	// clean-up after successful execution
 	cleanup_fifos(num_traders);
@@ -78,9 +94,11 @@ int main(int argc, char **argv) {
 void signal_handle(int signum, siginfo_t *info, void *context) {
 	if (signum == SIGUSR1) {
 		// handle SIGUSR1
+		sigusr1 = 1;
 	} else if (signum == SIGCHLD) {
 		// handle SIGCHLD
-		test = 1;
+		sigchld = 1;
+		pid = info->si_pid;
 	}
 }
 
@@ -245,6 +263,60 @@ void free_trader_list(trader *head) {
 
 		current = next; // move to next trader in list
 	}
+}
+
+void cleanup_trader(pid_t pid, trader **head) {
+	if (head == NULL) {
+		// list was empty
+		return;
+	}
+
+	// find the trader node with matching pid
+	trader *current = *head; // to delete
+	trader* previous;
+	while (current != NULL && current->process_id != pid) {
+		previous = current;
+		current = current->next;
+	}
+
+	if (current == NULL) {
+		// reached end of list without finding matching pid
+		return;
+	}
+
+	// clean up trader fifos
+	char *fifo_path = NULL;
+	int path_len = snprintf(NULL, 0, FIFO_EXCHANGE, current->trader_id);
+	fifo_path = malloc(path_len + 1);
+	// close and delete exchange fifo
+	if (access(fifo_path, F_OK) != -1) {
+		close(current->fd[1]);
+		unlink(fifo_path);
+	}
+	free(fifo_path);
+
+	path_len = snprintf(NULL, 0, FIFO_TRADER, current->trader_id);
+	fifo_path = malloc(path_len + 1);
+	// close and delete trader fifo
+	if (access(fifo_path, F_OK) != -1) {
+		close(current->fd[0]);
+		unlink(fifo_path);
+	}
+
+	printf("%s Trader %d disconnected\n", LOG_PREFIX, current->trader_id);
+
+	// remove trader node from list and free its memory
+	if (previous == NULL) {
+		*head = current->next;
+	} else {
+		previous->next = current->next;
+	}
+
+	free(current->buy_orders);
+	free(current->sell_orders);
+	free(current->min_sell);
+	free(current->max_buy);
+	free(current);
 }
 
 void cleanup_fifos(int number_of_traders) {

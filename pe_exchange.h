@@ -107,6 +107,14 @@ void free_products_list(products *prods);
 void free_trader_list(trader *head);
 
 /*
+ * Desc: Closes and deletes FIFOs, frees memory used by the trader with matching
+         PID.
+ * Params: The PID of the trader to be terminated, pointer to the head of trader
+           list.
+ */
+void cleanup_trader(pid_t pid, trader **head);
+
+/*
  * Desc: Closes, flushes and deletes all fifos created. Used during shutdown
  */
 void cleanup_fifos(int number_of_traders);
