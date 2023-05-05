@@ -64,6 +64,7 @@ int main(int argc, char **argv) {
 	while (trader_disconnect < num_traders) {
 		while (!sigchld || !sigusr1) {
 			// wait for either signal
+			printf("here\n");
 			pause();
 		}
 
