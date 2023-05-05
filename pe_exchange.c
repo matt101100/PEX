@@ -59,8 +59,6 @@ int main(int argc, char **argv) {
 		current = current->next;
 	}
 
-	sleep(3);
-
 	// event loop
 	int trader_disconnect = 0; // counts number of traders disconnected
 	while (trader_disconnect < num_traders) {
