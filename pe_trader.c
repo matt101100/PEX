@@ -39,10 +39,6 @@ int main(int argc, char ** argv) {
         return 1;
     }
 
-    sleep(10);
-
-    exit(0);
-
     // event loop:
     while (1) {
         // Wait for SIGUSR1 from parent process

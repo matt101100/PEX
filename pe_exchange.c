@@ -30,6 +30,7 @@ int main(int argc, char **argv) {
 	// int bytes_read = -1;
 	int bytes_written = -1;
 	int num_traders = argc - TRADERS_START;
+	int total_sales = 0;
 
 	printf("%s Starting\n", LOG_PREFIX);
 
@@ -62,9 +63,8 @@ int main(int argc, char **argv) {
 	// event loop
 	int trader_disconnect = 0; // counts number of traders disconnected
 	while (trader_disconnect < num_traders) {
-		while (!sigchld || !sigusr1) {
+		while (!sigchld && !sigusr1) {
 			// wait for either signal
-			printf("here\n");
 			pause();
 		}
 
@@ -77,6 +77,10 @@ int main(int argc, char **argv) {
 			trader_disconnect++;
 		}
 	}
+
+	printf("%s Trading completed\n", LOG_PREFIX);
+	printf("%s Exchange fees collected: %d\n", LOG_PREFIX, (int)FEE_PERCENTAGE * total_sales);
+
 
 	// clean-up after successful execution
 	cleanup_fifos(num_traders);
@@ -272,7 +276,7 @@ void cleanup_trader(pid_t pid, trader **head) {
 
 	// find the trader node with matching pid
 	trader *current = *head; // to delete
-	trader* previous;
+	trader* previous = NULL;
 	while (current != NULL && current->process_id != pid) {
 		previous = current;
 		current = current->next;
@@ -301,6 +305,7 @@ void cleanup_trader(pid_t pid, trader **head) {
 		close(current->fd[0]);
 		unlink(fifo_path);
 	}
+	free(fifo_path);
 
 	printf("%s Trader %d disconnected\n", LOG_PREFIX, current->trader_id);
 
