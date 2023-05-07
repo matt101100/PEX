@@ -3,6 +3,7 @@
 
 #include "pe_common.h"
 #include <sys/epoll.h>
+#include <sys/signalfd.h>
 
 #define LOG_PREFIX "[PEX]"
 
@@ -85,6 +86,16 @@ int init_product_list(char product_file[], products *prods);
  * Return: 
  */
 int spawn_and_communicate(int num_traders, char **argv, trader **head);
+
+/*
+ * Desc: Adds both fds of each trader to the epoll instance. Also adds SIGCHLD
+         and SIGUSR1 to the epoll instance. This function allows the epoll
+         instance to monitor the trader programs and notify the exchange once
+         a fifo end has been closed, or either signal has been sent.
+ * Params: the epoll_fd file descriptor and a pointer to the head of the trader
+           list.
+ */
+int prepare_epoll(int epoll_fd, trader *head);
 
 /*
  * Desc: calls all free functions to free allocated memory used for the 

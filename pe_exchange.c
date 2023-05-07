@@ -169,6 +169,10 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		snprintf(exchange_fifo_path, exchange_path_len + 1, FIFO_EXCHANGE, trader_id);
 		snprintf(trader_fifo_path, trader_path_len + 1, FIFO_TRADER, trader_id);
 
+		// delete existing fifos
+		unlink(exchange_fifo_path);
+		unlink(trader_fifo_path);
+
 		// create the fifos and print corresponding creation notification
 		int res = mkfifo(exchange_fifo_path, 0666);
 		if (res < 0) {
