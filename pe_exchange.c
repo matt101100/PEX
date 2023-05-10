@@ -92,7 +92,9 @@ int main(int argc, char **argv) {
 				kill(curr_trader->process_id, SIGUSR1);
 				continue;
 			}
+			printf("hereout\n");
 			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
+			printf("herein\n");
 
 			kill(pid, SIGUSR1); // send SIGUSR1 after successful execution
 
