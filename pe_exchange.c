@@ -309,7 +309,7 @@ char *read_and_format_message(trader *curr_trader) {
         }
     }
 	
-	char *formatted_string = malloc(delim_index + 2);
+	char *formatted_string = malloc(delim_index + 1);
 	if (formatted_string == NULL) {
 		free(formatted_string);
 		free(buffer);
@@ -317,7 +317,7 @@ char *read_and_format_message(trader *curr_trader) {
 	}
 
 	memcpy(formatted_string, buffer, delim_index + 1);
-	formatted_string[delim_index + 1] = '\0';
+	formatted_string[delim_index] = '\0';
 	
 	free(buffer);
 
