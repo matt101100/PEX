@@ -94,9 +94,6 @@ int main(int argc, char **argv) {
 			}
 			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
 
-			kill(pid, SIGUSR1); // send SIGUSR1 after successful execution
-
-
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
 
@@ -430,8 +427,8 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		}
 		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
 		printf("%s\n", accepted_msg);
-		int temp = write(curr_trader->fd[0], accepted_msg, strlen(accepted_msg));
-		printf("%d\n", temp);
+		int temp = write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
+		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
 
 	} else if (cmd_type == AMMEND) {
