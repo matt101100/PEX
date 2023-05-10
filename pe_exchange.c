@@ -84,7 +84,6 @@ int main(int argc, char **argv) {
 			// parse input of trader that sent sigusr1 and return corresponding output
 			curr_trader = get_trader(pid, -1, head);
 			message_in = read_and_format_message(curr_trader);
-			printf("out\n");
 			cmd_type = determine_cmd_type(message_in);
 			if (cmd_type == -1) {
 				// notify trader of invalid message
@@ -294,7 +293,6 @@ char *read_and_format_message(trader *curr_trader) {
 			}
 			buffer = new_buf;
 		}
-		printf("%d\n", bytes_read);
 	} while (bytes_read > 0);
 
 	// put the string into proper format
@@ -363,6 +361,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, order *
 		if (res < 5) {
 			return 1;
 		}
+		printf("%s %d %s %d %d\n", cmd_type, order_id, product, quantity, price);
 		
 
 	} else if (cmd_type == AMMEND) {
