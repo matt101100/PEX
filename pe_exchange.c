@@ -372,15 +372,15 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		}
 
 		// notify the trader that its order was accepted
-		// int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
-		// char *accepted_msg = malloc(msg_len);
-		// if (accepted_msg == NULL) {
-		// 	return 1;
-		// }
-		// snprintf(accepted_msg, msg_len, "ACCEPTED %d;", order_id);
-		write(curr_trader->fd[1], "ACCEPTED 0;", 11);
+		int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
+		char *accepted_msg = malloc(msg_len);
+		if (accepted_msg == NULL) {
+			return 1;
+		}
+		snprintf(accepted_msg, msg_len, "ACCEPTED %d;", order_id);
+		write(curr_trader->fd[1], accepted_msg, msg_len);
 		kill(curr_trader->process_id, SIGUSR1);
-		// free(accepted_msg);
+		free(accepted_msg);
 
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
