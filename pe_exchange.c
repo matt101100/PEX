@@ -359,15 +359,15 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 
 		// validate order
 		int product_index = get_product_index(prods, product);
-		if (product_index == -1) {
-			return 1;
-		} else if (order_id < OID_MIN || order_id > OID_MAX) {
-			return 1;
-		} else if (quantity < ORDER_MIN || quantity > ORDER_MAX) {
-			return 1;
-		} else if (price < ORDER_MIN || price > ORDER_MAX) {
-			return 1;
-		}
+		// if (product_index == -1) {
+		// 	return 1;
+		// } else if (order_id < OID_MIN || order_id > OID_MAX) {
+		// 	return 1;
+		// } else if (quantity < ORDER_MIN || quantity > ORDER_MAX) {
+		// 	return 1;
+		// } else if (price < ORDER_MIN || price > ORDER_MAX) {
+		// 	return 1;
+		// }
 
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
