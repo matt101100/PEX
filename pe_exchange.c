@@ -55,7 +55,6 @@ int main(int argc, char **argv) {
 	// order lists
 	order **buys = (order**)calloc(prods.size, sizeof(order*));
 	order **sells = (order**)calloc(prods.size, sizeof(order*));
-	printf("%p, %p\n", buys, sells);
 
 	// send MARKET OPEN; to all traders and signal SIGUSR1
 	trader *current = head;
@@ -420,18 +419,18 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		}		
 		
 		// notify the trader that its order was accepted
-		int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
-		char *accepted_msg = malloc(msg_len + 1);
-		if (accepted_msg == NULL) {
-			return 1;
-		}
-		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
-		int x = write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
+		// int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
+		// char *accepted_msg = malloc(msg_len + 1);
+		// if (accepted_msg == NULL) {
+		// 	return 1;
+		// }
+		// snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
+		int x = write(curr_trader->fd[1], "ACCEPTED 0;", strlen("ACCEPTED 0;"));
 		if (x < 0) {
 			return 1;
 		}
 		kill(curr_trader->process_id, SIGUSR1);
-		free(accepted_msg);
+		// free(accepted_msg);
 
 	} else if (cmd_type == AMMEND) {
 		
