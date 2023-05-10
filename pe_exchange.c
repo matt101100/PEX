@@ -94,6 +94,9 @@ int main(int argc, char **argv) {
 			}
 			printf("hereout\n");
 			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
+			if (res == 1) {
+				printf("hwhy\n");
+			}
 			printf("herein\n");
 
 			kill(pid, SIGUSR1); // send SIGUSR1 after successful execution
