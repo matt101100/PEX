@@ -92,12 +92,7 @@ int main(int argc, char **argv) {
 				kill(curr_trader->process_id, SIGUSR1);
 				continue;
 			}
-			printf("hereout\n");
 			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
-			if (res == 1) {
-				printf("hwhy\n");
-			}
-			printf("herein\n");
 
 			kill(pid, SIGUSR1); // send SIGUSR1 after successful execution
 
@@ -363,10 +358,11 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		int order_id;
 		int quantity;
 		int price;
-		int res = sscanf(message_in, "%s %d %s %d %d", cmd, &order_id, product, &quantity, &price);
-		if (res < 5) {
-			return 1;
-		}
+		sscanf(message_in, "%s %d %s %d %d", cmd, &order_id, product, &quantity, &price);
+		// if (res < 5) {
+		// 	printf()
+		// 	return 1;
+		// }
 
 		// validate order
 		int product_index = get_product_index(prods, product);
