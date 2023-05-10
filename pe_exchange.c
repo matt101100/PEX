@@ -429,6 +429,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		printf("%s\n", accepted_msg);
 		int temp = write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
 		kill(curr_trader->process_id, SIGUSR1);
+		printf("%d\n", temp);
 		free(accepted_msg);
 
 	} else if (cmd_type == AMMEND) {
