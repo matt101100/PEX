@@ -358,21 +358,25 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		int order_id;
 		int quantity;
 		int price;
-		sscanf(message_in, "%s %d %s %d %d", cmd, &order_id, product, &quantity, &price);
-		// if (res < 5) {
-		// 	printf()
-		// 	return 1;
-		// }
+		int res = sscanf(message_in, "%s %d %s %d %d", cmd, &order_id, product, &quantity, &price);
+		if (res < 5) {
+			printf("sscanf\n");
+			return 1;
+		}
 
 		// validate order
 		int product_index = get_product_index(prods, product);
 		if (product_index == -1) {
+			printf("pindex\n");
 			return 1;
 		} else if (order_id < OID_MIN || order_id > OID_MAX) {
+			printf("oid\n");
 			return 1;
 		} else if (quantity < ORDER_MIN || quantity > ORDER_MAX) {
+			printf("qty\n");
 			return 1;
 		} else if (price < ORDER_MIN || price > ORDER_MAX) {
+			printf("price\n");
 			return 1;
 		}
 
