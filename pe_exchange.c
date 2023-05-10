@@ -237,7 +237,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 
 		// connect to named pipes, create a new trader and add it to list
 		trader *new_trader = malloc(sizeof(trader));
-		new_trader->fd[1] = open(exchange_fifo_path, O_RDWR);
+		new_trader->fd[1] = open(exchange_fifo_path, O_WRONLY);
 		printf("%s Connected to %s\n", LOG_PREFIX, exchange_fifo_path);
 		new_trader->fd[0] = open(trader_fifo_path, O_RDONLY);
 		printf("%s Connected to %s\n", LOG_PREFIX, trader_fifo_path);
