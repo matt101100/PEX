@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 	// send MARKET OPEN; to all traders and signal SIGUSR1
 	trader *current = head;
 	while (current != NULL) {
-		bytes_written = write(current->fd[1], "MARKET OPEN;", strlen("MARKET OPEN;") - 1);
+		bytes_written = write(current->fd[1], "MARKET OPEN;", strlen("MARKET OPEN;"));
 		if (bytes_written < 0) {
 			printf("Error: %s\n", strerror(errno));
 		}
@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
 			cmd_type = determine_cmd_type(message_in);
 			if (cmd_type == -1) {
 				// notify trader of invalid message
-				write(curr_trader->fd[1], "INVALID;", strlen("INVALID;") - 1);
+				write(curr_trader->fd[1], "INVALID;", strlen("INVALID;"));
 				kill(curr_trader->process_id, SIGUSR1);
 				continue;
 			}
