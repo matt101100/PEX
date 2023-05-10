@@ -131,6 +131,7 @@ void signal_handle(int signum, siginfo_t *info, void *context) {
 	}
 
 	pid = info->si_pid;
+	usleep(1);
 }
 
 void init_sigaction(struct sigaction *sa) {
