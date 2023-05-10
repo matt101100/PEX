@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
 				kill(curr_trader->process_id, SIGUSR1);
 				continue;
 			}
-			res = execute_command(curr_trader, message_in, cmd_type, &buys, &sells);
+			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
 
 			kill(pid, SIGUSR1); // send SIGUSR1 after successful execution
 
@@ -345,24 +345,92 @@ int determine_cmd_type(char *message_in) {
 	return -1;
 }
 
-int execute_command(trader *curr_trader, char *message_in, int cmd_type, order ***buys, order ***sells) {
+int execute_command(trader *curr_trader, char *message_in, int cmd_type, products* prods, order ***buys, order ***sells) {
 	if (curr_trader == NULL) {
 		return 1;
 	}
 
 	if (cmd_type == BUY || cmd_type == SELL) {
 		// make a new order and add to its respective list
-		char cmd_type[CMD_LEN];
+		char cmd[CMD_LEN]; // buy, sell, amend, cancel strings
 		char product[PRODUCT_STR_LEN];
 		int order_id;
 		int quantity;
 		int price;
-		int res = sscanf(message_in, "%s %d %s %d %d", cmd_type, &order_id, product, &quantity, &price);
+		int res = sscanf(message_in, "%s %d %s %d %d", cmd, &order_id, product, &quantity, &price);
 		if (res < 5) {
 			return 1;
 		}
-		printf("%s %d %s %d %d\n", cmd_type, order_id, product, quantity, price);
+
+		// validate order
+		int product_index = get_product_index(prods, product);
+		if (product_index == -1) {
+			return 1;
+		} else if (order_id < OID_MIN || order_id > OID_MAX) {
+			return 1;
+		} else if (quantity < ORDER_MIN || quantity > ORDER_MAX) {
+			return 1;
+		} else if (price < ORDER_MIN || price > ORDER_MAX) {
+			return 1;
+		}
+
+		// make the new order
+		order *new_order = (order*)malloc(sizeof(order));
+		new_order->order_id = order_id;
+		new_order->product = product;
+		new_order->product_index = product_index;
+		new_order->quantity = quantity;
+		new_order->price = price;
+
+		// add the order to the corresponding list
+		if (cmd_type == BUY) {
+			// buy list is sorted in descending order of price
+			order *curr = (*buys)[product_index];
+			order *prev = NULL;
+			while (curr != NULL && curr->price >= new_order->price) {
+				prev = curr;
+				curr = curr->next;
+			}
+
+			// insert order into its correct position
+			if (prev == NULL) {
+				// list was empty or it is the highest priced order
+				new_order->next = (*buys)[product_index];
+				(*buys)[product_index] = new_order;
+			} else {
+				// insert between prev and current
+				prev->next = new_order;
+				new_order->next = curr;
+			}
+
+		} else if (cmd_type == SELL) {
+			// sell list is sorted in ascending order of price
+			order *curr = (*sells)[product_index];
+			order *prev = NULL;
+			while (curr != NULL && curr->price < new_order->price) {
+				prev = curr;
+				curr = curr->next;
+			}
+
+			// insert order into its correct position
+			if (prev == NULL) {
+				new_order->next = (*sells)[product_index];
+				(*sells)[product_index] = new_order;
+			} else {
+				// insert between prev and current
+				prev->next = new_order;
+				new_order->next = curr;
+			}
+		}		
 		
+		// notify the trader that its order was accepted
+		int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
+		char *accepted_msg = malloc(msg_len + 1);
+		if (accepted_msg == NULL) {
+			return 1;
+		}
+		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
+		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
 
 	} else if (cmd_type == AMMEND) {
 		

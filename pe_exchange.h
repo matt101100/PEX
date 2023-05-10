@@ -10,6 +10,10 @@
 #define TRADERS_START 2
 #define BUF_SIZE 256 // temporary storage for message strings
 #define CMD_LEN 7 // longest possible command type a trader can send
+#define OID_MIN 0
+#define OID_MAX 999999
+#define ORDER_MIN 1
+#define ORDER_MAX 999999
 
 enum cmd_type {
     BUY = 0,
@@ -27,7 +31,7 @@ enum cmd_type {
 typedef struct order order;
 struct order {
     int order_id;
-    char product[PRODUCT_STR_LEN];
+    char *product;
     int product_index; // index of the product string in the string array
     int quantity;
     int price;
@@ -112,7 +116,7 @@ int determine_cmd_type(char *message_in);
            the command to parse and execute.
  * Return: 0 on successful parsing and execution of the command, 1 otherwise
  */
-int execute_command(trader *curr_trader, char *message_in, int cmd_type, order ***buys, order ***sells);
+int execute_command(trader *curr_trader, char *message_in, int cmd_type, products *prods, order ***buys, order ***sells);
 
 /*
  * Desc: Gets the trader with matching PID or trader ID.
