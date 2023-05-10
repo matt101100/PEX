@@ -360,12 +360,12 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		int price;
 		int res = sscanf(message_in, "%s %d %s %d %d", cmd, &order_id, product, &quantity, &price);
 		if (res < 5) {
-			printf("sscanf\n");
 			return 1;
 		}
 
 		// validate order
 		int product_index = get_product_index(prods, product);
+		printf("%s\n", product);
 		if (product_index == -1) {
 			printf("pindex\n");
 			return 1;
