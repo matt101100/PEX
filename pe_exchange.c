@@ -79,11 +79,10 @@ int main(int argc, char **argv) {
 		}
 		if (sigusr1) {
 			sigusr1 = 0; // reset flag
-
+			write(curr_trader->fd[1], "ACCEPTED 0;", strlen("ACCEPTED 0;"));
 			// parse input of trader that sent sigusr1 and return corresponding output
 			curr_trader = get_trader(pid, -1, head);
 			message_in = read_and_format_message(curr_trader);
-			write(curr_trader->fd[1], "ACCEPTED 0;", strlen("ACCEPTED 0;"));
 			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, message_in);
 			cmd_type = determine_cmd_type(message_in);
 			if (cmd_type == -1) {
