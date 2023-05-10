@@ -431,6 +431,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			return 1;
 		}
 		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
+		printf("%s\n", accepted_msg);
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
 
 	} else if (cmd_type == AMMEND) {
