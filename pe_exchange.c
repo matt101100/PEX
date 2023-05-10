@@ -114,8 +114,6 @@ int main(int argc, char **argv) {
 	cleanup_fifos(num_traders);
 	free_structs(&prods, head, buys, sells);
 	free(message_in);
-	free(buys);
-	free(sells);
 	return 0;
 
 	cleanup:
