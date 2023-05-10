@@ -380,7 +380,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		// snprintf(accepted_msg, msg_len, "ACCEPTED %d;", order_id);
 		write(curr_trader->fd[1], "ACCEPTED 0;", 11);
 		kill(curr_trader->process_id, SIGUSR1);
-		free(accepted_msg);
+		// free(accepted_msg);
 
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
