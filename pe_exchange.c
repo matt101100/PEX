@@ -359,15 +359,29 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 
 		// validate order
 		int product_index = get_product_index(prods, product);
-		// if (product_index == -1) {
-		// 	return 1;
-		// } else if (order_id < OID_MIN || order_id > OID_MAX) {
-		// 	return 1;
-		// } else if (quantity < ORDER_MIN || quantity > ORDER_MAX) {
-		// 	return 1;
-		// } else if (price < ORDER_MIN || price > ORDER_MAX) {
-		// 	return 1;
-		// }
+		if (product_index == -1) {
+			return 1;
+		} else if (order_id < OID_MIN || order_id > OID_MAX) {
+			return 1;
+		} else if (quantity < ORDER_MIN || quantity > ORDER_MAX) {
+			return 1;
+		} else if (price < ORDER_MIN || price > ORDER_MAX) {
+			return 1;
+		}
+
+		// notify the trader that its order was accepted
+		int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
+		char *accepted_msg = malloc(msg_len + 1);
+		if (accepted_msg == NULL) {
+			return 1;
+		}
+		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
+		int x = write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
+		if (x < 0) {
+			return 1;
+		}
+		kill(curr_trader->process_id, SIGUSR1);
+		free(accepted_msg);
 
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
@@ -417,20 +431,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 				new_order->next = curr;
 			}
 		}		
-		
-		// notify the trader that its order was accepted
-		// int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
-		// char *accepted_msg = malloc(msg_len + 1);
-		// if (accepted_msg == NULL) {
-		// 	return 1;
-		// }
-		// snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
-		int x = write(curr_trader->fd[1], "ACCEPTED 0;", strlen("ACCEPTED 0;"));
-		if (x < 0) {
-			return 1;
-		}
-		kill(curr_trader->process_id, SIGUSR1);
-		// free(accepted_msg);
 
 	} else if (cmd_type == AMMEND) {
 		
