@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
 
 	// clean-up after successful execution
 	cleanup_fifos(num_traders);
-	free_structs(&prods, head);
+	free_structs(&prods, head, buys, sells);
 	free(message_in);
 	free(buys);
 	free(sells);
@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
 	cleanup:
 		// free all allocated memory and return 1 as an error code
 		cleanup_fifos(num_traders);
-		free_structs(&prods, head);
+		free_structs(&prods, head, buys, sells);
 		return 1;
 }
 
@@ -365,7 +365,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 
 		// validate order
 		int product_index = get_product_index(prods, product);
-		printf("%s\n", product);
 		if (product_index == -1) {
 			return 1;
 		} else if (order_id < OID_MIN || order_id > OID_MAX) {
@@ -472,9 +471,11 @@ int get_product_index(products *prods, char *product) {
 	return -1;
 }
 
-void free_structs(products *prods, trader *head) {
+void free_structs(products *prods, trader *head, order **buys, order **sells) {
 	free_products_list(prods);
 	free_trader_list(head);
+	free_order_list(buys, prods);
+	free_order_list(sells, prods);
 }
 
 void free_products_list(products *prods) {
@@ -492,6 +493,18 @@ void free_trader_list(trader *head) {
 		free(current); // free the memory used for the trader struct itself
 		current = next; // move to next trader in list
 	}
+}
+
+void free_order_list(order **order_list, products *prods) {
+	for (int i = 0; i < prods->size; i++) {
+		order *temp;
+		while (order_list[i] != NULL) {
+			temp = order_list[i];
+			order_list[i] = (order_list[i])->next;
+			free(temp);
+		}
+	}
+	free(order_list);
 }
 
 void cleanup_trader(pid_t pid, trader **head) {

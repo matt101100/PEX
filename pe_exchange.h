@@ -137,7 +137,7 @@ int get_product_index(products *prods, char *product);
          corresponding structs.
  * Params: pointers to structs
  */
-void free_structs(products *prods, trader *head);
+void free_structs(products *prods, trader *head, order **buys, order **sells);
 
 /*
  * Desc: Frees the memory used by the products struct.
@@ -148,9 +148,15 @@ void free_products_list(products *prods);
 /*
  * Desc: Frees memory used by the trader list, and frees memory used by each
          trader structure's dynamic fields.
- * Param: A pointer to the head of the trader linked list.
+ * Params: A pointer to the head of the trader linked list.
  */
 void free_trader_list(trader *head);
+
+/*
+ * Desc: Frees memory used by the order list (buy / sell orders).
+ * Params: A pointer to the order list head and a pointer to the products struct.
+ */
+void free_order_list(order **order_list, products *prods);
 
 /*
  * Desc: Closes and deletes FIFOs, frees memory used by the trader with matching
