@@ -472,7 +472,7 @@ int get_product_index(products *prods, char *product) {
 	}
 
 	for (int i = 0; i < prods->size; i++) {
-		if (prods->product_strings[i] == product) {
+		if (strcmp(prods->product_strings[i], product) == 0) {
 			return i;
 		}
 	}
