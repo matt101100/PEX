@@ -123,9 +123,11 @@ void signal_handle(int signum, siginfo_t *info, void *context) {
 	if (signum == SIGUSR1) {
 		// handle SIGUSR1
 		sigusr1 = 1;
+		usleep(1);
 	} else if (signum == SIGCHLD) {
 		// handle SIGCHLD
 		sigchld = 1;
+		usleep(1);
 	}
 
 	pid = info->si_pid;
