@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 	// send MARKET OPEN; to all traders and signal SIGUSR1
 	trader *current = head;
 	while (current != NULL) {
-		bytes_written = write(current->fd[1], "MARKET OPEN;", strlen("MARKET OPEN;"));
+		bytes_written = write(current->fd[1], "MARKET OPEN;", 11);
 		if (bytes_written < 0) {
 			printf("Error: %s\n", strerror(errno));
 		}
