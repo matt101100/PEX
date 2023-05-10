@@ -385,6 +385,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 
 		// add the order to the corresponding list
 		if (cmd_type == BUY) {
+			printf("here11\n");
 			// buy list is sorted in descending order of price
 			order *curr = (*buys)[product_index];
 			order *prev = NULL;
@@ -392,6 +393,8 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 				prev = curr;
 				curr = curr->next;
 			}
+
+			printf("here22\n");
 
 			// insert order into its correct position
 			if (prev == NULL) {
@@ -403,6 +406,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 				prev->next = new_order;
 				new_order->next = curr;
 			}
+			printf("here333\n");
 
 		} else if (cmd_type == SELL) {
 			// sell list is sorted in ascending order of price
@@ -425,6 +429,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		}		
 		
 		// notify the trader that its order was accepted
+		printf("here\n");
 		int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
 		char *accepted_msg = malloc(msg_len + 1);
 		if (accepted_msg == NULL) {
