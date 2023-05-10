@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
 			// parse input of trader that sent sigusr1 and return corresponding output
 			curr_trader = get_trader(pid, -1, head);
 			message_in = read_and_format_message(curr_trader);
-			printf("%s [T%d] Parsing command: <%s>", LOG_PREFIX, curr_trader->trader_id, message_in);
+			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, message_in);
 			cmd_type = determine_cmd_type(message_in);
 			if (cmd_type == -1) {
 				// notify trader of invalid message
