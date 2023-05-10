@@ -83,6 +83,7 @@ int main(int argc, char **argv) {
 			// parse input of trader that sent sigusr1 and return corresponding output
 			curr_trader = get_trader(pid, -1, head);
 			message_in = read_and_format_message(curr_trader);
+			write(curr_trader->fd[1], "ACCEPTED 0;", strlen("ACCEPTED 0;"));
 			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, message_in);
 			cmd_type = determine_cmd_type(message_in);
 			if (cmd_type == -1) {
@@ -370,12 +371,12 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		}
 
 		// notify the trader that its order was accepted
-		int msg_len = snprintf(NULL, 0, "ACCEPTED %d", order_id);
+		int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
 		char *accepted_msg = malloc(msg_len + 1);
 		if (accepted_msg == NULL) {
 			return 1;
 		}
-		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d", order_id);
+		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
 		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
