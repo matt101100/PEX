@@ -47,7 +47,15 @@ int main(int argc, char **argv) {
 	if (res) {
 		printf("Error: %s\n", strerror(errno));
 		goto cleanup;
+	} else if (head == NULL) {
+		printf("Error connecting to traders.\n");
+		goto cleanup;
 	}
+
+	// order lists
+	order **buys = (order**)calloc(prods.size, sizeof(order*));
+	order **sells = (order**)calloc(prods.size, sizeof(order*));
+	printf("%p, %p\n", buys, sells);
 
 	// send MARKET OPEN; to all traders and signal SIGUSR1
 	trader *current = head;
@@ -62,16 +70,36 @@ int main(int argc, char **argv) {
 
 	// event loop
 	int trader_disconnect = 0; // counts number of traders disconnected
+	int cmd_type = -1;
+	char *message_in = NULL;
+	trader *curr_trader = NULL; // tracks the last trader that signalled
 	while (trader_disconnect < num_traders) {
 		while (!sigchld && !sigusr1) {
 			// wait for either signal
 			pause();
 		}
-
 		if (sigusr1) {
+			sigusr1 = 0; // reset flag
+
 			// parse input of trader that sent sigusr1 and return corresponding output
+			curr_trader = get_trader(pid, -1, head);
+			message_in = read_and_format_message(curr_trader);
+			printf("out\n");
+			cmd_type = determine_cmd_type(message_in);
+			if (cmd_type == -1) {
+				// notify trader of invalid message
+				write(curr_trader->fd[1], "INVALID;", strlen("INVALID;"));
+				kill(curr_trader->process_id, SIGUSR1);
+				continue;
+			}
+			res = execute_command(curr_trader, message_in, cmd_type, &buys, &sells);
+
+			kill(pid, SIGUSR1); // send SIGUSR1 after successful execution
+
 
 		} else if (sigchld) {
+			sigchld = 0; // reset flag
+
 			// perform disconnection and cleanup of terminated trader
 			cleanup_trader(pid, &head);
 			trader_disconnect++;
@@ -85,6 +113,9 @@ int main(int argc, char **argv) {
 	// clean-up after successful execution
 	cleanup_fifos(num_traders);
 	free_structs(&prods, head);
+	free(message_in);
+	free(buys);
+	free(sells);
 	return 0;
 
 	cleanup:
@@ -101,8 +132,9 @@ void signal_handle(int signum, siginfo_t *info, void *context) {
 	} else if (signum == SIGCHLD) {
 		// handle SIGCHLD
 		sigchld = 1;
-		pid = info->si_pid;
 	}
+
+	pid = info->si_pid;
 }
 
 void init_sigaction(struct sigaction *sa) {
@@ -219,10 +251,6 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		// initialize trader data fields
 		new_trader->trader_id = trader_id;
 		new_trader->process_id = pid;
-		new_trader->buy_orders = NULL; // no buy or sell orders upon init
-		new_trader->sell_orders = NULL;
-		new_trader->min_sell = NULL;
-		new_trader->max_buy = NULL;
 
 		// add the newly opened trader to the head of the list
 		new_trader->next = *head;
@@ -233,6 +261,144 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 	}
 
 	return 0;
+}
+
+char *read_and_format_message(trader *curr_trader) {
+	if (curr_trader == NULL) {
+		return NULL;
+	}
+
+	char *buffer = malloc(BUF_SIZE);
+	if (buffer == NULL) {
+		free(buffer);
+		return NULL;
+	}
+
+	int size = BUF_SIZE;
+	int position = 0;
+	int bytes_read = 0;
+	do {
+		bytes_read = read(curr_trader->fd[0], buffer + position, 1);
+		if (bytes_read == -1) {
+			free(buffer);
+			return NULL;
+		}
+
+		position += bytes_read;
+		if (position == size) {
+			size *= 2;
+			char *new_buf = realloc(buffer, size);
+			if (new_buf == NULL) {
+				free(new_buf);
+				return NULL;
+			}
+			buffer = new_buf;
+		}
+		printf("%d\n", bytes_read);
+	} while (bytes_read > 0);
+
+	// put the string into proper format
+	int delim_index = 0;
+    for (int i = 0; i < position; i++) {
+        // look for the ; delimiter
+        if (buffer[i] == ';') {
+            delim_index = i;
+            break;
+        } else if (i == bytes_read - 1) {
+            // reached end of data without finding delimiter
+            return NULL;
+        }
+    }
+	
+	char *formatted_string = malloc(delim_index + 2);
+	if (formatted_string == NULL) {
+		free(formatted_string);
+		free(buffer);
+		return NULL;
+	}
+
+	memcpy(formatted_string, buffer, delim_index + 1);
+	formatted_string[delim_index + 1] = '\0';
+	
+	free(buffer);
+
+	return formatted_string;
+}
+
+int determine_cmd_type(char *message_in) {
+	// extract the command type from the incomming message
+	char type[CMD_LEN];
+	int res = sscanf(message_in, "%s", type);
+	if (res != 1) {
+		return -1;
+	}
+
+	// return the corresponding flag
+	if (strcmp(type, "BUY") == 0) {
+		return BUY;
+	} else if (strcmp(type, "SELL") == 0) {
+		return SELL;
+	} else if (strcmp(type, "AMMEND") == 0) {
+		return AMMEND;
+	} else if (strcmp(type, "CANECL") == 0) {
+		return CANCEL;
+	}
+
+	return -1;
+}
+
+int execute_command(trader *curr_trader, char *message_in, int cmd_type, order ***buys, order ***sells) {
+	if (curr_trader == NULL) {
+		return 1;
+	}
+
+	if (cmd_type == BUY || cmd_type == SELL) {
+		// make a new order and add to its respective list
+		char cmd_type[CMD_LEN];
+		char product[PRODUCT_STR_LEN];
+		int order_id;
+		int quantity;
+		int price;
+		int res = sscanf(message_in, "%s %d %s %d %d", cmd_type, &order_id, product, &quantity, &price);
+		if (res < 5) {
+			return 1;
+		}
+		
+
+	} else if (cmd_type == AMMEND) {
+		
+
+	} else if (cmd_type == CANCEL) {
+
+
+	}
+
+	return 0;
+}
+
+trader *get_trader(pid_t pid, int trader_id, trader *head) {
+	trader *current = head;
+	while (current != NULL) {
+		if (current->process_id == pid || current->trader_id == trader_id) {
+			return current;
+		}
+		current = current->next;
+	}
+	return current;
+}
+
+int get_product_index(products *prods, char *product) {
+	if (product == NULL) {
+		return -1;
+	}
+
+	for (int i = 0; i < prods->size; i++) {
+		if (prods->product_strings[i] == product) {
+			return i;
+		}
+	}
+
+	return -1;
 }
 
 void free_structs(products *prods, trader *head) {
@@ -252,22 +418,7 @@ void free_trader_list(trader *head) {
 	trader *next;
 	while (current != NULL) {
 		next = current->next;
-		
-		// free the dynamically allocated trader fields
-		if (current->buy_orders != NULL) {
-			free(current->buy_orders);
-		}
-		if (current->sell_orders != NULL) {
-			free(current->sell_orders);
-		}
-		if (current->min_sell != NULL) {
-			free(current->min_sell);
-		}
-		if (current->max_buy != NULL) {
-			free(current->max_buy);
-		}
 		free(current); // free the memory used for the trader struct itself
-
 		current = next; // move to next trader in list
 	}
 }
@@ -320,10 +471,6 @@ void cleanup_trader(pid_t pid, trader **head) {
 		previous->next = current->next;
 	}
 
-	free(current->buy_orders);
-	free(current->sell_orders);
-	free(current->min_sell);
-	free(current->max_buy);
 	free(current);
 }
 

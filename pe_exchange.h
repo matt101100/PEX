@@ -8,6 +8,15 @@
 #define LOG_PREFIX "[PEX]"
 
 #define TRADERS_START 2
+#define BUF_SIZE 256 // temporary storage for message strings
+#define CMD_LEN 7 // longest possible command type a trader can send
+
+enum cmd_type {
+    BUY = 0,
+    SELL,
+    AMMEND,
+    CANCEL
+};
 
 /*
  * Desc: Generic order struct.
@@ -17,7 +26,9 @@
  */
 typedef struct order order;
 struct order {
+    int order_id;
     char product[PRODUCT_STR_LEN];
+    int product_index; // index of the product string in the string array
     int quantity;
     int price;
     order *next;
@@ -26,18 +37,12 @@ struct order {
 /*
  * Desc: All-encompassing trader struct.
  * Fields: Tracks the trader ID, process ID of the trader binary,
-           sell and buy orders, the minimum sell and maximum buy
-           orders, the array of file descriptors and a pointer to the next trader
-           in the list.
+           the array of file descriptors and a pointer to the next trader.
  */
 typedef struct trader trader;
 struct trader {
     int trader_id; // main identifier
     pid_t process_id; // get this from the fork() call
-    order *buy_orders;
-    order *sell_orders;
-    order *min_sell;
-    order *max_buy;
     int fd[2]; // fd[0] = trader fifo, fd[1] = exchange fifo
     trader *next; // has a linked-list structure
 };
@@ -83,19 +88,45 @@ int init_product_list(char product_file[], products *prods);
  * Params: The number of traders to spawn, the list of command line args given
            to pe_exchange and a pointer to a pointer to the head of the 
            trader list.
- * Return: 
+ * Return: 0 if all traders where successfully set up and exec'd, 1 otherwise
  */
 int spawn_and_communicate(int num_traders, char **argv, trader **head);
 
 /*
- * Desc: Adds both fds of each trader to the epoll instance. Also adds SIGCHLD
-         and SIGUSR1 to the epoll instance. This function allows the epoll
-         instance to monitor the trader programs and notify the exchange once
-         a fifo end has been closed, or either signal has been sent.
- * Params: the epoll_fd file descriptor and a pointer to the head of the trader
-           list.
+ * Desc: Reads and formats message from trader_fifo of trader with matching PID.
+ * Params: the pid to match and a pointer to the head of the trader list
  */
-int prepare_epoll(int epoll_fd, trader *head);
+char *read_and_format_message(trader *curr_trader);
+
+/*
+ * Desc: Determines the type of command to execute specified by the message.
+ * Params: The message to parse.
+ * Returns: A flag representing the command type
+*/
+int determine_cmd_type(char *message_in);
+
+/*
+ * Desc: Acts on the command sent via a fifo and responds accordingly to the
+         corresponding trader.
+ * Params: The PID to match, a pointer to the head of trader list,
+           the command to parse and execute.
+ * Return: 0 on successful parsing and execution of the command, 1 otherwise
+ */
+int execute_command(trader *curr_trader, char *message_in, int cmd_type, order ***buys, order ***sells);
+
+/*
+ * Desc: Gets the trader with matching PID or trader ID.
+ * Params: the PID / TID to match, a pointer the head of the trader list
+ */
+trader *get_trader(pid_t pid, int trader_id, trader *head);
+
+/*
+ * Desc: Gets the index of product in the products string array.
+ * Params: A pointer to the products struct containing the product array, the
+           product string to find.
+ * Return: The index of the product string in the string array, -1 if invalid.
+ */
+int get_product_index(products *prods, char *product);
 
 /*
  * Desc: calls all free functions to free allocated memory used for the 
