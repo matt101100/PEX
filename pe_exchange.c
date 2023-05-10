@@ -91,7 +91,9 @@ int main(int argc, char **argv) {
 				kill(curr_trader->process_id, SIGUSR1);
 				continue;
 			}
+
 			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
+			
 
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
@@ -371,12 +373,11 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 
 		// notify the trader that its order was accepted
 		int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
-		char *accepted_msg = malloc(msg_len + 1);
+		char *accepted_msg = malloc(msg_len);
 		if (accepted_msg == NULL) {
 			return 1;
 		}
-		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
-		sleep(100);
+		snprintf(accepted_msg, msg_len, "ACCEPTED %d;", order_id);
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
 		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
