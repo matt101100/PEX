@@ -39,10 +39,6 @@ int main(int argc, char ** argv) {
         return 1;
     }
 
-    // sleep(5);
-    // write(write_fd, "BUY 0 Apples 2 300;", strlen("BUY 0 APPLES 2 300;"));
-    // kill(getppid(), SIGUSR1);
-
     // event loop:
     while (1) {
         // Wait for SIGUSR1 from parent process

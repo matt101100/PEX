@@ -82,7 +82,6 @@ int main(int argc, char **argv) {
 
 			// parse input of trader that sent sigusr1 and return corresponding output
 			curr_trader = get_trader(pid, -1, head);
-			usleep(3);
 			message_in = read_and_format_message(curr_trader);
 			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, message_in);
 			cmd_type = determine_cmd_type(message_in);
@@ -103,7 +102,6 @@ int main(int argc, char **argv) {
 			cleanup_trader(pid, &head);
 			trader_disconnect++;
 		}
-		usleep(10);
 	}
 
 	printf("%s Trading completed\n", LOG_PREFIX);
@@ -248,7 +246,6 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		if (new_trader->fd[0] < 0 || new_trader->fd[1] < 0) {
 			return 1;
 		}
-		usleep(10);
 		// initialize trader data fields
 		new_trader->trader_id = trader_id;
 		new_trader->process_id = forked_pid;
@@ -383,9 +380,12 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			return 1;
 		}
 		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
+		printf("here\n");
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
 		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
+
+
 
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
