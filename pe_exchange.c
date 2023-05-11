@@ -382,7 +382,8 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		}
 		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
-		kill(curr_trader->process_id, SIGTERM);
+		int temp = kill(curr_trader->process_id, SIGUSR1);
+		printf("%d\n");
 		free(accepted_msg);
 
 		// make the new order
