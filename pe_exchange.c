@@ -186,7 +186,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 	int trader_path_len = 0;
 	char *exchange_fifo_path = NULL;
 	char *trader_fifo_path = NULL;
-	pid_t pid = -1;
+	pid_t forked_pid = -1;
 	for (trader_id = 0; trader_id < num_traders; trader_id++) {
 		// get the length of each path
 		exchange_path_len = snprintf(NULL, 0, FIFO_EXCHANGE, trader_id);
@@ -224,10 +224,10 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		// fork and exec the trader after creating its fifos
 		printf("%s Starting trader %d ", LOG_PREFIX, trader_id);
 		printf("(%s)\n", argv[TRADERS_START + trader_id]);
-		pid = fork();
-		if (pid < 0) {
+		forked_pid = fork();
+		if (forked_pid < 0) {
 			return 1;
-		} else if (pid == 0) {
+		} else if (forked_pid == 0) {
 			// exec trader binaries from child process
 			// first, convert trader ID into a string
 			int tid_len = snprintf(NULL, 0, "%d", trader_id);
@@ -249,7 +249,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		}
 		// initialize trader data fields
 		new_trader->trader_id = trader_id;
-		new_trader->process_id = pid;
+		new_trader->process_id = forked_pid;
 
 		// add the newly opened trader to the head of the list
 		new_trader->next = *head;
@@ -382,8 +382,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		}
 		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
-		int temp = kill(curr_trader->process_id, SIGUSR1);
-		printf("%d\n", temp);
+		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
 
 		// make the new order
