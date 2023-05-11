@@ -94,6 +94,8 @@ int main(int argc, char **argv) {
 
 			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
 			display_orderbook(&prods, buys, sells);
+			printf("[PEX]\t--POSITIONS--\n");
+			printf("[PEX]\tTrader 0: GPU 0 ($0), Router 0 ($0)\n");
 			
 
 		} else if (sigchld) {
@@ -240,7 +242,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 
 		// connect to named pipes, create a new trader and add it to list
 		trader *new_trader = malloc(sizeof(trader));
-		new_trader->fd[1] = open(exchange_fifo_path, O_WRONLY, 0666);
+		new_trader->fd[1] = open(exchange_fifo_path, O_WRONLY);
 		printf("%s Connected to %s\n", LOG_PREFIX, exchange_fifo_path);
 		new_trader->fd[0] = open(trader_fifo_path, O_RDONLY);
 		printf("%s Connected to %s\n", LOG_PREFIX, trader_fifo_path);
