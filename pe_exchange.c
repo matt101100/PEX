@@ -452,7 +452,6 @@ void display_orderbook(products *prods, order **buys, order **sells) {
 		display_orders(buys, i, BUY);
 		display_orders(sells, i, SELL);
 	}
-	return 0;
 }
 
 int count_order_levels(order **list, int product_index) {
@@ -495,7 +494,7 @@ void display_orders(order **list, int product_index, int order_type) {
 
 void display_positions(trader *head) {
 	printf("%s\t--POSITIONS--\n", LOG_PREFIX);
-	
+
 }
 
 trader *get_trader(pid_t pid, int trader_id, trader *head) {
