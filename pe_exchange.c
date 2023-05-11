@@ -130,6 +130,7 @@ void signal_handle(int signum, siginfo_t *info, void *context) {
 	} else if (signum == SIGCHLD) {
 		// handle SIGCHLD
 		sigchld = 1;
+		usleep(1);
 	}
 
 	pid = info->si_pid;
@@ -380,7 +381,9 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			return 1;
 		}
 		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
+		printf("%s\n", accepted_msg);
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
+		printf("%s\n", accepted_msg);
 		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
 
