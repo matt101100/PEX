@@ -379,7 +379,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			return 1;
 		}
 		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
-		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
+		write(curr_trader->fd[0], accepted_msg, strlen(accepted_msg));
 		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
 
@@ -598,7 +598,6 @@ void cleanup_trader(pid_t pid, trader **head) {
 	free(fifo_path);
 
 	printf("%s Trader %d disconnected\n", LOG_PREFIX, current->trader_id);
-	write(current->fd[1], "ACCEPTED 0", strlen("ACCEPTED 0"));
 
 	// remove trader node from list and free its memory
 	if (previous == NULL) {
