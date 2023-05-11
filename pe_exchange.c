@@ -93,6 +93,7 @@ int main(int argc, char **argv) {
 			}
 
 			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
+			display_orderbook(&prods, buys, sells);
 			
 
 		} else if (sigchld) {
@@ -379,7 +380,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		}
 		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
 		write(curr_trader->fd[1], accepted_msg, msg_len);
-		printf("%d %d\n", curr_trader->process_id, pid);
 		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
 
@@ -441,6 +441,57 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 	}
 
 	return 0;
+}
+
+int display_orderbook(products *prods, order **buys, order **sells) {
+	printf("%s\t--ORDERBOOK--\n", LOG_PREFIX);
+	for (int i = 0; i < prods->size; i++) {
+		printf("%s\tProduct: %s; BUY levels: %d; SELL levels: %d", LOG_PREFIX,
+				prods->product_strings[i], count_order_levels(buys, i),
+				count_order_levels(sells, i));
+		display_orders(buys, i, BUY);
+		display_orders(sells, i, SELL);
+	}
+	return 0;
+}
+
+int count_order_levels(order **list, int product_index) {
+	int count = 0;
+	order *curr = list[product_index];
+	while (curr != NULL) {
+		count++;
+		curr = curr->next;
+	}
+	return count;
+}
+
+void display_orders(order **list, int product_index, int order_type) {
+	char *order_prefix = malloc(strlen("SELL") + 1);
+	if (order_type == BUY) {
+		order_prefix = "BUY";
+		order_prefix[strlen("BUY")] = '\0';
+	} else if (order_type == SELL) {
+		order_prefix = "SELL";
+		order_prefix[strlen("SELL")] = '\0';
+	}
+	order *curr = list[product_index];
+	int count = 1;
+	while (curr != NULL) {
+		order *runner = curr->next;
+		while (runner != NULL) {
+			if (runner->quantity == curr->quantity && runner->price == curr->price) {
+				count++;
+			} else if (runner->quantity != curr->quantity && runner->price != curr->price) {
+				if (count > 1) {
+					printf("%s %d @ %d (%d orders)\n", order_prefix, curr->quantity, curr->price, count);
+				} else if (count == 1) {
+					printf("%s %d @ %d (%d order)\n", order_prefix, curr->quantity, curr->price, count);
+				}
+				curr = runner;
+				break;
+			}
+		}
+	}
 }
 
 trader *get_trader(pid_t pid, int trader_id, trader *head) {
