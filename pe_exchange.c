@@ -82,6 +82,7 @@ int main(int argc, char **argv) {
 
 			// parse input of trader that sent sigusr1 and return corresponding output
 			curr_trader = get_trader(pid, -1, head);
+			usleep(3);
 			message_in = read_and_format_message(curr_trader);
 			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, message_in);
 			cmd_type = determine_cmd_type(message_in);
@@ -97,13 +98,12 @@ int main(int argc, char **argv) {
 
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
-			write(curr_trader->fd[1], "ACCEPTED 0;", strlen("ACCEPTED 0;"));
-			kill(curr_trader->process_id, SIGUSR1);
 
 			// perform disconnection and cleanup of terminated trader
 			cleanup_trader(pid, &head);
 			trader_disconnect++;
 		}
+		usleep(10);
 	}
 
 	printf("%s Trading completed\n", LOG_PREFIX);
@@ -248,6 +248,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		if (new_trader->fd[0] < 0 || new_trader->fd[1] < 0) {
 			return 1;
 		}
+		usleep(1);
 		// initialize trader data fields
 		new_trader->trader_id = trader_id;
 		new_trader->process_id = forked_pid;
