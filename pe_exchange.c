@@ -480,7 +480,6 @@ void display_orders(order **list, int product_index, int order_type) {
 			if (runner->quantity == curr->quantity && runner->price == curr->price) {
 				count++;
 			} else {
-				curr = runner;
 				break;
 			}
 		}
@@ -489,6 +488,7 @@ void display_orders(order **list, int product_index, int order_type) {
 		} else if (count == 1) {
 			printf("%s %d @ %d (%d order)\n", order_prefix, curr->quantity, curr->price, count);
 		}
+		curr = runner;
 	}
 	free(order_prefix);
 }
