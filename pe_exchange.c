@@ -385,6 +385,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		kill(curr_trader->process_id, SIGUSR1);
 		printf("after k\n");
 		free(accepted_msg);
+		//gkfjn
 
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
