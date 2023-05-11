@@ -468,13 +468,10 @@ int count_order_levels(order **list, int product_index) {
 void display_orders(order **list, int product_index, int order_type) {
 	char *order_prefix = malloc(strlen("SELL") + 1);
 	if (order_type == BUY) {
-		order_prefix = "BUY";
-		order_prefix[strlen("BUY") - 1] = '\0';
+		strcpy(order_prefix, "BUY");
 		printf("here\n");
-		//test
 	} else if (order_type == SELL) {
-		order_prefix = "SELL";
-		order_prefix[strlen("SELL") - 1] = '\0';
+		strcpy(order_prefix, "SELL");
 	}
 	order *curr = list[product_index];
 	int count = 1;
@@ -494,6 +491,7 @@ void display_orders(order **list, int product_index, int order_type) {
 			printf("%s %d @ %d (%d order)\n", order_prefix, curr->quantity, curr->price, count);
 		}
 	}
+	free(order_prefix);
 }
 
 trader *get_trader(pid_t pid, int trader_id, trader *head) {
