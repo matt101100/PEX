@@ -373,11 +373,11 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 
 		// notify the trader that its order was accepted
 		int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
-		char *accepted_msg = malloc(msg_len);
+		char *accepted_msg = malloc(msg_len + 1);
 		if (accepted_msg == NULL) {
 			return 1;
 		}
-		snprintf(accepted_msg, msg_len, "ACCEPTED %d;", order_id);
+		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
 		printf("%s\n", accepted_msg);
 		write(curr_trader->fd[1], accepted_msg, msg_len);
 		kill(curr_trader->process_id, SIGUSR1);
