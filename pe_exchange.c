@@ -598,7 +598,7 @@ void cleanup_trader(pid_t pid, trader **head) {
 	free(fifo_path);
 
 	printf("%s Trader %d disconnected\n", LOG_PREFIX, current->trader_id);
-	write(current->fd[1], "DISCONNECT", strlen("DISCONNECT"));
+	write(current->fd[1], "ACCEPTED 0", strlen("ACCEPTED 0"));
 
 	// remove trader node from list and free its memory
 	if (previous == NULL) {
