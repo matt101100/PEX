@@ -98,6 +98,7 @@ int main(int argc, char **argv) {
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
 			write(curr_trader->fd[1], "ACCEPTED 0;", strlen("ACCEPTED 0;"));
+			kill(curr_trader->process_id, SIGUSR1);
 
 			// perform disconnection and cleanup of terminated trader
 			cleanup_trader(pid, &head);
