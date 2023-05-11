@@ -139,7 +139,7 @@ void signal_handle(int signum, siginfo_t *info, void *context) {
 void init_sigaction(struct sigaction *sa) {
 	sa->sa_sigaction = signal_handle;
 	sigemptyset(&sa->sa_mask);
-    sa->sa_flags = SA_SIGINFO | SA_RESTART;
+    sa->sa_flags = SA_SIGINFO;
 }
 
 int init_product_list(char products_file[], products *prods) {
@@ -382,7 +382,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		}
 		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
-		kill(curr_trader->process_id, SIGUSR1);
+		kill(pid, SIGUSR1);
 		free(accepted_msg);
 
 		// make the new order
