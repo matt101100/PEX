@@ -240,7 +240,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 
 		// connect to named pipes, create a new trader and add it to list
 		trader *new_trader = malloc(sizeof(trader));
-		new_trader->fd[1] = open(exchange_fifo_path, O_WRONLY);
+		new_trader->fd[1] = open(exchange_fifo_path, O_WRONLY, 0666);
 		printf("%s Connected to %s\n", LOG_PREFIX, exchange_fifo_path);
 		new_trader->fd[0] = open(trader_fifo_path, O_RDONLY);
 		printf("%s Connected to %s\n", LOG_PREFIX, trader_fifo_path);
@@ -375,12 +375,12 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		}
 
 		// notify the trader that its order was accepted
-		int msg_len = snprintf(NULL, 0, " ACCEPTED %d;", order_id);
+		int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
 		char *accepted_msg = malloc(msg_len + 1);
 		if (accepted_msg == NULL) {
 			return 1;
 		}
-		snprintf(accepted_msg, msg_len + 1, " ACCEPTED %d;", order_id);
+		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
 		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
