@@ -129,8 +129,6 @@ void signal_handle(int signum, siginfo_t *info, void *context) {
 	} else if (signum == SIGCHLD) {
 		// handle SIGCHLD
 		sigchld = 1;
-	} else if (signum == SIGPIPE) {
-		printf("here\n");
 	}
 
 	pid = info->si_pid;
@@ -600,6 +598,7 @@ void cleanup_trader(pid_t pid, trader **head) {
 	free(fifo_path);
 
 	printf("%s Trader %d disconnected\n", LOG_PREFIX, current->trader_id);
+	write(current->fd[1], "DISCONNECT", strlen("DISCONNECT"));
 
 	// remove trader node from list and free its memory
 	if (previous == NULL) {
