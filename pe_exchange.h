@@ -122,10 +122,9 @@ int match_orders();
 
 /*
  * Desc: Prints the orderbook to stdout.
- * Params: Pointers to the products list, buy and sell orders.
- * Return: 0 on successful printing, 1 otherwise.
+ * Params: Pointers to the products list, buy and sell orders..
  */
-int display_orderbook(products *prods, order **buys, order **sells);
+void display_orderbook(products *prods, order **buys, order **sells);
 
 /*
  * Desc: Counts the number of orders for a specific product.
@@ -145,9 +144,8 @@ void display_orders(order **list, int product_index, int order_type);
 /*
  * Desc: Prints the positions of all traders to stdout.
  * Params: A pointer to the head of the traders list.
- * Return: 0 on successful print, 1 otherwise.
  */
-int display_positions(trader *head);
+void display_positions(trader *head);
 
 /*
  * Desc: Gets the trader with matching PID or trader ID.

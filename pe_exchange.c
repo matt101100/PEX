@@ -443,7 +443,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 	return 0;
 }
 
-int display_orderbook(products *prods, order **buys, order **sells) {
+void display_orderbook(products *prods, order **buys, order **sells) {
 	printf("%s\t--ORDERBOOK--\n", LOG_PREFIX);
 	for (int i = 0; i < prods->size; i++) {
 		printf("%s\tProduct: %s; Buy levels: %d; Sell levels: %d\n", LOG_PREFIX,
@@ -484,13 +484,18 @@ void display_orders(order **list, int product_index, int order_type) {
 			}
 		}
 		if (count > 1) {
-			printf("%s\t\t%s %d @ %d (%d orders)\n", LOG_PREFIX, order_prefix, curr->quantity, curr->price, count);
+			printf("%s\t\t%s %d @ $%d (%d orders)\n", LOG_PREFIX, order_prefix, curr->quantity, curr->price, count);
 		} else if (count == 1) {
-			printf("%s\t\t%s %d @ %d (%d order)\n", LOG_PREFIX, order_prefix, curr->quantity, curr->price, count);
+			printf("%s\t\t%s %d @ $%d (%d order)\n", LOG_PREFIX, order_prefix, curr->quantity, curr->price, count);
 		}
 		curr = runner;
 	}
 	free(order_prefix);
+}
+
+void display_positions(trader *head) {
+	printf("%s\t--POSITIONS--\n", LOG_PREFIX);
+	
 }
 
 trader *get_trader(pid_t pid, int trader_id, trader *head) {
