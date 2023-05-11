@@ -126,6 +126,7 @@ void signal_handle(int signum, siginfo_t *info, void *context) {
 	if (signum == SIGUSR1) {
 		// handle SIGUSR1
 		sigusr1 = 1;
+		usleep(1);
 	} else if (signum == SIGCHLD) {
 		// handle SIGCHLD
 		sigchld = 1;
@@ -379,13 +380,9 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			return 1;
 		}
 		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
-		printf("here\n");
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
-		printf("after w\n");
 		kill(curr_trader->process_id, SIGUSR1);
-		printf("after k\n");
 		free(accepted_msg);
-		//gkfjn
 
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
