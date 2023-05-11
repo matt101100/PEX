@@ -400,7 +400,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 				prev = curr;
 				curr = curr->next;
 			}
-			//test
 
 			// insert order into its correct position
 			if (prev == NULL) {
