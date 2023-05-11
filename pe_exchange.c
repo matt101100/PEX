@@ -128,6 +128,7 @@ void signal_handle(int signum, siginfo_t *info, void *context) {
 		sigusr1 = 1;
 	} else if (signum == SIGCHLD) {
 		// handle SIGCHLD
+		printf("here\n");
 		sigchld = 1;
 	}
 
