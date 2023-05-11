@@ -379,7 +379,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			return 1;
 		}
 		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
-		write(curr_trader->fd[1], accepted_msg, msg_len);
+		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
 		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
 
@@ -446,7 +446,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 int display_orderbook(products *prods, order **buys, order **sells) {
 	printf("%s\t--ORDERBOOK--\n", LOG_PREFIX);
 	for (int i = 0; i < prods->size; i++) {
-		printf("%s\tProduct: %s; BUY levels: %d; SELL levels: %d\n", LOG_PREFIX,
+		printf("%s\tProduct: %s; Buy levels: %d; Sell levels: %d\n", LOG_PREFIX,
 				prods->product_strings[i], count_order_levels(buys, i),
 				count_order_levels(sells, i));
 		display_orders(buys, i, BUY);
@@ -469,11 +469,11 @@ void display_orders(order **list, int product_index, int order_type) {
 	char *order_prefix = malloc(strlen("SELL") + 1);
 	if (order_type == BUY) {
 		order_prefix = "BUY";
-		order_prefix[strlen("BUY")] = '\0';
+		order_prefix[strlen("BUY") - 1] = '\0';
 		printf("here\n");
 	} else if (order_type == SELL) {
 		order_prefix = "SELL";
-		order_prefix[strlen("SELL")] = '\0';
+		order_prefix[strlen("SELL") - 1] = '\0';
 	}
 	order *curr = list[product_index];
 	int count = 1;
