@@ -94,6 +94,7 @@ int main(int argc, char **argv) {
 
 			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
 			display_orderbook(&prods, buys, sells);
+			//tests
 			
 
 		} else if (sigchld) {
