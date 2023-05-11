@@ -97,6 +97,7 @@ int main(int argc, char **argv) {
 
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
+			write(curr_trader->fd[1], "ACCEPTED 0;", strlen("ACCEPTED 0;"));
 
 			// perform disconnection and cleanup of terminated trader
 			cleanup_trader(pid, &head);
@@ -372,7 +373,18 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		} else if (price < ORDER_MIN || price > ORDER_MAX) {
 			return 1;
 		}
-		
+
+		// notify the trader that its order was accepted
+		int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
+		char *accepted_msg = malloc(msg_len + 1);
+		if (accepted_msg == NULL) {
+			return 1;
+		}
+		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
+		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
+		kill(curr_trader->process_id, SIGUSR1);
+		free(accepted_msg);
+
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
 		new_order->order_id = order_id;
