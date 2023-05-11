@@ -17,15 +17,6 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	// setup the sigaction struct
-	struct sigaction sa;
-	init_sigaction(&sa);
-	if (sigaction(SIGUSR1, &sa, NULL) == -1 
-		|| sigaction(SIGCHLD, &sa, NULL) == -1) {
-        printf("Error initializing sigaction.\n");
-        return 1;
-    }
-
 	int res = 0; // stores result of init functions for error checking
 	// int bytes_read = -1;
 	int bytes_written = -1;
@@ -66,6 +57,15 @@ int main(int argc, char **argv) {
 		kill(current->process_id, SIGUSR1);
 		current = current->next;
 	}
+
+	// setup the sigaction struct
+	struct sigaction sa;
+	init_sigaction(&sa);
+	if (sigaction(SIGUSR1, &sa, NULL) == -1 
+		|| sigaction(SIGCHLD, &sa, NULL) == -1) {
+        printf("Error initializing sigaction.\n");
+        return 1;
+    }
 
 	// event loop
 	int trader_disconnect = 0; // counts number of traders disconnected
@@ -381,9 +381,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			return 1;
 		}
 		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
-		printf("%s\n", accepted_msg);
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
-		printf("%s\n", accepted_msg);
 		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
 
