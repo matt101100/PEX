@@ -94,8 +94,6 @@ int main(int argc, char **argv) {
 
 			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
 			display_orderbook(&prods, buys, sells);
-			printf("[PEX]\t--POSITIONS--\n");
-			printf("[PEX]\tTrader 0: GPU 0 ($0), Router 0 ($0)\n");
 			
 
 		} else if (sigchld) {
@@ -379,9 +377,9 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		// notify the trader that its order was accepted
 		int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
 		char *accepted_msg = malloc(msg_len + 1);
-		if (accepted_msg == NULL) {
-			return 1;
-		}
+		// if (accepted_msg == NULL) {
+		// 	return 1;
+		// }
 		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
 		kill(curr_trader->process_id, SIGUSR1);
