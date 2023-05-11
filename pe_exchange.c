@@ -471,6 +471,7 @@ void display_orders(order **list, int product_index, int order_type) {
 		order_prefix = "BUY";
 		order_prefix[strlen("BUY") - 1] = '\0';
 		printf("here\n");
+		//test
 	} else if (order_type == SELL) {
 		order_prefix = "SELL";
 		order_prefix[strlen("SELL") - 1] = '\0';
