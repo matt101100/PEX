@@ -469,7 +469,6 @@ void display_orders(order **list, int product_index, int order_type) {
 	char *order_prefix = malloc(strlen("SELL") + 1);
 	if (order_type == BUY) {
 		strcpy(order_prefix, "BUY");
-		printf("here\n");
 	} else if (order_type == SELL) {
 		strcpy(order_prefix, "SELL");
 	}
@@ -480,7 +479,7 @@ void display_orders(order **list, int product_index, int order_type) {
 		while (runner != NULL) {
 			if (runner->quantity == curr->quantity && runner->price == curr->price) {
 				count++;
-			} else if (runner->quantity != curr->quantity && runner->price != curr->price) {
+			} else {
 				curr = runner;
 				break;
 			}
