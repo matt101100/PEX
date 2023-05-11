@@ -248,7 +248,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		if (new_trader->fd[0] < 0 || new_trader->fd[1] < 0) {
 			return 1;
 		}
-		usleep(1);
+		usleep(10);
 		// initialize trader data fields
 		new_trader->trader_id = trader_id;
 		new_trader->process_id = forked_pid;
