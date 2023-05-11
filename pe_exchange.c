@@ -484,9 +484,9 @@ void display_orders(order **list, int product_index, int order_type) {
 			}
 		}
 		if (count > 1) {
-			printf("%s %d @ %d (%d orders)\n", order_prefix, curr->quantity, curr->price, count);
+			printf("\t\t%s %d @ %d (%d orders)\n", order_prefix, curr->quantity, curr->price, count);
 		} else if (count == 1) {
-			printf("%s %d @ %d (%d order)\n", order_prefix, curr->quantity, curr->price, count);
+			printf("\t\t%s %d @ %d (%d order)\n", order_prefix, curr->quantity, curr->price, count);
 		}
 		curr = runner;
 	}
