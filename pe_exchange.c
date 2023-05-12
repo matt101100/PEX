@@ -76,8 +76,8 @@ int main(int argc, char **argv) {
 	int cmd_type = -1;
 	char message_in[BUF_SIZE];
 	trader *curr_trader = NULL; // tracks the last trader that signalled
-	while (trader_disconnect < num_traders) {
-		if (!sigchld && !sigusr1) {
+	if (trader_disconnect < num_traders) {
+		while (!sigchld && !sigusr1) {
 			// wait for either signal
 			pause();
 		}
@@ -438,6 +438,7 @@ void display_orderbook(products *prods, order **buys, order **sells) {
 		display_orders(buys, i, BUY);
 		display_orders(sells, i, SELL);
 	}
+	printf("here\n");
 }
 
 int count_order_levels(order **list, int product_index) {
