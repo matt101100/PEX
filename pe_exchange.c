@@ -367,6 +367,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
 		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
+		printf("here\n");
 
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
@@ -430,7 +431,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 
 void display_orderbook(products *prods, order **buys, order **sells) {
 	printf("%s\t--ORDERBOOK--\n", LOG_PREFIX);
-	printf("%d\n", prods->size);
 	for (int i = 0; i < prods->size; i++) {
 		printf("%s\tProduct: %s; Buy levels: %d; Sell levels: %d\n", LOG_PREFIX,
 				prods->product_strings[i], count_order_levels(buys, i),
