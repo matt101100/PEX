@@ -450,14 +450,14 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 }
 
 void display_orderbook(products *prods, order **buys, order **sells) {
-	// printf("%s\t--ORDERBOOK--\n", LOG_PREFIX);
-	// for (int i = 0; i < prods->size; i++) {
-	// 	printf("%s\tProduct: %s; Buy levels: %d; Sell levels: %d\n", LOG_PREFIX,
-	// 			prods->product_strings[i], count_order_levels(buys, i),
-	// 			count_order_levels(sells, i));
-	// 	display_orders(buys, i, BUY);
-	// 	display_orders(sells, i, SELL);
-	// }
+	printf("%s\t--ORDERBOOK--\n", LOG_PREFIX);
+	for (int i = 0; i < prods->size; i++) {
+		printf("%s\tProduct: %s; Buy levels: %d; Sell levels: %d\n", LOG_PREFIX,
+				prods->product_strings[i], count_order_levels(buys, i),
+				count_order_levels(sells, i));
+		display_orders(buys, i, BUY);
+		display_orders(sells, i, SELL);
+	}
 }
 
 int count_order_levels(order **list, int product_index) {
@@ -510,8 +510,7 @@ void display_positions(trader *head, int ***matches, products *prods) {
 	while (curr != NULL) {
 		printf("%s\tTrader %d: ", LOG_PREFIX, curr->trader_id);
 		for (int i = 0; i < prods->size; i++) {
-			printf("%s ", prods->product_strings[i]);
-			printf("%d ($%d)", matches[curr->trader_id][i][0], matches[curr->trader_id][i][1]);
+			printf("%s %d ($%d)", prods->product_strings[i], matches[curr->trader_id][i][0], matches[curr->trader_id][i][1]);
 			if (i != prods->size - 1) {
 				printf(", ");
 			}
