@@ -268,9 +268,13 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		new_trader->process_id = forked_pid;
 
 		// add the newly opened trader to the head of the list
-		new_trader->next = NULL;
-		prev->next = new_trader;
-		prev = new_trader;
+		if (*head == NULL) {
+			*head = new_trader;
+		} else {
+			prev->next = new_trader;
+			new_trader->next = NULL;
+			prev = new_trader;
+		}
 		// new_trader->next = *head;
 		// *head = new_trader;
 
