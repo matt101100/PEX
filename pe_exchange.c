@@ -444,7 +444,7 @@ int count_order_levels(order **list, int product_index) {
 	int prev_price = -1;
 	order *curr = list[product_index];
 	while (curr != NULL) {
-		if (curr_price == prev_price) {
+		if (curr->price == prev_price) {
 			continue;
 		}
 		count++;
