@@ -441,16 +441,17 @@ void display_orderbook(products *prods, order **buys, order **sells) {
 
 int count_order_levels(order **list, int product_index) {
 	int count = 0;
-	int dupe = 0;
+	int prev_price = -1;
 	order *curr = list[product_index];
 	while (curr != NULL) {
-		if (curr->price == curr->next->price) {
-			dupe++;
+		if (curr_price == prev_price) {
+			continue;
 		}
 		count++;
+		prev_price = curr->price;
 		curr = curr->next;
 	}
-	return count - dupe;
+	return count;
 }
 
 void display_orders(order **list, int product_index, int order_type) {
