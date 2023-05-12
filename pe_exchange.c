@@ -276,7 +276,7 @@ char *read_and_format_message(trader *curr_trader) {
 	int position = 0;
 	int bytes_read = 0;
 	do {
-		bytes_read = read(curr_trader->fd[0], buffer + position, 50);
+		bytes_read = read(curr_trader->fd[0], buffer + position, 256);
 		if (bytes_read == -1) {
 			free(buffer);
 			return NULL;
