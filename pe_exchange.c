@@ -461,46 +461,47 @@ void display_orderbook(products *prods, order **buys, order **sells) {
 }
 
 int count_order_levels(order **list, int product_index) {
-	int count = 0;
-	int prev_price = -1;
-	order *curr = list[product_index];
-	while (curr != NULL) {
-		if (curr->price == prev_price) {
-			continue;
-		}
-		count++;
-		prev_price = curr->price;
-		curr = curr->next;
-	}
-	return count;
+	// int count = 0;
+	// int prev_price = -1;
+	// order *curr = list[product_index];
+	// while (curr != NULL) {
+	// 	if (curr->price == prev_price) {
+	// 		continue;
+	// 	}
+	// 	count++;
+	// 	prev_price = curr->price;
+	// 	curr = curr->next;
+	// }
+	// return count;
+	return 0;
 }
 
 void display_orders(order **list, int product_index, int order_type) {
-	// char *order_prefix = malloc(strlen("SELL") + 1);
-	// if (order_type == BUY) {
-	// 	strcpy(order_prefix, "BUY");
-	// } else if (order_type == SELL) {
-	// 	strcpy(order_prefix, "SELL");
-	// }
-	// order *curr = list[product_index];
-	// int count = 1;
-	// while (curr != NULL) {
-	// 	order *runner = curr->next;
-	// 	while (runner != NULL) {
-	// 		if (runner->quantity == curr->quantity && runner->price == curr->price) {
-	// 			count++;
-	// 		} else {
-	// 			break;
-	// 		}
-	// 	}
-	// 	if (count > 1) {
-	// 		printf("%s\t\t%s %d @ $%d (%d orders)\n", LOG_PREFIX, order_prefix, curr->quantity, curr->price, count);
-	// 	} else if (count == 1) {
-	// 		printf("%s\t\t%s %d @ $%d (%d order)\n", LOG_PREFIX, order_prefix, curr->quantity, curr->price, count);
-	// 	}
-	// 	curr = runner;
-	// }
-	// free(order_prefix);
+	char *order_prefix = malloc(strlen("SELL") + 1);
+	if (order_type == BUY) {
+		strcpy(order_prefix, "BUY");
+	} else if (order_type == SELL) {
+		strcpy(order_prefix, "SELL");
+	}
+	order *curr = list[product_index];
+	int count = 1;
+	while (curr != NULL) {
+		order *runner = curr->next;
+		while (runner != NULL) {
+			if (runner->quantity == curr->quantity && runner->price == curr->price) {
+				count++;
+			} else {
+				break;
+			}
+		}
+		if (count > 1) {
+			printf("%s\t\t%s %d @ $%d (%d orders)\n", LOG_PREFIX, order_prefix, curr->quantity, curr->price, count);
+		} else if (count == 1) {
+			printf("%s\t\t%s %d @ $%d (%d order)\n", LOG_PREFIX, order_prefix, curr->quantity, curr->price, count);
+		}
+		curr = runner;
+	}
+	free(order_prefix);
 }
 
 void display_positions(trader *head, int ***matches, products *prods) {
