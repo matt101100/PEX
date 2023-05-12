@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
 
 			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
 			display_orderbook(&prods, buys, sells);
-			display_positions(head, matches, prods);
+			display_positions(head, matches, &prods);
 
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
