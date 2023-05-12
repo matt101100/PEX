@@ -96,8 +96,8 @@ int main(int argc, char **argv) {
 				kill(curr_trader->process_id, SIGUSR1);
 				continue;
 			}
-			display_orderbook(&prods, buys, sells);
-			display_positions(head, matches, &prods);
+			// display_orderbook(&prods, buys, sells);
+			// display_positions(head, matches, &prods);
 
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
@@ -378,7 +378,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					snprintf(msg, msg_len + 1, "MARKET BUY %s %d %d;", product, quantity, price);
 					write(cursor->fd[1], msg, strlen(msg));
 				} else if (cmd_type == SELL) {
-					printf("here\n");
 					// send MARKET SELL
 					msg_len = snprintf(NULL, 0, "MARKET SELL %s %d %d;", product, quantity, price);
 					msg = malloc(msg_len + 1);
