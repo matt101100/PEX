@@ -452,11 +452,9 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 void display_orderbook(products *prods, order **buys, order **sells) {
 	printf("%s\t--ORDERBOOK--\n", LOG_PREFIX);
 	for (int i = 0; i < prods->size; i++) {
-		char orderbook_info[BUF_SIZE];
-		sprintf(orderbook_info, "%s\tProduct: %s; Buy levels: %d; Sell levels: %d\n", LOG_PREFIX,
-				prods->product_strings[i], count_order_levels(buys, i), count_order_levels(sells, i));
-		printf("%s", orderbook_info);
-
+		printf("%s\tProduct: %s; Buy levels: %d; Sell levels: %d\n", LOG_PREFIX,
+				prods->product_strings[i], count_order_levels(buys, i),
+				count_order_levels(sells, i));
 		display_orders(buys, i, BUY);
 		display_orders(sells, i, SELL);
 	}
@@ -500,7 +498,7 @@ void display_orders(order **list, int product_index, int order_type) {
 				printf("%s\t\tSELL %d @ $%d (%d order)\n", LOG_PREFIX, curr->quantity, curr->price, count);
 			}
 		}
-		curr = runner;
+		curr = curr->next;
 	}
 }
 
