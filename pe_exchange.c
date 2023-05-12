@@ -272,6 +272,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		if (*head == NULL) {
 			*head = new_trader;
 		} else {
+			//test
 			prev->next = new_trader;
 			prev = new_trader;
 			// trader *current = *head;
