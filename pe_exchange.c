@@ -276,7 +276,7 @@ char *read_and_format_message(trader *curr_trader) {
 	int position = 0;
 	int bytes_read = 0;
 	do {
-		bytes_read = read(curr_trader->fd[0], buffer + position, 1);
+		bytes_read = read(curr_trader->fd[0], buffer + position, 50);
 		if (bytes_read == -1) {
 			free(buffer);
 			return NULL;
@@ -383,7 +383,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
 		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
-		sleep(15);
 
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
