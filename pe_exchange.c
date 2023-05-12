@@ -98,7 +98,6 @@ int main(int argc, char **argv) {
 			}
 			display_orderbook(&prods, buys, sells);
 			display_positions(head, matches, &prods);
-			sleep(5);
 
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
@@ -366,6 +365,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		while (cursor != NULL) {
 			if (cursor->process_id == curr_trader->process_id) {
 				// write accepted to trader that made the order
+				printf("%d\n", order_id);
 				msg_len = snprintf(NULL, 0 , "ACCEPTED %d;", order_id);
 				msg = malloc(msg_len + 1);
 				snprintf(msg, msg_len + 1, "ACCEPTED %d;", order_id);
