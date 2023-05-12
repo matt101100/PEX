@@ -201,7 +201,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 	int trader_path_len = 0;
 	char *exchange_fifo_path = NULL;
 	char *trader_fifo_path = NULL;
-	// trader *prev = *head;
+	trader *prev = *head;
 	pid_t forked_pid = -1;
 	for (trader_id = 0; trader_id < num_traders; trader_id++) {
 		// get the length of each path
@@ -268,17 +268,16 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		new_trader->process_id = forked_pid;
 
 		// add the newly opened trader to the head of the list
+		new_trader->next = NULL;
 		if (*head == NULL) {
 			*head = new_trader;
 		} else {
 			// prev->next = new_trader;
-			// new_trader->next = NULL;
 			// prev = new_trader;
 			trader *current = *head;
 			while (current->next != NULL) {
 				current = current->next;
 			}
-			current->next = new_trader;
 		}
 		// new_trader->next = *head;
 		// *head = new_trader;
