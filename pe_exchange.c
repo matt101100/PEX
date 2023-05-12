@@ -480,7 +480,7 @@ void display_positions(trader *head, int ***matches, products *prods) {
 			printf("%s ", prods->product_strings[i]);
 			printf("%d ($%d)", matches[curr->trader_id][i][0], matches[curr->trader_id][i][1]);
 			if (i != prods->size - 1) {
-				printf(",");
+				printf(", ");
 			}
 		}
 		printf("\n");
