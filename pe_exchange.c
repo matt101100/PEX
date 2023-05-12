@@ -77,11 +77,12 @@ int main(int argc, char **argv) {
 	char message_in[BUF_SIZE];
 	trader *curr_trader = NULL; // tracks the last trader that signalled
 	while (trader_disconnect < num_traders) {
-		while (!sigchld && !sigusr1) {
+		if (!sigchld && !sigusr1) {
 			// wait for either signal
 			pause();
 		}
 		if (sigusr1) {
+			sigusr1 = 0; // reset flag
 
 			// parse input of trader that sent sigusr1 and return corresponding output
 			curr_trader = get_trader(pid, -1, head);
@@ -97,7 +98,6 @@ int main(int argc, char **argv) {
 			}
 			display_orderbook(&prods, buys, sells);
 			display_positions(head, matches, &prods);
-			sigusr1 = 0; // reset flag
 
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
