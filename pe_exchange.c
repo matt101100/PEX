@@ -76,8 +76,8 @@ int main(int argc, char **argv) {
 	int cmd_type = -1;
 	char message_in[BUF_SIZE];
 	trader *curr_trader = NULL; // tracks the last trader that signalled
-	if (trader_disconnect < num_traders) {
-		while (!sigchld && !sigusr1) {
+	while (trader_disconnect < num_traders) {
+		if (!sigchld && !sigusr1) {
 			// wait for either signal
 			pause();
 		}
