@@ -386,6 +386,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 				}
 			}
 			kill(cursor->process_id, SIGUSR1);
+			cursor = cursor->next;
 		}
 		free(msg);
 
