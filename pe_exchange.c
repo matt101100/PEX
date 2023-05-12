@@ -423,7 +423,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 
 	} else if (cmd_type == CANCEL) {
 
-
 	}
 
 	return 0;
@@ -442,12 +441,16 @@ void display_orderbook(products *prods, order **buys, order **sells) {
 
 int count_order_levels(order **list, int product_index) {
 	int count = 0;
+	int dupe = 0;
 	order *curr = list[product_index];
 	while (curr != NULL) {
+		if (curr->price == curr->next->price) {
+			dupe++;
+		}
 		count++;
 		curr = curr->next;
 	}
-	return count;
+	return count - dupe;
 }
 
 void display_orders(order **list, int product_index, int order_type) {
