@@ -476,18 +476,14 @@ int count_order_levels(order **list, int product_index) {
 }
 
 void display_orders(order **list, int product_index, int order_type) {
-	char *order_prefix = malloc(strlen("SELL") + 1);
-	if (order_type == BUY) {
-		strcpy(order_prefix, "BUY");
-	} else if (order_type == SELL) {
-		strcpy(order_prefix, "SELL");
-	}
 	order *curr = list[product_index];
 	int count = 1;
 	while (curr != NULL) {
 		order *runner = curr->next;
+		count = 1;
 		while (runner != NULL) {
 			if (runner->quantity == curr->quantity && runner->price == curr->price) {
+				runner = runner->next;
 				count++;
 			} else {
 				break;
@@ -508,7 +504,6 @@ void display_orders(order **list, int product_index, int order_type) {
 		}
 		curr = runner;
 	}
-	free(order_prefix);
 }
 
 void display_positions(trader *head, int ***matches, products *prods) {
