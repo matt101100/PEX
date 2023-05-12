@@ -141,9 +141,10 @@ void signal_handle(int signum, siginfo_t *info, void *context) {
 }
 
 void init_sigaction(struct sigaction *sa) {
+	memset(sa, 0, sizeof(struct sigaction));
 	sa->sa_sigaction = signal_handle;
-	sigemptyset(&sa->sa_mask);
-    sa->sa_flags = SA_SIGINFO;
+	// sigemptyset(&sa->sa_mask);
+    sa->sa_flags = SA_SIGINFO | SA_RESTART;
 }
 
 int init_product_list(char products_file[], products *prods) {
