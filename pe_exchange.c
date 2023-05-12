@@ -116,12 +116,14 @@ int main(int argc, char **argv) {
 	// clean-up after successful execution
 	cleanup_fifos(num_traders);
 	free_structs(&prods, head, buys, sells);
+	free_matches(matches, num_traders, prods.size);
 	return 0;
 
 	cleanup:
 		// free all allocated memory and return 1 as an error code
 		cleanup_fifos(num_traders);
 		free_structs(&prods, head, buys, sells);
+		free_matches(matches, num_traders, prods.size);
 		return 1;
 }
 
@@ -479,6 +481,7 @@ void display_positions(trader *head, int ***matches, products *prods) {
 			printf("%d ($%d), ", matches[curr->trader_id][i][0], matches[curr->trader_id][i][1]);
 		}
 		printf("\n");
+		curr = curr->next;
 	}
 }
 
@@ -541,6 +544,16 @@ void free_order_list(order **order_list, products *prods) {
 		}
 	}
 	free(order_list);
+}
+
+void free_matches(int ***matches, int num_traders, int prods_size) {
+	for (int i = 0; i < num_traders; i++) {
+		for (int j = 0; j < prods_size; j++) {
+			free(matches[i][j]);
+		}
+		free(matches[i]);
+	}
+	free(matches);
 }
 
 void cleanup_trader(pid_t pid, trader **head) {

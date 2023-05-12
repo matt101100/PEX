@@ -190,6 +190,8 @@ void free_trader_list(trader *head);
  */
 void free_order_list(order **order_list, products *prods);
 
+void free_matches(int ***matches, int num_traders, int prods_size);
+
 /*
  * Desc: Closes and deletes FIFOs, frees memory used by the trader with matching
          PID.
