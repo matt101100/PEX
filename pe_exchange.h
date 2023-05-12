@@ -84,6 +84,8 @@ void init_sigaction(struct sigaction *sa);
  */
 int init_product_list(char product_file[], products *prods);
 
+void init_matches(int ****matches, int num_traders, int prods_size);
+
 /*
  * Desc: Creates named pipes, launches trader process and connects to the
          corresponding named pipes, based on trader ID. Creates and initializes
@@ -146,7 +148,7 @@ void display_orders(order **list, int product_index, int order_type);
  * Desc: Prints the positions of all traders to stdout.
  * Params: A pointer to the head of the traders list.
  */
-void display_positions(trader *head);
+void display_positions(trader *head, int ***matches, products *prods);
 
 /*
  * Desc: Gets the trader with matching PID or trader ID.

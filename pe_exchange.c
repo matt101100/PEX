@@ -56,6 +56,10 @@ int main(int argc, char **argv) {
 	order **buys = (order**)calloc(prods.size, sizeof(order*));
 	order **sells = (order**)calloc(prods.size, sizeof(order*));
 
+	// initialize the match matrix
+	int ***matches = NULL;
+	init_matches(&matches, num_traders, prods.size);
+
 	// send MARKET OPEN; to all traders and signal SIGUSR1
 	trader *current = head;
 	while (current != NULL) {
@@ -94,6 +98,7 @@ int main(int argc, char **argv) {
 
 			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
 			display_orderbook(&prods, buys, sells);
+			display_positions(head, matches, prods);
 
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
@@ -176,6 +181,16 @@ int init_product_list(char products_file[], products *prods) {
 
 	fclose(fp);
 	return 0;
+}
+
+void init_matches(int ****matches, int num_traders, int prods_size) {
+	*matches = (int***)malloc(num_traders * sizeof(int**));
+	for (int i = 0; i < num_traders; i++) {
+		(*matches)[i] = (int**)calloc(prods_size, sizeof(int*));
+		for (int j = 0; j < prods_size; j++) {
+			(*matches)[i][j] = (int*)calloc(2, sizeof(int));
+		}
+	}
 }
 
 int spawn_and_communicate(int num_traders, char **argv, trader **head) {
@@ -453,9 +468,18 @@ void display_orders(order **list, int product_index, int order_type) {
 	free(order_prefix);
 }
 
-void display_positions(trader *head) {
+void display_positions(trader *head, int ***matches, products *prods) {
+	// loop through and print each trader's positions for each product
 	printf("%s\t--POSITIONS--\n", LOG_PREFIX);
-
+	trader *curr = head;
+	while (curr != NULL) {
+		printf("%s\tTrader %d: ", LOG_PREFIX, curr->trader_id);
+		for (int i = 0; i < prods->size; i++) {
+			printf("%s ", prods->product_strings[i]);
+			printf("%d ($%d), ", matches[curr->trader_id][i][0], matches[curr->trader_id][i][1]);
+		}
+		printf("\n");
+	}
 }
 
 trader *get_trader(pid_t pid, int trader_id, trader *head) {
