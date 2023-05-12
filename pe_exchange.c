@@ -483,7 +483,7 @@ void display_orders(order **list, int product_index, int order_type) {
 		count = 1;
 		while (runner != NULL && runner->quantity == curr->quantity && runner->price == curr->price) {
 			count++;
-			runner = runner->next;  // Move to the next node
+			runner = runner->next;
 		}
 		if (count > 1) {
 			if (order_type == BUY) {
@@ -508,22 +508,13 @@ void display_positions(trader *head, int ***matches, products *prods) {
 	trader *curr = head;
 	while (curr != NULL) {
 		printf("%s\tTrader %d: ", LOG_PREFIX, curr->trader_id);
-
-		// Concatenate positions into a string
-		char positions[256];
-		positions[0] = '\0';  // Initialize the string
-
 		for (int i = 0; i < prods->size; i++) {
-			char product_position[256];
-			sprintf(product_position, "%s %d ($%d)", prods->product_strings[i], matches[curr->trader_id][i][0], matches[curr->trader_id][i][1]);
-			strcat(positions, product_position);
-
+			printf("%s %d ($%d)", prods->product_strings[i], matches[curr->trader_id][i][0], matches[curr->trader_id][i][1]);
 			if (i != prods->size - 1) {
-				strcat(positions, ", ");
+				printf(", ");
 			}
 		}
-
-		printf("%s\n", positions);
+		printf("\n");
 		curr = curr->next;
 	}
 }
