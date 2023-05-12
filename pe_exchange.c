@@ -508,13 +508,22 @@ void display_positions(trader *head, int ***matches, products *prods) {
 	trader *curr = head;
 	while (curr != NULL) {
 		printf("%s\tTrader %d: ", LOG_PREFIX, curr->trader_id);
+
+		// Concatenate positions into a string
+		char positions[256];
+		positions[0] = '\0';  // Initialize the string
+
 		for (int i = 0; i < prods->size; i++) {
-			printf("%s %d ($%d)", prods->product_strings[i], matches[curr->trader_id][i][0], matches[curr->trader_id][i][1]);
+			char product_position[256];
+			sprintf(product_position, "%s %d ($%d)", prods->product_strings[i], matches[curr->trader_id][i][0], matches[curr->trader_id][i][1]);
+			strcat(positions, product_position);
+
 			if (i != prods->size - 1) {
-				printf(", ");
+				strcat(positions, ", ");
 			}
 		}
-		printf("\n");
+
+		printf("%s\n", positions);
 		curr = curr->next;
 	}
 }
