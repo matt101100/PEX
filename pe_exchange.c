@@ -82,8 +82,6 @@ int main(int argc, char **argv) {
 
 			// parse input of trader that sent sigusr1 and return corresponding output
 			curr_trader = get_trader(pid, -1, head);
-			write(curr_trader->fd[1], "ACCEPTED 0;", strlen("ACCEPTED 0;"));
-			kill(curr_trader->process_id, SIGUSR1);
 			message_in = read_and_format_message(curr_trader);
 			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, message_in);
 			cmd_type = determine_cmd_type(message_in);
@@ -385,8 +383,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
 		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
-
-
+		sleep(15);
 
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
