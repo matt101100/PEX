@@ -369,6 +369,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 				msg = malloc(msg_len + 1);
 				snprintf(msg, msg_len + 1, "ACCEPTED %d;", order_id);
 				write(curr_trader->fd[1], msg, strlen(msg));
+				free(msg);
 			} else {
 				// let the other traders now about the new order
 				if (cmd_type == BUY) {
