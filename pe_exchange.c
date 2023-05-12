@@ -224,6 +224,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		printf("%s Starting trader %d ", LOG_PREFIX, trader_id);
 		printf("(%s)\n", argv[TRADERS_START + trader_id]);
 		forked_pid = fork();
+		printf("scpid: %d", forked_pid);
 		if (forked_pid < 0) {
 			return 1;
 		} else if (forked_pid == 0) {
@@ -246,6 +247,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		if (new_trader->fd[0] < 0 || new_trader->fd[1] < 0) {
 			return 1;
 		}
+		printf("ex_fd_sc: %d, tr_fd_sc: %d\n", new_trader->fd[1], new_trader->fd[0]);
 		// initialize trader data fields
 		new_trader->trader_id = trader_id;
 		new_trader->process_id = forked_pid;
@@ -379,8 +381,8 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		if (accepted_msg == NULL) {
 			return 1;
 		}
+		printf("currs: pid %d, ex_fd %d, tr_fd %d\n", curr_trader->process_id, curr_trader->fd[1], curr_trader->fd[0]);
 		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
-		printf("here\n");
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
 		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
