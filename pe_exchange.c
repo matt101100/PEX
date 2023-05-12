@@ -481,13 +481,9 @@ void display_orders(order **list, int product_index, int order_type) {
 	while (curr != NULL) {
 		order *runner = curr->next;
 		count = 1;
-		while (runner != NULL) {
-			if (runner->quantity == curr->quantity && runner->price == curr->price) {
-				runner = runner->next;
-				count++;
-			} else {
-				break;
-			}
+		while (runner != NULL && runner->quantity == curr->quantity && runner->price == curr->price) {
+			count++;
+			runner = runner->next;  // Move to the next node
 		}
 		if (count > 1) {
 			if (order_type == BUY) {
