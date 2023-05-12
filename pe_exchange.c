@@ -488,7 +488,7 @@ void display_orders(order **list, int product_index, int order_type) {
 		total_qty = 0;
 		while (runner != NULL && runner->quantity == curr->quantity && runner->price == curr->price) {
 			count++;
-			total_qty += curr->quantity;
+			total_qty += runner->quantity;
 			runner = runner->next;
 		}
 		if (count > 1) {
