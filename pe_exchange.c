@@ -358,39 +358,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			return 1;
 		}
 
-		// send appropriate message to all traders
-		printf("here\n");
-		int msg_len;
-		char *msg;
-		trader *cursor = head;
-		while (cursor != NULL) {
-			if (cursor->process_id == curr_trader->process_id) {
-				// write accepted to trader that made the order
-				msg_len = snprintf(NULL, 0 , "ACCEPTED %d;", order_id);
-				msg = malloc(msg_len + 1);
-				snprintf(msg, msg_len + 1, "ACCEPTED %d;", order_id);
-				write(curr_trader->fd[1], msg, strlen(msg));
-			} else {
-				// let the other traders now about the new order
-				if (cmd_type == BUY) {
-					// send MARKET BUY
-					msg_len = snprintf(NULL, 0, "MARKET BUY %s %d %d;", product, quantity, price);
-					msg = malloc(msg_len + 1);
-					snprintf(msg, msg_len + 1, "MARKET BUY %s %d %d;", product, quantity, price);
-					write(cursor->fd[1], msg, strlen(msg));
-				} else if (cmd_type == SELL) {
-					// send MARKET SELL
-					msg_len = snprintf(NULL, 0, "MARKET SELL %s %d %d;", product, quantity, price);
-					msg = malloc(msg_len + 1);
-					snprintf(msg, msg_len + 1, "MARKET SELL %s %d %d;", product, quantity, price);
-					write(cursor->fd[1], msg, strlen(msg));
-				}
-			}
-			kill(cursor->process_id, SIGUSR1);
-			cursor = cursor->next;
-		}
-		free(msg);
-
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
 		new_order->order_id = order_id;
@@ -438,7 +405,39 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 				prev->next = new_order;
 				new_order->next = curr;
 			}
-		}		
+		}
+
+				// send appropriate message to all traders
+		int msg_len;
+		char *msg;
+		trader *cursor = head;
+		while (cursor != NULL) {
+			if (cursor->process_id == curr_trader->process_id) {
+				// write accepted to trader that made the order
+				msg_len = snprintf(NULL, 0 , "ACCEPTED %d;", order_id);
+				msg = malloc(msg_len + 1);
+				snprintf(msg, msg_len + 1, "ACCEPTED %d;", order_id);
+				write(curr_trader->fd[1], msg, strlen(msg));
+			} else {
+				// let the other traders now about the new order
+				if (cmd_type == BUY) {
+					// send MARKET BUY
+					msg_len = snprintf(NULL, 0, "MARKET BUY %s %d %d;", product, quantity, price);
+					msg = malloc(msg_len + 1);
+					snprintf(msg, msg_len + 1, "MARKET BUY %s %d %d;", product, quantity, price);
+					write(cursor->fd[1], msg, strlen(msg));
+				} else if (cmd_type == SELL) {
+					// send MARKET SELL
+					msg_len = snprintf(NULL, 0, "MARKET SELL %s %d %d;", product, quantity, price);
+					msg = malloc(msg_len + 1);
+					snprintf(msg, msg_len + 1, "MARKET SELL %s %d %d;", product, quantity, price);
+					write(cursor->fd[1], msg, strlen(msg));
+				}
+			}
+			kill(cursor->process_id, SIGUSR1);
+			cursor = cursor->next;
+		}
+		free(msg);	
 
 	} else if (cmd_type == AMMEND) {
 		
