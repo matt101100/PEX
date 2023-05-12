@@ -481,24 +481,27 @@ int count_order_levels(order **list, int product_index) {
 void display_orders(order **list, int product_index, int order_type) {
 	order *curr = list[product_index];
 	int count = 1;
+	int total_qty;
 	while (curr != NULL) {
 		order *runner = curr->next;
 		count = 1;
+		total_qty = 0;
 		while (runner != NULL && runner->quantity == curr->quantity && runner->price == curr->price) {
 			count++;
+			total_qty += curr->quantity;
 			runner = runner->next;
 		}
 		if (count > 1) {
 			if (order_type == BUY) {
-				printf("%s\t\tBUY %d @ $%d (%d orders)\n", LOG_PREFIX, curr->quantity, curr->price, count);
+				printf("%s\t\tBUY %d @ $%d (%d orders)\n", LOG_PREFIX, total_qty, curr->price, count);
 			} else if (order_type == SELL) {
-				printf("%s\t\tSELL %d @ $%d (%d orders)\n", LOG_PREFIX, curr->quantity, curr->price, count);
+				printf("%s\t\tSELL %d @ $%d (%d orders)\n", LOG_PREFIX, total_qty, curr->price, count);
 			}
 		} else if (count == 1) {
 			if (order_type == BUY) {
-				printf("%s\t\tBUY %d @ $%d (%d order)\n", LOG_PREFIX, curr->quantity, curr->price, count);
+				printf("%s\t\tBUY %d @ $%d (%d order)\n", LOG_PREFIX, total_qty, curr->price, count);
 			} else if (order_type == SELL) {
-				printf("%s\t\tSELL %d @ $%d (%d order)\n", LOG_PREFIX, curr->quantity, curr->price, count);
+				printf("%s\t\tSELL %d @ $%d (%d order)\n", LOG_PREFIX, total_qty, curr->price, count);
 			}
 		}
 		curr = runner;
