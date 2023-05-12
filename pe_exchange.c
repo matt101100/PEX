@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
 			read_and_format_message(curr_trader, message_in);
 			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, message_in);
 			cmd_type = determine_cmd_type(message_in);
-			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
+			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells, head);
 			if (res) {
 				// notify trader of invalid message
 				write(curr_trader->fd[1], "INVALID;", strlen("INVALID;"));
@@ -327,7 +327,7 @@ int determine_cmd_type(char *message_in) {
 	return -1;
 }
 
-int execute_command(trader *curr_trader, char *message_in, int cmd_type, products* prods, order ***buys, order ***sells) {
+int execute_command(trader *curr_trader, char *message_in, int cmd_type, products* prods, order ***buys, order ***sells, trader *head) {
 	if (curr_trader == NULL) {
 		return 1;
 	} else if (cmd_type == -1) {
@@ -358,16 +358,46 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			return 1;
 		}
 
-		// notify the trader that its order was accepted
-		int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
-		char *accepted_msg = malloc(msg_len + 1);
-		if (accepted_msg == NULL) {
-			return 1;
+		// send appropriate message to all traders
+		int msg_len;
+		char *msg;
+		trader *cursor = head;
+		while (cursor != NULL) {
+			if (cursor->process_id == curr_trader->process_id) {
+				// write accepted to trader that made the order
+				msg_len = snprintf(NULL, 0 , "ACCEPTED %d;", order_id);
+				msg = malloc(msg_len + 1);
+				snprintf(msg, msg_len + 1, "ACCEPTED %d;", order_id);
+				write(curr_trader->fd[1], msg, strlen(msg));
+			} else {
+				// let the other traders now about the new order
+				if (cmd_type == BUY) {
+					// send MARKET BUY
+					msg_len = snprintf(NULL, 0, "MARKET BUY %s %d %d;", product, quantity, price);
+					msg = malloc(msg_len + 1);
+					snprintf(msg, msg_len + 1, "MARKET BUY %s %d %d;", product, quantity, price);
+					write(cursor->fd[1], msg, strlen(msg));
+				} else if (cmd_type == SELL) {
+					// send MARKET SELL
+					msg_len = snprintf(NULL, 0, "MARKET SELL %s %d %d;", product, quantity, price);
+					msg = malloc(msg_len + 1);
+					snprintf(msg, msg_len + 1, "MARKET SELL %s %d %d;", product, quantity, price);
+					write(cursor->fd[1], msg, strlen(msg));
+				}
+			}
+			kill(cursor->process_id, SIGUSR1);
 		}
-		snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
-		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
-		kill(curr_trader->process_id, SIGUSR1);
-		free(accepted_msg);
+		free(msg);
+
+		// int msg_len = snprintf(NULL, 0, "ACCEPTED %d;", order_id);
+		// char *accepted_msg = malloc(msg_len + 1);
+		// if (accepted_msg == NULL) {
+		// 	return 1;
+		// }
+		// snprintf(accepted_msg, msg_len + 1, "ACCEPTED %d;", order_id);
+		// write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
+		// kill(curr_trader->process_id, SIGUSR1);
+		// free(accepted_msg);
 
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
