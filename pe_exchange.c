@@ -480,7 +480,6 @@ void display_orders(order **list, int product_index, int order_type) {
 	int count = 1;
 	while (curr != NULL) {
 		order *runner = curr->next;
-		count = 1;
 		while (runner != NULL && runner->quantity == curr->quantity && runner->price == curr->price) {
 			count++;
 			runner = runner->next;
@@ -498,7 +497,7 @@ void display_orders(order **list, int product_index, int order_type) {
 				printf("%s\t\tSELL %d @ $%d (%d order)\n", LOG_PREFIX, curr->quantity, curr->price, count);
 			}
 		}
-		curr = curr->next;
+		curr = runner;
 	}
 }
 
