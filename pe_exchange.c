@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
 				continue;
 			}
 			display_orderbook(&prods, buys, sells);
-			// display_positions(head, matches, &prods);
+			display_positions(head, matches, &prods);
 
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
@@ -451,13 +451,13 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 
 void display_orderbook(products *prods, order **buys, order **sells) {
 	printf("%s\t--ORDERBOOK--\n", LOG_PREFIX);
-	for (int i = 0; i < prods->size; i++) {
-		printf("%s\tProduct: %s; Buy levels: %d; Sell levels: %d\n", LOG_PREFIX,
-				prods->product_strings[i], count_order_levels(buys, i),
-				count_order_levels(sells, i));
-		display_orders(buys, i, BUY);
-		display_orders(sells, i, SELL);
-	}
+	// for (int i = 0; i < prods->size; i++) {
+	// 	printf("%s\tProduct: %s; Buy levels: %d; Sell levels: %d\n", LOG_PREFIX,
+	// 			prods->product_strings[i], count_order_levels(buys, i),
+	// 			count_order_levels(sells, i));
+	// 	display_orders(buys, i, BUY);
+	// 	display_orders(sells, i, SELL);
+	// }
 }
 
 int count_order_levels(order **list, int product_index) {
