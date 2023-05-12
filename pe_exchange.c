@@ -10,6 +10,7 @@
 volatile sig_atomic_t sigusr1 = 0;
 volatile sig_atomic_t sigchld = 0;
 volatile sig_atomic_t pid = -1; // stores the ID of the trader that last signaled
+char msg[256];
 
 int main(int argc, char **argv) {
 	if (argc < 3) {
@@ -83,8 +84,8 @@ int main(int argc, char **argv) {
 			// parse input of trader that sent sigusr1 and return corresponding output
 			curr_trader = get_trader(pid, -1, head);
 			message_in = read_and_format_message(curr_trader);
-			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, message_in);
-			cmd_type = determine_cmd_type(message_in);
+			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, msg);
+			cmd_type = determine_cmd_type(msg);
 			if (cmd_type == -1) {
 				// notify trader of invalid message
 				write(curr_trader->fd[1], "INVALID;", strlen("INVALID;"));
@@ -92,7 +93,7 @@ int main(int argc, char **argv) {
 				continue;
 			}
 
-			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
+			res = execute_command(curr_trader, msg, cmd_type, &prods, &buys, &sells);
 			display_orderbook(&prods, buys, sells);
 
 		} else if (sigchld) {
@@ -262,64 +263,63 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 }
 
 char *read_and_format_message(trader *curr_trader) {
-	if (curr_trader == NULL) {
-		return NULL;
-	}
 
-	char *buffer = malloc(BUF_SIZE);
-	if (buffer == NULL) {
-		free(buffer);
-		return NULL;
-	}
+	// char *buffer = malloc(BUF_SIZE);
+	// if (buffer == NULL) {
+	// 	free(buffer);
+	// 	return NULL;
+	// }
 
-	int size = BUF_SIZE;
-	int position = 0;
-	int bytes_read = 0;
-	do {
-		bytes_read = read(curr_trader->fd[0], buffer + position, 256);
-		if (bytes_read == -1) {
-			free(buffer);
-			return NULL;
-		}
+	// int size = BUF_SIZE;
+	// int position = 0;
+	// int bytes_read = 0;
+	// do {
+	// 	bytes_read = read(curr_trader->fd[0], buffer + position, 256);
+	// 	if (bytes_read == -1) {
+	// 		free(buffer);
+	// 		return NULL;
+	// 	}
 
-		position += bytes_read;
-		if (position == size) {
-			size *= 2;
-			char *new_buf = realloc(buffer, size);
-			if (new_buf == NULL) {
-				free(new_buf);
-				return NULL;
-			}
-			buffer = new_buf;
-		}
-	} while (bytes_read > 0);
+	// 	position += bytes_read;
+	// 	if (position == size) {
+	// 		size *= 2;
+	// 		char *new_buf = realloc(buffer, size);
+	// 		if (new_buf == NULL) {
+	// 			free(new_buf);
+	// 			return NULL;
+	// 		}
+	// 		buffer = new_buf;
+	// 	}
+	// } while (bytes_read > 0);
+
+	read(curr_trader->fd[0], msg, 256);
 
 	// put the string into proper format
 	int delim_index = 0;
-    for (int i = 0; i < position; i++) {
+    for (int i = 0; i < 256; i++) {
         // look for the ; delimiter
-        if (buffer[i] == ';') {
+        if (msg[i] == ';') {
             delim_index = i;
             break;
-        } else if (i == bytes_read - 1) {
+        } else if (i == 255) {
             // reached end of data without finding delimiter
             return NULL;
         }
     }
 	
-	char *formatted_string = malloc(delim_index + 1);
-	if (formatted_string == NULL) {
-		free(formatted_string);
-		free(buffer);
-		return NULL;
-	}
+	// char *formatted_string = malloc(delim_index + 1);
+	// if (formatted_string == NULL) {
+	// 	free(formatted_string);
+	// 	free(buffer);
+	// 	return NULL;
+	// }
 
-	memcpy(formatted_string, buffer, delim_index + 1);
-	formatted_string[delim_index] = '\0';
+	// memcpy(formatted_string, buffer, delim_index + 1);
+	msg[delim_index] = '\0';
 	
-	free(buffer);
+	// free(buffer);
 
-	return formatted_string;
+	return NULL;
 }
 
 int determine_cmd_type(char *message_in) {
