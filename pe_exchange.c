@@ -201,7 +201,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 	int trader_path_len = 0;
 	char *exchange_fifo_path = NULL;
 	char *trader_fifo_path = NULL;
-	trader *prev = *head;
+	trader *prev = *head; // tracks the last trader added to the list
 	pid_t forked_pid = -1;
 	for (trader_id = 0; trader_id < num_traders; trader_id++) {
 		// get the length of each path
@@ -270,14 +270,10 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		// add the newly opened trader to the head of the list
 		new_trader->next = NULL;
 		if (*head == NULL) {
+			// empty list -- make new trader the head
 			*head = new_trader;
 		} else {
 			prev->next = new_trader;
-			// trader *current = *head;
-			// while (current->next != NULL) {
-			// 	current = current->next;
-			// }
-			// current->next = new_trader;
 		}
 		prev = new_trader;
 
@@ -434,6 +430,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 
 void display_orderbook(products *prods, order **buys, order **sells) {
 	printf("%s\t--ORDERBOOK--\n", LOG_PREFIX);
+	printf("%d\n", prods->size);
 	for (int i = 0; i < prods->size; i++) {
 		printf("%s\tProduct: %s; Buy levels: %d; Sell levels: %d\n", LOG_PREFIX,
 				prods->product_strings[i], count_order_levels(buys, i),
