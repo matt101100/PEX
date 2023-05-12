@@ -450,30 +450,29 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 }
 
 void display_orderbook(products *prods, order **buys, order **sells) {
-	printf("%s\t--ORDERBOOK--\n", LOG_PREFIX);
-	for (int i = 0; i < prods->size; i++) {
-		printf("%s\tProduct: %s; Buy levels: %d; Sell levels: %d\n", LOG_PREFIX,
-				prods->product_strings[i], count_order_levels(buys, i),
-				count_order_levels(sells, i));
-		display_orders(buys, i, BUY);
-		display_orders(sells, i, SELL);
-	}
+	// printf("%s\t--ORDERBOOK--\n", LOG_PREFIX);
+	// for (int i = 0; i < prods->size; i++) {
+	// 	printf("%s\tProduct: %s; Buy levels: %d; Sell levels: %d\n", LOG_PREFIX,
+	// 			prods->product_strings[i], count_order_levels(buys, i),
+	// 			count_order_levels(sells, i));
+	// 	display_orders(buys, i, BUY);
+	// 	display_orders(sells, i, SELL);
+	// }
 }
 
 int count_order_levels(order **list, int product_index) {
-	// int count = 0;
-	// int prev_price = -1;
-	// order *curr = list[product_index];
-	// while (curr != NULL) {
-	// 	if (curr->price == prev_price) {
-	// 		continue;
-	// 	}
-	// 	count++;
-	// 	prev_price = curr->price;
-	// 	curr = curr->next;
-	// }
-	// return count;
-	return 0;
+	int count = 0;
+	int prev_price = -1;
+	order *curr = list[product_index];
+	while (curr != NULL) {
+		if (curr->price == prev_price) {
+			continue;
+		}
+		count++;
+		prev_price = curr->price;
+		curr = curr->next;
+	}
+	return count;
 }
 
 void display_orders(order **list, int product_index, int order_type) {
