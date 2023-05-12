@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
 				continue;
 			}
 			display_orderbook(&prods, buys, sells);
-			display_positions(head, matches, &prods);
+			// display_positions(head, matches, &prods);
 
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
@@ -480,6 +480,7 @@ void display_orders(order **list, int product_index, int order_type) {
 	int count = 1;
 	while (curr != NULL) {
 		order *runner = curr->next;
+		count = 1;
 		while (runner != NULL && runner->quantity == curr->quantity && runner->price == curr->price) {
 			count++;
 			runner = runner->next;
