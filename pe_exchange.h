@@ -99,8 +99,9 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head);
 /*
  * Desc: Reads and formats message from trader_fifo of trader with matching PID.
  * Params: the pid to match and a pointer to the head of the trader list
+ * Return: 0 on successful read, 1 otherwise
  */
-char *read_and_format_message(trader *curr_trader);
+int read_and_format_message(trader *curr_trader, char *message_in);
 
 /*
  * Desc: Determines the type of command to execute specified by the message.
