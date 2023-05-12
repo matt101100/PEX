@@ -82,23 +82,22 @@ int main(int argc, char **argv) {
 			pause();
 		}
 		if (sigusr1) {
-			sigusr1 = 0; // reset flag
 
 			// parse input of trader that sent sigusr1 and return corresponding output
 			curr_trader = get_trader(pid, -1, head);
 			read_and_format_message(curr_trader, message_in);
 			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, message_in);
 			cmd_type = determine_cmd_type(message_in);
-			if (cmd_type == -1) {
+			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
+			if (res) {
 				// notify trader of invalid message
 				write(curr_trader->fd[1], "INVALID;", strlen("INVALID;"));
 				kill(curr_trader->process_id, SIGUSR1);
 				continue;
 			}
-
-			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells);
 			display_orderbook(&prods, buys, sells);
 			display_positions(head, matches, &prods);
+			sigusr1 = 0; // reset flag
 
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
@@ -331,6 +330,8 @@ int determine_cmd_type(char *message_in) {
 int execute_command(trader *curr_trader, char *message_in, int cmd_type, products* prods, order ***buys, order ***sells) {
 	if (curr_trader == NULL) {
 		return 1;
+	} else if (cmd_type == -1) {
+		return 1;
 	}
 
 	if (cmd_type == BUY || cmd_type == SELL) {
@@ -367,7 +368,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		write(curr_trader->fd[1], accepted_msg, strlen(accepted_msg));
 		kill(curr_trader->process_id, SIGUSR1);
 		free(accepted_msg);
-		printf("here\n");
 
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
