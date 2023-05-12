@@ -278,6 +278,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 			while (current->next != NULL) {
 				current = current->next;
 			}
+			current->next = new_trader;
 		}
 		// new_trader->next = *head;
 		// *head = new_trader;
