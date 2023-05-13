@@ -351,7 +351,7 @@ int determine_cmd_type(char *message_in) {
 		return SELL;
 	} else if (strcmp(type, "AMMEND") == 0) {
 		return AMMEND;
-	} else if (strcmp(type, "CANECL") == 0) {
+	} else if (strcmp(type, "CANCEL") == 0) {
 		return CANCEL;
 	}
 
@@ -491,7 +491,73 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		
 
 	} else if (cmd_type == CANCEL) {
+		char cmd[CMD_LEN];
+		int order_id;
+		sscanf(message_in, "%s %d", cmd, &order_id);
+		// check BUY and SELL orders for every product
+		int break_flag = 0;
+		for (int i = 0; i < prods->size; i++) {
+			// search the BUY orders
+			order *curr = (*buys)[i];
+			order *prev = NULL;
+			order *temp = (*buys)[i];
+			while (curr != NULL) {
+				if (curr->trader_id == curr_trader->trader_id && curr->order_id == order_id) {
+					// delete the matching buy order
+					if (curr == (*buys)[i]) {
+						// order to remove is the head
+						(*buys)[i] = curr->next;
+						free(temp);
+						break_flag = 1;
+						break;
+					} else {
+						// order is not head of list
+						prev->next = curr->next;
+						free(curr);
+						break_flag = 1;
+						break;
+					}
+				}
+			}
 
+			if (break_flag) {
+				break;
+			}
+
+			// search the SELL orders
+			curr = (*sells)[i];
+			prev = NULL;
+			temp = (*sells)[i];
+			while (curr != NULL) {
+				if (curr->trader_id == curr_trader->trader_id && curr->order_id == order_id) {
+					// delete matching sell order
+					if (curr == (*sells)[i]) {
+						// order to remove is the head
+						(*sells)[i] = curr->next;
+						free(temp);
+						break_flag = 1;
+						break;
+					} else {
+						// order is not head of list
+						prev->next = curr->next;
+						free(curr);
+						break_flag = 1;
+						break;
+					}
+				}
+			}
+
+			if (break_flag) {
+				break;
+			}
+		}
+
+		// write and signal the trader
+		int msg_len = snprintf(NULL, 0, "CANCELLED %d;", order_id);
+		char *msg = malloc(msg_len + 1);
+		snprintf(msg, msg_len + 1, "CANCELLED %d", order_id);
+		write(curr_trader->fd[1], msg, strlen(msg));
+		kill(curr_trader->process_id, SIGUSR1);
 	}
 
 	return 0;
