@@ -399,14 +399,14 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		char *msg;
 		trader *cursor = head;
 		while (cursor != NULL) {
-			if (cursor->process_id == curr_trader->process_id) {
+			if (cursor->process_id == curr_trader->process_id && !(curr_trader->disconnected)) {
 				// write accepted to trader that made the order
 				msg_len = snprintf(NULL, 0 , "ACCEPTED %d;", order_id);
 				msg = malloc(msg_len + 1);
 				snprintf(msg, msg_len + 1, "ACCEPTED %d;", order_id);
 				write(curr_trader->fd[1], msg, strlen(msg));
 				free(msg);
-			} else {
+			} else if (!(cursor->disconnected)) {
 				// let the other traders now about the new order
 				if (cmd_type == BUY) {
 					// send MARKET BUY
