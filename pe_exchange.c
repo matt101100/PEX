@@ -560,6 +560,7 @@ int find_matches(int ****list, order ***buys, order ***sells, trader *head, int 
 	}
 	return 0;
 }
+//test
 
 trader *get_trader(pid_t pid, int trader_id, trader *head) {
 	trader *current = head;
