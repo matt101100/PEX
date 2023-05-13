@@ -382,6 +382,8 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		} else if (order_id > curr_trader->max_order_id + 1) {
 			// non-consecutive order ID
 			return 1;
+		} else if (order_id < curr_trader->max_order_id) {
+			return 1;
 		}
 
 		// send appropriate message to all traders
