@@ -616,7 +616,7 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				trading_fee = (float)(rounding); // rounded to nearest decimal
 
 				// reduce the amount of product avaliable for this sell order
-				// prod_sells->quantity -= prod_buys->quantity;
+				prod_sells->quantity -= prod_buys->quantity;
 
 				// cache the details of the trade
 				(*matches)[prod_buys->trader_id][product_index][0] += prod_buys->quantity;
@@ -688,7 +688,7 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				free(to_delete);
 				prod_buys = (*buys)[product_index]; // move to the next order
 
-				to_delete = (*sells)[product_index];
+				order *to_delete = (*sells)[product_index];
 				(*sells)[product_index] = ((*sells)[product_index])->next;
 				free(to_delete);
 				prod_sells = (*sells)[product_index]; // move to the next order
