@@ -130,6 +130,7 @@ int main(int argc, char **argv) {
 			// perform disconnection and cleanup of terminated trader
 			curr_trader = get_trader(pid, -1, head);
 			curr_trader->disconnected = 1; // disconnect trader
+			printf("%s Trader %d disconnected\n", LOG_PREFIX, curr_trader->trader_id);
 			trader_disconnect++;
 		}
 	}
