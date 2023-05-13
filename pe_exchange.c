@@ -631,19 +631,19 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 						trading_sum, trading_fee);
 
 				// send fill messages to traders involved
-				if (buyer != NULL) {
+				if (buyer == NULL) {
 					// send FILL only if buyer has not disconnected
-					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
+					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
 					msg = malloc(msg_len + 1);
-					snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
+					snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
 					write(buyer->fd[1], msg, strlen(msg));
 					kill(buyer->process_id, SIGUSR1);
 					free(msg);
-				} else if (seller != NULL) {
+				} else if (seller == NULL) {
 					// send FILL only if seller has not disconnected
-					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_buys->quantity);
 					msg = malloc(msg_len + 1);
-					snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+					snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_buys->quantity);
 					write(seller->fd[1], msg, strlen(msg));
 					kill(seller->process_id, SIGUSR1);
 					free(msg);
@@ -688,15 +688,15 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 						trading_sum, trading_fee);
 
 				// send fill messages to traders involved
-				if (buyer != NULL) {
+				if (buyer == NULL) {
 					// send FILL only if buyer has not disconnected
-					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
+					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
 					msg = malloc(msg_len + 1);
-					snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
+					snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
 					write(buyer->fd[1], msg, strlen(msg));
 					kill(buyer->process_id, SIGUSR1);
 					free(msg);
-				} else if (seller != NULL) {
+				} else if (seller == NULL) {
 					// send FILL only if seller has not disconnected
 					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
 					msg = malloc(msg_len + 1);
