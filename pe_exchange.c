@@ -487,7 +487,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			}
 		}
 
-	} else if (cmd_type == AMMEND) {
+	} else if (cmd_type == AMEND) {
 		
 
 	} else if (cmd_type == CANCEL) {
