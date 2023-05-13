@@ -134,7 +134,7 @@ int main(int argc, char **argv) {
 	}
 
 	printf("%s Trading completed\n", LOG_PREFIX);
-	printf("%s Exchange fees collected: $%.0f\n", LOG_PREFIX, (int)FEE_PERCENTAGE * total_fees);
+	printf("%s Exchange fees collected: $%.0f\n", LOG_PREFIX, total_fees);
 
 
 	// clean-up after successful execution
