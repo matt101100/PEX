@@ -628,10 +628,10 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				prod_buys = (*buys)[product_index]; // move to the next order
 
 				// print the results of the trade to stdout
-				printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
-				 		LOG_PREFIX, prod_buys->order_id, prod_buys->trader_id, 
-						prod_sells->order_id, prod_sells->trader_id, 
-						trading_sum, trading_fee);
+				// printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
+				//  		LOG_PREFIX, prod_buys->order_id, prod_buys->trader_id, 
+				// 		prod_sells->order_id, prod_sells->trader_id, 
+				// 		trading_sum, trading_fee);
 
 				// send fill messages to traders involved
 				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
