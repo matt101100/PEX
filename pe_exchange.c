@@ -695,6 +695,7 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				prod_sells = (*sells)[product_index]; // move to the next order
 
 			} else if (prod_buys->quantity > prod_sells->quantity) {
+				printf("here\n");
 				// compute price of the trade, this is based on the older order
 				if (prod_buys->order_id >= prod_sells->order_id) {
 					trading_sum = prod_sells->price * prod_sells->quantity;
