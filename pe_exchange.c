@@ -717,7 +717,7 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				trading_fee = (float)(rounding);
 
 				// cache the details of the trade
-				(*matches)[prod_buys->trader_id][product_index][0] += prod_buys->quantity;
+				(*matches)[prod_buys->trader_id][product_index][0] += prod_sells->quantity;
 				(*matches)[prod_buys->trader_id][product_index][1] -= trading_sum;
 				(*matches)[prod_sells->trader_id][product_index][0] -= prod_sells->quantity;
 				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
