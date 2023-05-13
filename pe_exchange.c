@@ -128,7 +128,8 @@ int main(int argc, char **argv) {
 			sigchld = 0; // reset flag
 
 			// perform disconnection and cleanup of terminated trader
-			cleanup_trader(pid, &head);
+			curr_trader = get_trader(pid, -1, head);
+			curr_trader->disconnected = 1; // disconnect trader
 			trader_disconnect++;
 		}
 	}
@@ -292,6 +293,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		new_trader->process_id = forked_pid;
 		new_trader->max_buy_order_id = 0;
 		new_trader->max_sell_order_id = 0;
+		new_trader->disconnected = 0;
 
 		// add the newly opened trader to the head of the list
 		new_trader->next = NULL;
@@ -631,7 +633,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 						trading_sum, trading_fee);
 
 				// send fill messages to traders involved
-				if (buyer != NULL) {
+				if (!(buyer->disconnected)) {
 					// send FILL only if buyer has not disconnected
 					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
 					msg = malloc(msg_len + 1);
@@ -641,7 +643,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 					free(msg);
 				} 
 				
-				if (seller != NULL) {
+				if (!(seller->disconnected)) {
 					// send FILL only if seller has not disconnected
 					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_buys->quantity);
 					msg = malloc(msg_len + 1);
@@ -690,7 +692,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 						trading_sum, trading_fee);
 
 				// send fill messages to traders involved
-				if (buyer != NULL) {
+				if (!(buyer->disconnected)) {
 					// send FILL only if buyer has not disconnected
 					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
 					msg = malloc(msg_len + 1);
@@ -700,7 +702,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 					free(msg);
 				}
 				
-				if (seller != NULL) {
+				if (!(seller->disconnected)) {
 					// send FILL only if seller has not disconnected
 					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
 					msg = malloc(msg_len + 1);
@@ -764,7 +766,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				}
 
 				// send fill messages to traders involved
-				if (buyer != NULL) {
+				if (!(buyer->disconnected)) {
 					// send FILL only if buyer has not disconnected
 					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
 					msg = malloc(msg_len + 1);
@@ -774,7 +776,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 					free(msg);
 				}
 				
-				if (seller != NULL) {
+				if (!(seller->disconnected)) {
 					// send FILL only if seller has not disconnected
 					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
 					msg = malloc(msg_len + 1);
