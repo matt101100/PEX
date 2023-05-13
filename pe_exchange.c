@@ -96,6 +96,8 @@ int main(int argc, char **argv) {
 	// event loop
 	int trader_disconnect = 0; // counts number of traders disconnected
 	int cmd_type = -1;
+	// position of the most recently added product in the product strings array
+	int product_index = -1;
 	char message_in[BUF_SIZE];
 	trader *curr_trader = NULL; // tracks the last trader that signalled
 	while (trader_disconnect < num_traders) {
@@ -111,7 +113,7 @@ int main(int argc, char **argv) {
 			read_and_format_message(curr_trader, message_in);
 			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, message_in);
 			cmd_type = determine_cmd_type(message_in);
-			res = execute_command(curr_trader, message_in, cmd_type, &prods, &buys, &sells, head);
+			res = execute_command(curr_trader, message_in, cmd_type, &prods, &product_index, &buys, &sells, head);
 			if (res) {
 				// notify trader of invalid message
 				write(curr_trader->fd[1], "INVALID;", strlen("INVALID;"));
@@ -351,7 +353,7 @@ int determine_cmd_type(char *message_in) {
 	return -1;
 }
 
-int execute_command(trader *curr_trader, char *message_in, int cmd_type, products* prods, order ***buys, order ***sells, trader *head) {
+int execute_command(trader *curr_trader, char *message_in, int cmd_type, products* prods, int *product_index, order ***buys, order ***sells, trader *head) {
 	if (curr_trader == NULL) {
 		return 1;
 	} else if (cmd_type == -1) {
@@ -371,8 +373,8 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		}
 
 		// validate order
-		int product_index = get_product_index(prods, product);
-		if (product_index == -1) {
+		*product_index = get_product_index(prods, product);
+		if (*product_index == -1) {
 			return 1;
 		} else if (order_id < OID_MIN || order_id > OID_MAX) {
 			return 1;
@@ -427,7 +429,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		new_order->order_id = order_id;
 		new_order->trader_id = curr_trader->trader_id;
 		new_order->product = product;
-		new_order->product_index = product_index;
+		new_order->product_index = *product_index;
 		new_order->quantity = quantity;
 		new_order->price = price;
 
@@ -441,7 +443,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		// add the order to the corresponding list
 		if (cmd_type == BUY) {
 			// buy list is sorted in descending order of price
-			order *curr = (*buys)[product_index];
+			order *curr = (*buys)[*product_index];
 			order *prev = NULL;
 			while (curr != NULL && curr->price >= new_order->price) {
 				prev = curr;
@@ -451,8 +453,8 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			// insert order into its correct position
 			if (prev == NULL) {
 				// list was empty or it is the highest priced order
-				new_order->next = (*buys)[product_index];
-				(*buys)[product_index] = new_order;
+				new_order->next = (*buys)[*product_index];
+				(*buys)[*product_index] = new_order;
 			} else {
 				// insert between prev and current
 				prev->next = new_order;
@@ -461,7 +463,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 
 		} else if (cmd_type == SELL) {
 			// sell list is sorted in ascending order of price
-			order *curr = (*sells)[product_index];
+			order *curr = (*sells)[*product_index];
 			order *prev = NULL;
 			while (curr != NULL && curr->price < new_order->price) {
 				prev = curr;
@@ -470,8 +472,8 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 
 			// insert order into its correct position
 			if (prev == NULL) {
-				new_order->next = (*sells)[product_index];
-				(*sells)[product_index] = new_order;
+				new_order->next = (*sells)[*product_index];
+				(*sells)[*product_index] = new_order;
 			} else {
 				// insert between prev and current
 				prev->next = new_order;

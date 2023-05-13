@@ -126,7 +126,7 @@ int determine_cmd_type(char *message_in);
            the command to parse and execute.
  * Return: 0 on successful parsing and execution of the command, 1 otherwise
  */
-int execute_command(trader *curr_trader, char *message_in, int cmd_type, products *prods, order ***buys, order ***sells, trader *head);
+int execute_command(trader *curr_trader, char *message_in, int cmd_type, products *prods, int *product_index, order ***buys, order ***sells, trader *head);
 
 /*
  * Desc: Finds matching orders for product at product_index, prints the 
