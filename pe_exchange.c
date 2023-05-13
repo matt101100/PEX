@@ -623,15 +623,6 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				// get the traders involved in the match
 				trader *buyer = get_trader(-1, prod_buys->trader_id, head);
 				trader *seller = get_trader(-1, prod_sells->trader_id, head);
-				if (buyer == NULL) {
-					// buyer disconnected before match, ignore
-					prod_buys = ((*buys)[product_index])->next;
-					continue;
-				} else if (seller == NULL) {
-					// seller disconnected before match, ignore
-					prod_sells = ((*sells)[product_index])->next;
-					continue;
-				}
 
 				// print the results of the trade to stdout
 				printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
@@ -640,19 +631,23 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 						trading_sum, trading_fee);
 
 				// send fill messages to traders involved
-				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
-				msg = malloc(msg_len + 1);
-				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
-				write(buyer->fd[1], msg, strlen(msg));
-				kill(buyer->process_id, SIGUSR1);
-				free(msg);
-
-				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_buys->quantity);
-				msg = malloc(msg_len + 1);
-				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_buys->quantity);
-				write(seller->fd[1], msg, strlen(msg));
-				kill(seller->process_id, SIGUSR1);
-				free(msg);
+				if (buyer != NULL) {
+					// send FILL only if buyer has not disconnected
+					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
+					msg = malloc(msg_len + 1);
+					snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
+					write(buyer->fd[1], msg, strlen(msg));
+					kill(buyer->process_id, SIGUSR1);
+					free(msg);
+				} else if (seller != NULL) {
+					// send FILL only if seller has not disconnected
+					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+					msg = malloc(msg_len + 1);
+					snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+					write(seller->fd[1], msg, strlen(msg));
+					kill(seller->process_id, SIGUSR1);
+					free(msg);
+				}
 
 				// remove the BUY order from the list
 				order *to_delete = (*buys)[product_index];
@@ -685,15 +680,6 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				// get the traders involved in the match
 				trader *buyer = get_trader(-1, prod_buys->trader_id, head);
 				trader *seller = get_trader(-1, prod_sells->trader_id, head);
-				if (buyer == NULL) {
-					// buyer disconnected before match, ignore
-					prod_buys = ((*buys)[product_index])->next;
-					continue;
-				} else if (seller == NULL) {
-					// seller disconnected before match, ignore
-					prod_sells = ((*sells)[product_index])->next;
-					continue;
-				}
 
 				// print the results of the trade to stdout
 				printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
@@ -702,19 +688,23 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 						trading_sum, trading_fee);
 
 				// send fill messages to traders involved
-				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
-				msg = malloc(msg_len + 1);
-				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
-				write(buyer->fd[1], msg, strlen(msg));
-				kill(buyer->process_id, SIGUSR1);
-				free(msg);
-
-				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
-				msg = malloc(msg_len + 1);
-				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
-				write(seller->fd[1], msg, strlen(msg));
-				kill(seller->process_id, SIGUSR1);
-				free(msg);
+				if (buyer != NULL) {
+					// send FILL only if buyer has not disconnected
+					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
+					msg = malloc(msg_len + 1);
+					snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
+					write(buyer->fd[1], msg, strlen(msg));
+					kill(buyer->process_id, SIGUSR1);
+					free(msg);
+				} else if (seller != NULL) {
+					// send FILL only if seller has not disconnected
+					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+					msg = malloc(msg_len + 1);
+					snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+					write(seller->fd[1], msg, strlen(msg));
+					kill(seller->process_id, SIGUSR1);
+					free(msg);
+				}
 
 				// remove both orders from their respective lists
 				order *to_delete = (*buys)[product_index];
@@ -753,18 +743,8 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
 
 				// get the traders involved in the match
-				printf("here\n");
 				trader *buyer = get_trader(-1, prod_buys->trader_id, head);
 				trader *seller = get_trader(-1, prod_sells->trader_id, head);
-				if (buyer == NULL) {
-					// buyer disconnected before match, ignore
-					prod_buys = ((*buys)[product_index])->next;
-					continue;
-				} else if (seller == NULL) {
-					// seller disconnected before match, ignore
-					prod_sells = ((*sells)[product_index])->next;
-					continue;
-				}
 
 				// print the results of the trade to stdout
 				printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
@@ -773,19 +753,23 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 						trading_sum, trading_fee);
 
 				// send fill messages to traders involved
-				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
-				msg = malloc(msg_len + 1);
-				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
-				write(buyer->fd[1], msg, strlen(msg));
-				kill(buyer->process_id, SIGUSR1);
-				free(msg);
-
-				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
-				msg = malloc(msg_len + 1);
-				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
-				write(seller->fd[1], msg, strlen(msg));
-				kill(seller->process_id, SIGUSR1);
-				free(msg);
+				if (buyer != NULL) {
+					// send FILL only if buyer has not disconnected
+					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
+					msg = malloc(msg_len + 1);
+					snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
+					write(buyer->fd[1], msg, strlen(msg));
+					kill(buyer->process_id, SIGUSR1);
+					free(msg);
+				} else if (seller != NULL) {
+					// send FILL only if seller has not disconnected
+					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+					msg = malloc(msg_len + 1);
+					snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+					write(seller->fd[1], msg, strlen(msg));
+					kill(seller->process_id, SIGUSR1);
+					free(msg);
+				}
 
 				// remove SELL order from the list
 				order *to_delete = (*sells)[product_index];
