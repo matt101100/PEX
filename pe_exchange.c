@@ -488,7 +488,60 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		}
 
 	} else if (cmd_type == AMEND) {
-		
+		char cmd[CMD_LEN];
+		int order_id;
+		int quantity;
+		int price;
+		sscanf(message_in, "%s %d %d %d", cmd, &order_id, &quantity, &price);
+
+		// check BUY and SELL orders for every product
+		int break_flag = 0;
+		for (int i = 0; i < prods->size; i++) {
+			order *curr = (*buys)[i];
+			while (curr != NULL) {
+				if (curr->trader_id == curr_trader->trader_id && curr->order_id == order_id) {
+					// update the qty and price
+					curr->quantity = quantity;
+					curr->price = price;
+					break_flag = 1;
+					break;
+				}
+				curr = curr->next;
+			}
+
+			if (break_flag) {
+				break;
+			}
+
+			curr = (*sells)[i];
+			while (curr != NULL) {
+				if (curr->trader_id == curr_trader->trader_id && curr->order_id == order_id) {
+					// update qty and price
+					curr->quantity = quantity;
+					curr->price = price;
+					break_flag = 1;
+					break;
+				}
+				curr = curr->next;
+			}
+
+			if (break_flag) {
+				break;
+			}
+		}
+
+		if (!break_flag) {
+			return 1;
+		}
+
+		// write and signal the trader
+		int msg_len = snprintf(NULL, 0, "AMENDED %d;", order_id);
+		char *msg = malloc(msg_len + 1);
+		snprintf(msg, msg_len + 1, "AMENDED %d;", order_id);
+		write(curr_trader->fd[1], msg, strlen(msg));
+		kill(curr_trader->process_id, SIGUSR1);
+		free(msg);
+
 
 	} else if (cmd_type == CANCEL) {
 		char cmd[CMD_LEN];
@@ -518,6 +571,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 						break;
 					}
 				}
+				curr = curr->next;
 			}
 
 			if (break_flag) {
@@ -545,6 +599,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 						break;
 					}
 				}
+				curr = curr->next;
 			}
 
 			if (break_flag) {
