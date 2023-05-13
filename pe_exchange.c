@@ -158,7 +158,6 @@ void signal_handle(int signum, siginfo_t *info, void *context) {
 		usleep(1);
 	} else if (signum == SIGCHLD) {
 		// handle SIGCHLD
-		printf("here\n");
 		sigchld = 1;
 		usleep(1);
 	}
@@ -732,6 +731,14 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				(*matches)[prod_sells->trader_id][product_index][0] -= prod_sells->quantity;
 				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
 
+				// get the traders involved in the match
+				trader *buyer = get_trader(-1, prod_buys->trader_id, head);
+				trader *seller = get_trader(-1, prod_sells->trader_id, head);
+				if (buyer == NULL || seller == NULL) {
+					// either trader disconnected, their trade should be ignored
+					continue;
+				}
+
 				// print the results of the trade to stdout
 				printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
 				 		LOG_PREFIX, prod_buys->order_id, prod_buys->trader_id, 
@@ -742,21 +749,16 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
 				msg = malloc(msg_len + 1);
 				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
-				to_write = get_trader(-1, prod_buys->trader_id, head);
-				write(to_write->fd[1], msg, strlen(msg));
-				kill(to_write->process_id, SIGUSR1);
+				write(buyer->fd[1], msg, strlen(msg));
+				kill(buyer->process_id, SIGUSR1);
 				free(msg);
 
-				// msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
-				// msg = malloc(msg_len + 1);
-				// snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
-				to_write = get_trader(-1, prod_sells->trader_id, head);
-				if (to_write == NULL) {
-					printf("%d\n", prod_sells->trader_id);
-				}
-				// write(to_write->fd[1], msg, strlen(msg));
-				// kill(to_write->process_id, SIGUSR1);
-				// free(msg);
+				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+				msg = malloc(msg_len + 1);
+				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+				write(seller->fd[1], msg, strlen(msg));
+				kill(seller->process_id, SIGUSR1);
+				free(msg);
 
 				// remove SELL order from the list
 				order *to_delete = (*sells)[product_index];
