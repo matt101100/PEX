@@ -602,11 +602,7 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 		
 			if (prod_buys->quantity < prod_sells->quantity) {
 				// compute price of the trade, this is based on the older order
-				if (prod_buys->order_id >= prod_sells->order_id) {
-					trading_sum = prod_buys->price * prod_buys->quantity;
-				} else {
-					trading_sum = prod_buys->price * prod_buys->quantity;
-				}
+				trading_sum = prod_buys->price * prod_buys->quantity;
 
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
