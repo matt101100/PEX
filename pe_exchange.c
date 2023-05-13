@@ -726,7 +726,7 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				order *to_delete = (*sells)[product_index];
 				(*sells)[product_index] = ((*sells)[product_index])->next;
 				free(to_delete);
-				prod_buys = (*sells)[product_index]; // move to the next order
+				prod_sell = (*sells)[product_index]; // move to the next order
 			}
 		} else {
 			// no trades possible
