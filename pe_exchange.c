@@ -708,6 +708,9 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 					trading_sum = prod_buys->price * prod_sells->quantity;
 				}
 
+				// reduce the amount of product avaliable for this sell order
+				prod_buys->quantity -= prod_sells->quantity;
+
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
 				long rounding = (long)(trading_fee + 0.5f);
