@@ -666,6 +666,12 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				(*matches)[prod_sells->trader_id][product_index][0] -= prod_buys->quantity;
 				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
 
+				// print the results of the trade to stdout
+				printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
+				 		LOG_PREFIX, prod_buys->order_id, prod_buys->trader_id, 
+						prod_sells->order_id, prod_sells->trader_id, 
+						trading_sum, trading_fee);
+
 				// send fill messages to traders involved
 				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
 				msg = malloc(msg_len + 1);
@@ -695,7 +701,6 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				prod_sells = (*sells)[product_index]; // move to the next order
 
 			} else if (prod_buys->quantity > prod_sells->quantity) {
-				printf("here\n");
 				// compute price of the trade, this is based on the older order
 				if (prod_buys->order_id >= prod_sells->order_id) {
 					trading_sum = prod_sells->price * prod_sells->quantity;
@@ -713,6 +718,12 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				(*matches)[prod_buys->trader_id][product_index][1] -= trading_sum;
 				(*matches)[prod_sells->trader_id][product_index][0] -= prod_sells->quantity;
 				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
+
+				// print the results of the trade to stdout
+				printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
+				 		LOG_PREFIX, prod_buys->order_id, prod_buys->trader_id, 
+						prod_sells->order_id, prod_sells->trader_id, 
+						trading_sum, trading_fee);
 
 				// send fill messages to traders involved
 				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
