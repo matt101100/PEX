@@ -590,13 +590,15 @@ int find_matches(int ****list, order ***buys, order ***sells, trader *head, int 
 			/*
 			 * We have the following 3 cases for a match:
 			 	1. The qty to BUY is less than the qty to SELL
-					--> 
+					--> Delete BUY, keep SELL
 				2. The qty to BUY is equal to the qty to SELL
+					--> Delete both BUY and SELL
 				3. The qty to BUY is greater than the qty to Sell
+					--> Keep BUY, delete SELL
 			 */
 		
 			if (prod_buys->quantity < prod_sells->quantity) {
-				break;
+				
 			}
 		}
 	}
