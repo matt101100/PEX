@@ -765,6 +765,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 					continue;
 				}
 
+				printf("here\n");
 				// print the results of the trade to stdout
 				printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
 				 		LOG_PREFIX, prod_buys->order_id, prod_buys->trader_id, 
