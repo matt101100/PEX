@@ -584,7 +584,6 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 	double trading_fee = 0;
 	long trading_sum = 0; // tracks the total value of the trade
 	while (prod_buys != NULL && prod_sells != NULL) {
-		printf("here2\n");
 		// we match off the top of both lists as long as orders exist
 		trading_fee = 0;
 		trading_sum = 0;
@@ -611,7 +610,6 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 			 */
 		
 			if (prod_buys->quantity < prod_sells->quantity) {
-				printf("hereless\n");
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
 				long rounding = (long)(trading_fee + 0.5f);
@@ -653,7 +651,6 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				free(msg);
 
 			} else if (prod_buys->quantity == prod_sells->quantity) {
-				printf("hereeq\n");
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
 				long rounding = (long)(trading_fee + 0.5f);
@@ -694,7 +691,6 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				free(msg);
 
 			} else if (prod_buys->quantity > prod_sells->quantity) {
-				printf("heremore\n");
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
 				long rounding = (long)(trading_fee + 0.5f);
@@ -729,6 +725,9 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				kill(to_write->process_id, SIGUSR1);
 				free(msg);
 			}
+		} else {
+			// no trades possible
+			break;
 		}
 	}
 	return trading_fee;
