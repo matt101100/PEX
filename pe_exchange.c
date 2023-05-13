@@ -747,7 +747,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				if (prod_buys->global_order_num > prod_sells->global_order_num) {
 					trading_sum = prod_sells->price * prod_buys->quantity;
 				} else {
-					trading_sum = trading_sum = prod_buys->price * prod_buys->quantity;
+					trading_sum = prod_buys->price * prod_buys->quantity;
 				}
 
 				// compute fee of the trade
