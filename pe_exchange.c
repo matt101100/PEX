@@ -639,7 +639,9 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 					write(buyer->fd[1], msg, strlen(msg));
 					kill(buyer->process_id, SIGUSR1);
 					free(msg);
-				} else if (seller != NULL) {
+				} 
+				
+				if (seller != NULL) {
 					// send FILL only if seller has not disconnected
 					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_buys->quantity);
 					msg = malloc(msg_len + 1);
@@ -696,7 +698,9 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 					write(buyer->fd[1], msg, strlen(msg));
 					kill(buyer->process_id, SIGUSR1);
 					free(msg);
-				} else if (seller != NULL) {
+				}
+				
+				if (seller != NULL) {
 					// send FILL only if seller has not disconnected
 					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
 					msg = malloc(msg_len + 1);
@@ -761,7 +765,9 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 					write(buyer->fd[1], msg, strlen(msg));
 					kill(buyer->process_id, SIGUSR1);
 					free(msg);
-				} else if (seller != NULL) {
+				}
+				
+				if (seller != NULL) {
 					// send FILL only if seller has not disconnected
 					msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
 					msg = malloc(msg_len + 1);
