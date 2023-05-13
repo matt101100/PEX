@@ -745,23 +745,13 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 
 				// cache the details of the trade
 				(*matches)[prod_buys->trader_id][product_index][0] += prod_sells->quantity;
-				// (*matches)[prod_buys->trader_id][product_index][1] -= trading_sum;
+				(*matches)[prod_buys->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
 				(*matches)[prod_sells->trader_id][product_index][0] -= prod_sells->quantity;
-				// (*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
+				(*matches)[prod_sells->trader_id][product_index][1] -= trading_sum;
 
 				// get the traders involved in the match
 				trader *buyer = get_trader(-1, prod_buys->trader_id, head);
 				trader *seller = get_trader(-1, prod_sells->trader_id, head);
-
-				// if one trader disconnected, connected one pays fees
-				if (buyer->disconnected) {
-					// charge seller with fees
-					(*matches)[prod_buys->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
-					(*matches)[prod_sells->trader_id][product_index][1] -= trading_sum;
-				} else if (seller->disconnected) {
-					(*matches)[prod_buys->trader_id][product_index][1] -=  trading_sum;
-					(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
-				}
 
 				// print the results of the trade to stdout
 				if (prod_buys->order_id >= prod_sells->order_id) {
