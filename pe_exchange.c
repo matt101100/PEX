@@ -737,8 +737,8 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
-				long rounding = (long)(trading_fee + 0.5f);
-				trading_fee = (float)(rounding);
+				// long rounding = (long)(trading_fee + 0.5f);
+				// trading_fee = (float)(rounding);
 
 				// update the total trading fees sum
 				*total_trading_fees += trading_fee;
@@ -747,7 +747,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				(*matches)[prod_buys->trader_id][product_index][0] += prod_sells->quantity;
 				(*matches)[prod_buys->trader_id][product_index][1] -= trading_sum;
 				(*matches)[prod_sells->trader_id][product_index][0] -= prod_sells->quantity;
-				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum);
+				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
 
 				// get the traders involved in the match
 				trader *buyer = get_trader(-1, prod_buys->trader_id, head);
