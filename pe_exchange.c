@@ -427,6 +427,9 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		new_order->quantity = quantity;
 		new_order->price = price;
 
+		// update the maximum order ID tracker
+		curr_trader->max_order_id++;
+
 		// add the order to the corresponding list
 		if (cmd_type == BUY) {
 			// buy list is sorted in descending order of price
@@ -560,7 +563,6 @@ int find_matches(int ****list, order ***buys, order ***sells, trader *head, int 
 	}
 	return 0;
 }
-//test
 
 trader *get_trader(pid_t pid, int trader_id, trader *head) {
 	trader *current = head;
