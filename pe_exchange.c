@@ -349,8 +349,8 @@ int determine_cmd_type(char *message_in) {
 		return BUY;
 	} else if (strcmp(type, "SELL") == 0) {
 		return SELL;
-	} else if (strcmp(type, "AMMEND") == 0) {
-		return AMMEND;
+	} else if (strcmp(type, "AMEND") == 0) {
+		return AMEND;
 	} else if (strcmp(type, "CANCEL") == 0) {
 		return CANCEL;
 	}
@@ -555,7 +555,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		// write and signal the trader
 		int msg_len = snprintf(NULL, 0, "CANCELLED %d;", order_id);
 		char *msg = malloc(msg_len + 1);
-		snprintf(msg, msg_len + 1, "CANCELLED %d", order_id);
+		snprintf(msg, msg_len + 1, "CANCELLED %d;", order_id);
 		write(curr_trader->fd[1], msg, strlen(msg));
 		kill(curr_trader->process_id, SIGUSR1);
 		free(msg);

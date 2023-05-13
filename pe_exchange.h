@@ -18,7 +18,7 @@
 enum cmd_type {
     BUY = 0,
     SELL,
-    AMMEND,
+    AMEND,
     CANCEL
 };
 
