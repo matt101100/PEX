@@ -94,6 +94,7 @@ int main(int argc, char **argv) {
 
 	// event loop
 	double total_fees = 0;
+	int total_order_num = 0;
 	int trader_disconnect = 0; // counts number of traders disconnected
 	int cmd_type = -1;
 	// position of the most recently added product in the product strings array
@@ -113,7 +114,7 @@ int main(int argc, char **argv) {
 			read_and_format_message(curr_trader, message_in);
 			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, message_in);
 			cmd_type = determine_cmd_type(message_in);
-			res = execute_command(curr_trader, message_in, cmd_type, &prods, &product_index, &buys, &sells, head);
+			res = execute_command(curr_trader, message_in, cmd_type, &prods, &product_index, &total_order_num, &buys, &sells, head);
 			if (res) {
 				// notify trader of invalid message
 				write(curr_trader->fd[1], "INVALID;", strlen("INVALID;"));
@@ -357,7 +358,7 @@ int determine_cmd_type(char *message_in) {
 	return -1;
 }
 
-int execute_command(trader *curr_trader, char *message_in, int cmd_type, products* prods, int *product_index, order ***buys, order ***sells, trader *head) {
+int execute_command(trader *curr_trader, char *message_in, int cmd_type, products* prods, int *product_index, int *total_order_num, order ***buys, order ***sells, trader *head) {
 	if (curr_trader == NULL) {
 		return 1;
 	} else if (cmd_type == -1) {
@@ -436,6 +437,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		new_order->product_index = *product_index;
 		new_order->quantity = quantity;
 		new_order->price = price;
+		new_order->global_order_num = ++(*total_order_num);
 
 		// update the maximum order ID tracker
 		if (cmd_type == BUY) {
@@ -750,7 +752,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum);
 
 				// charge trader that made the newer with fees
-				if (prod_buys->order_id >= prod_sells->order_id) {
+				if (prod_buys->global_order_num > prod_sells->global_order_num) {
 					(*matches)[prod_buys->trader_id][product_index][1] -= trading_fee;
 				} else {
 					(*matches)[prod_sells->trader_id][product_index][1] -= trading_fee;

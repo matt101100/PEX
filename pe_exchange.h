@@ -32,6 +32,7 @@ typedef struct order order;
 struct order {
     int order_id;
     int trader_id; // trader that made the order
+    int global_order_num; // tracks the total number of orders ever made
     char *product;
     int product_index; // index of the product string in the string array
     int quantity;
@@ -127,7 +128,7 @@ int determine_cmd_type(char *message_in);
            the command to parse and execute.
  * Return: 0 on successful parsing and execution of the command, 1 otherwise
  */
-int execute_command(trader *curr_trader, char *message_in, int cmd_type, products *prods, int *product_index, order ***buys, order ***sells, trader *head);
+int execute_command(trader *curr_trader, char *message_in, int cmd_type, products *prods, int *product_index, int *total_order_num, order ***buys, order ***sells, trader *head);
 
 /*
  * Desc: Finds matching orders for product at product_index, prints the 
