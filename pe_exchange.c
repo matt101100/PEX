@@ -588,15 +588,6 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 		trading_fee = 0;
 		trading_sum = 0;
 		if (prod_buys->price >= prod_sells->price) {
-			// compute price of the trade, this is based on the older order
-			if (prod_buys->order_id > prod_sells->order_id) {
-				// buy order is older
-				trading_sum = prod_buys->price * prod_buys->quantity;
-			} else {
-				// sell order is older, or both have same order ID
-				trading_sum = prod_sells->price * prod_sells->quantity;
-			}
-
 			// match if the price of BUY was greater than the price of the SELL
 
 			/*
@@ -610,6 +601,14 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 			 */
 		
 			if (prod_buys->quantity < prod_sells->quantity) {
+				// compute price of the trade, this is based on the older order
+				if (prod_buys->order_id > prod_sells->order_id) {
+					// buy order is older
+					trading_sum = prod_buys->price * prod_buys->quantity;
+				} else {
+					// sell order is older, or both have same order ID
+					trading_sum = prod_sells->price * prod_sells->quantity;
+				}
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
 				long rounding = (long)(trading_fee + 0.5f);
@@ -654,6 +653,14 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				prod_buys = (*buys)[product_index]; // move to the next order
 
 			} else if (prod_buys->quantity == prod_sells->quantity) {
+								// compute price of the trade, this is based on the older order
+				if (prod_buys->order_id > prod_sells->order_id) {
+					// buy order is older
+					trading_sum = prod_buys->price * prod_buys->quantity;
+				} else {
+					// sell order is older, or both have same order ID
+					trading_sum = prod_sells->price * prod_sells->quantity;
+				}
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
 				long rounding = (long)(trading_fee + 0.5f);
@@ -694,6 +701,14 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				prod_sells = (*sells)[product_index]; // move to the next order
 
 			} else if (prod_buys->quantity > prod_sells->quantity) {
+								// compute price of the trade, this is based on the older order
+				if (prod_buys->order_id > prod_sells->order_id) {
+					// buy order is older
+					trading_sum = prod_buys->price * prod_buys->quantity;
+				} else {
+					// sell order is older, or both have same order ID
+					trading_sum = prod_sells->price * prod_sells->quantity;
+				}
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
 				long rounding = (long)(trading_fee + 0.5f);
