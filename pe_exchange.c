@@ -736,6 +736,8 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				trader *seller = get_trader(-1, prod_sells->trader_id, head);
 				if (buyer == NULL || seller == NULL) {
 					// either trader disconnected, their trade should be ignored
+					// move to the next order
+					prod_sells = ((*sells)[product_index])->next;
 					continue;
 				}
 
