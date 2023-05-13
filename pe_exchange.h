@@ -135,7 +135,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
  * Params: Pointers to the match, buy, sell and trader lists the index of the product
            to find matches for.
  */
-float find_matches(int ****matches, order ***buys, order ***sells, trader *head, int product_index);
+void find_matches(int ****matches, order ***buys, order ***sells, trader *head, double* total_trading_fees, int product_index);
 
 /*
  * Desc: Prints the orderbook to stdout.

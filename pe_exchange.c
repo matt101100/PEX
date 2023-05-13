@@ -93,7 +93,7 @@ int main(int argc, char **argv) {
 	}
 
 	// event loop
-	float total_fees = 0;
+	double total_fees = 0;
 	int trader_disconnect = 0; // counts number of traders disconnected
 	int cmd_type = -1;
 	// position of the most recently added product in the product strings array
@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
 				kill(curr_trader->process_id, SIGUSR1);
 				continue;
 			}
-			total_fees += find_matches(&matches, &buys, &sells, head, product_index);
+			find_matches(&matches, &buys, &sells, head, &total_fees, product_index);
 			display_orderbook(&prods, buys, sells);
 			display_positions(head, matches, &prods);
 
@@ -566,14 +566,14 @@ void display_positions(trader *head, int ***matches, products *prods) {
 	}
 }
 
-float find_matches(int ****matches, order ***buys, order ***sells, trader *head, int product_index) {
+void find_matches(int ****matches, order ***buys, order ***sells, trader *head, double *total_trading_fees, int product_index) {
 	// store the head of the BUY and SELL lists for the most recently added prod
 	order *prod_buys = (*buys)[product_index];
 	order *prod_sells = (*sells)[product_index];
 
 	if (prod_buys == NULL || prod_sells == NULL) {
 		// empty BUY or SELL list for this product
-		return 1;
+		return;
 	}
 
 	// variables used for writing to the traders
@@ -608,6 +608,9 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				trading_fee = trading_sum * FEE_PERCENTAGE;
 				long rounding = (long)(trading_fee + 0.5f);
 				trading_fee = (float)(rounding); // rounded to nearest decimal
+
+				// update the total trading fees sum
+				*total_trading_fees += trading_fee;
 
 				// reduce the amount of product avaliable for this sell order
 				prod_sells->quantity -= prod_buys->quantity;
@@ -659,6 +662,9 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				trading_fee = trading_sum * FEE_PERCENTAGE;
 				long rounding = (long)(trading_fee + 0.5f);
 				trading_fee = (float)(rounding);
+
+				// update the total trading fees sum
+				*total_trading_fees += trading_fee;
 
 				// cache the details of the trade
 				(*matches)[prod_buys->trader_id][product_index][0] += prod_buys->quantity;
@@ -716,6 +722,9 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				long rounding = (long)(trading_fee + 0.5f);
 				trading_fee = (float)(rounding);
 
+				// update the total trading fees sum
+				*total_trading_fees += trading_fee;
+
 				// cache the details of the trade
 				(*matches)[prod_buys->trader_id][product_index][0] += prod_sells->quantity;
 				(*matches)[prod_buys->trader_id][product_index][1] -= trading_sum;
@@ -756,7 +765,6 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 			break;
 		}
 	}
-	return trading_fee;
 }
 
 trader *get_trader(pid_t pid, int trader_id, trader *head) {
