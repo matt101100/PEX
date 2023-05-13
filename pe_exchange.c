@@ -751,7 +751,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				// snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
 				to_write = get_trader(-1, prod_sells->trader_id, head);
 				if (to_write == NULL) {
-					printf("here\n");
+					printf("%d\n", prod_sells->trader_id);
 				}
 				// write(to_write->fd[1], msg, strlen(msg));
 				// kill(to_write->process_id, SIGUSR1);
