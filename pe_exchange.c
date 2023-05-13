@@ -740,7 +740,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 
 			} else if (prod_buys->quantity > prod_sells->quantity) {
 				// compute price of the trade, this is based on the older order
-				if (prod_buys->order_id >= prod_sells->order_id) {
+				if (prod_buys->order_id > prod_sells->order_id) {
 					trading_sum = prod_sells->price * prod_sells->quantity;
 				} else {
 					trading_sum = prod_buys->price * prod_sells->quantity;
