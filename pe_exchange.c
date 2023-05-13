@@ -599,6 +599,10 @@ int find_matches(int ****list, order ***buys, order ***sells, trader *head, int 
 		
 			if (prod_buys->quantity < prod_sells->quantity) {
 				
+				// cache the details of the trade
+				matches[prod_buys->trader_id][product_index][0] += prod_buys->quantity;
+				matches[prod_buys->trader_id][product_index][1] += trading_sum;
+				matches[prod_sells->trader_id][product_index][]
 			}
 		}
 	}
