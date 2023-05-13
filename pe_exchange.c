@@ -120,9 +120,9 @@ int main(int argc, char **argv) {
 				kill(curr_trader->process_id, SIGUSR1);
 				continue;
 			}
+			total_fees += find_matches(&matches, &buys, &sells, head, product_index);
 			display_orderbook(&prods, buys, sells);
 			display_positions(head, matches, &prods);
-			total_fees += find_matches(&matches, &buys, &sells, head, product_index);
 
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
