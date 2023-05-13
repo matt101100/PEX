@@ -494,6 +494,14 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		int price;
 		sscanf(message_in, "%s %d %d %d", cmd, &order_id, &quantity, &price);
 
+		if (order_id < OID_MIN || order_id > OID_MAX) {
+			return 1;
+		} else if (quantity < ORDER_MIN || quantity > ORDER_MAX) {
+			return 1;
+		} else if (price < ORDER_MIN || price > ORDER_MAX) {
+			return 1;
+		}
+
 		// check BUY and SELL orders for every product
 		int break_flag = 0;
 		for (int i = 0; i < prods->size; i++) {
@@ -547,6 +555,10 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		char cmd[CMD_LEN];
 		int order_id;
 		sscanf(message_in, "%s %d", cmd, &order_id);
+		if (order_id < OID_MIN || order_id > OID_MAX) {
+			return 1;
+		}
+
 		// check BUY and SELL orders for every product
 		int break_flag = 0;
 		for (int i = 0; i < prods->size; i++) {
