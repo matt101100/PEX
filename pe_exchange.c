@@ -610,6 +610,7 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 			 */
 		
 			if (prod_buys->quantity < prod_sells->quantity) {
+				printf("here\n");
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
 				long rounding = (long)(trading_fee + 0.5f);
