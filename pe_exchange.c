@@ -583,7 +583,9 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 
 	double trading_fee = 0;
 	long trading_sum = 0; // tracks the total value of the trade
+	printf("here\n");
 	while (prod_buys != NULL && prod_sells != NULL) {
+		printf("here2\n");
 		// we match off the top of both lists as long as orders exist
 		trading_fee = 0;
 		trading_sum = 0;
@@ -725,10 +727,8 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				kill(to_write->process_id, SIGUSR1);
 				free(msg);
 			}
-			//tests
 		}
 	}
-
 	return trading_fee;
 }
 
