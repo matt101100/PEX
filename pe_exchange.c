@@ -122,6 +122,7 @@ int main(int argc, char **argv) {
 			}
 			display_orderbook(&prods, buys, sells);
 			display_positions(head, matches, &prods);
+			find_matches(&matches, &buys, &sells, head, product_index);
 
 		} else if (sigchld) {
 			sigchld = 0; // reset flag
@@ -566,11 +567,40 @@ void display_positions(trader *head, int ***matches, products *prods) {
 }
 
 int find_matches(int ****list, order ***buys, order ***sells, trader *head, int product_index) {
-	// we loop through the match cache and access each trader's position matrix
-	trader *curr = head;
-	while (curr != NULL) {
+	// store the head of the BUY and SELL lists for the most recently added prod
+	order *prod_buys = (*buys)[product_index];
+	order *prod_sells = (*sells)[product_index];
 
+	if (prod_buys == NULL || prod_sells == NULL) {
+		// empty BUY or SELL list for this product
+		return 1;
 	}
+
+	double trading_fee = 0;
+	double trading_sum = 0; // tracks the total value of the trade
+	int prod_sold = 0;
+	int prod_bought = 0;
+	while (prod_buys != NULL && prod_sells != NULL) {
+		// we match off the top of both lists as long as orders exist
+		trading_fee = 0;
+		trading_sum = 0;
+		if (prod_buys->price >= prod_sells->price) {
+			// match if the price of BUY was greater than the price of the SELL
+
+			/*
+			 * We have the following 3 cases for a match:
+			 	1. The qty to BUY is less than the qty to SELL
+					--> 
+				2. The qty to BUY is equal to the qty to SELL
+				3. The qty to BUY is greater than the qty to Sell
+			 */
+		
+			if (prod_buys->quantity < prod_sells->quantity) {
+				return 1;
+			}
+		}
+	}
+
 	return 0;
 }
 
