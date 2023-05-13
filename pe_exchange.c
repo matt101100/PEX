@@ -581,8 +581,8 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 	char *msg;
 	trader *to_write;
 
-	float trading_fee = 0;
-	int trading_sum = 0; // tracks the total value of the trade
+	double trading_fee = 0;
+	long trading_sum = 0; // tracks the total value of the trade
 	while (prod_buys != NULL && prod_sells != NULL) {
 		// we match off the top of both lists as long as orders exist
 		trading_fee = 0;
@@ -612,14 +612,14 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 			if (prod_buys->quantity < prod_sells->quantity) {
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
-				int rounding = (int)(trading_fee + 0.5f);
+				long rounding = (long)(trading_fee + 0.5f);
 				trading_fee = (float)(rounding); // rounded to nearest decimal
 
 				// cache the details of the trade
 				(*matches)[prod_buys->trader_id][product_index][0] += prod_buys->quantity;
 				(*matches)[prod_buys->trader_id][product_index][1] += trading_sum;
 				(*matches)[prod_sells->trader_id][product_index][0] -= prod_buys->quantity;
-				(*matches)[prod_sells->trader_id][product_index][1] += (int)(trading_sum - trading_fee);
+				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
 
 				// remove the BUY order from the list
 				order *to_delete = (*buys)[product_index];
@@ -628,7 +628,7 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				prod_buys = (*buys)[product_index]; // move to the next order
 
 				// print the results of the trade to stdout
-				printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%d, fee: $%.0f.\n",
+				printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
 				 		LOG_PREFIX, prod_buys->order_id, prod_buys->trader_id, 
 						prod_sells->order_id, prod_sells->trader_id, 
 						trading_sum, trading_fee);
@@ -651,9 +651,79 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				free(msg);
 
 			} else if (prod_buys->quantity == prod_sells->quantity) {
+				// compute fee of the trade
+				trading_fee = trading_sum * FEE_PERCENTAGE;
+				long rounding = (long)(trading_fee + 0.5f);
+				trading_fee = (float)(rounding);
 
+				// cache the details of the trade
+				(*matches)[prod_buys->trader_id][product_index][0] += prod_buys->quantity;
+				(*matches)[prod_buys->trader_id][product_index][1] -= trading_sum;
+				(*matches)[prod_sells->trader_id][product_index][0] -= prod_buys->quantity;
+				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
+
+				// remove both orders from their respective lists
+				order *to_delete = (*buys)[product_index];
+				(*buys)[product_index] = ((*buys)[product_index])->next;
+				free(to_delete);
+				prod_buys = (*buys)[product_index]; // move to the next order
+
+				to_delete = (*sells)[product_index];
+				(*sells)[product_index] = ((*sells)[product_index])->next;
+				free(to_delete);
+				prod_sells = (*sells)[product_index]; // move to the next order
+
+				// send fill messages to traders involved
+				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
+				msg = malloc(msg_len + 1);
+				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
+				to_write = get_trader(-1, prod_buys->trader_id, head);
+				write(to_write->fd[1], msg, strlen(msg));
+				kill(to_write->process_id, SIGUSR1);
+				free(msg);
+
+				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+				msg = malloc(msg_len + 1);
+				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+				to_write = get_trader(-1, prod_sells->trader_id, head);
+				write(to_write->fd[1], msg, strlen(msg));
+				kill(to_write->process_id, SIGUSR1);
+				free(msg);
 
 			} else if (prod_buys->quantity > prod_sells->quantity) {
+				// compute fee of the trade
+				trading_fee = trading_sum * FEE_PERCENTAGE;
+				long rounding = (long)(trading_fee + 0.5f);
+				trading_fee = (float)(rounding);
+
+				// cache the details of the trade
+				(*matches)[prod_buys->trader_id][product_index][0] += prod_buys->quantity;
+				(*matches)[prod_buys->trader_id][product_index][1] -= trading_sum;
+				(*matches)[prod_sells->trader_id][product_index][0] -= prod_sells->quantity;
+				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
+
+				// remove SELL order from the list
+				order *to_delete = (*sells)[product_index];
+				(*sells)[product_index] = ((*sells)[product_index])->next;
+				free(to_delete);
+				prod_buys = (*sells)[product_index]; // move to the next order
+
+				// send fill messages to traders involved
+				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
+				msg = malloc(msg_len + 1);
+				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
+				to_write = get_trader(-1, prod_buys->trader_id, head);
+				write(to_write->fd[1], msg, strlen(msg));
+				kill(to_write->process_id, SIGUSR1);
+				free(msg);
+
+				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+				msg = malloc(msg_len + 1);
+				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+				to_write = get_trader(-1, prod_sells->trader_id, head);
+				write(to_write->fd[1], msg, strlen(msg));
+				kill(to_write->process_id, SIGUSR1);
+				free(msg);
 
 			}
 		}
