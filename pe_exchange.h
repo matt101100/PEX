@@ -31,6 +31,7 @@ enum cmd_type {
 typedef struct order order;
 struct order {
     int order_id;
+    int trader_id; // trader that made the order
     char *product;
     int product_index; // index of the product string in the string array
     int quantity;
@@ -46,6 +47,7 @@ struct order {
 typedef struct trader trader;
 struct trader {
     int trader_id; // main identifier
+    int max_order_id; // ensures OIDs are consecutive
     pid_t process_id; // get this from the fork() call
     int fd[2]; // fd[0] = trader fifo, fd[1] = exchange fifo
     trader *next; // has a linked-list structure
@@ -84,6 +86,10 @@ void init_sigaction(struct sigaction *sa);
  */
 int init_product_list(char product_file[], products *prods);
 
+/*
+ * Desc: Initializes the matches matrix and sets all entries to default values.
+ * Params: The matches matrix, the number of traders and the number of products.
+ */
 void init_matches(int ****matches, int num_traders, int prods_size);
 
 /*
@@ -121,11 +127,18 @@ int determine_cmd_type(char *message_in);
  */
 int execute_command(trader *curr_trader, char *message_in, int cmd_type, products *prods, order ***buys, order ***sells, trader *head);
 
-int match_orders();
+/*
+ * Desc: Finds matching orders for product at product_index, prints the 
+         corresponding match message to stdout and notifies involved traders of
+         the trader.
+ * Params: Pointers to the match, buy, sell and trader lists the index of the product
+           to find matches for.
+ */
+int find_matches(int ****matches, order ***buys, order ***sells, trader *head, int product_index);
 
 /*
  * Desc: Prints the orderbook to stdout.
- * Params: Pointers to the products list, buy and sell orders..
+ * Params: Pointers to the products list, buy and sell orders.
  */
 void display_orderbook(products *prods, order **buys, order **sells);
 
@@ -141,12 +154,14 @@ int count_order_levels(order **list, int product_index);
  * Desc: Prints all unique orders for a specific product at product_index to
          stdout.
  * Params: A pointer to the order list, the product_index of the product to count
+           and a flag indicating that we are printing buy or sell orders
  */
 void display_orders(order **list, int product_index, int order_type);
 
 /*
  * Desc: Prints the positions of all traders to stdout.
- * Params: A pointer to the head of the traders list.
+ * Params: A pointer to the head of the traders list, the matches matrix and 
+           a pointer to the products struct.
  */
 void display_positions(trader *head, int ***matches, products *prods);
 
@@ -190,6 +205,10 @@ void free_trader_list(trader *head);
  */
 void free_order_list(order **order_list, products *prods);
 
+/*
+ * Desc: Frees all allocated dimensions used by the matches matrix.
+ * Param: The matches matrix, the number of traders and the number of products.
+ */
 void free_matches(int ***matches, int num_traders, int prods_size);
 
 /*

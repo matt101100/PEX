@@ -52,13 +52,35 @@ int main(int argc, char **argv) {
 		goto cleanup;
 	}
 
-	// order lists
+	/*
+	 * Order lists -- each index i stores the head of a linked list for the
+	   product associated with index i.
+	 * Buys are sorted in descending order ells are sorted in asscending order.
+	 * Indices are mapped from the products.txt input. Ex: if products
+	   are [GPU, CPU] then GPU --> 0, CPU --> 1, so buys[0] is the head of
+	   the buy GPU buy orders.
+	 */
 	order **buys = (order**)calloc(prods.size, sizeof(order*));
 	order **sells = (order**)calloc(prods.size, sizeof(order*));
 
-	// initialize the match matrix
+	// initialize the match cache
 	int ***matches = NULL;
 	init_matches(&matches, num_traders, prods.size);
+
+	/*
+	 * Explanation of how the 'match cache' works:
+	 		Each trader, i, has a num_products x 2 matrix associated to it.
+			Each index j represents an array of size 2 that stores the amount of
+			product j owned / owed by trader i and the amount of money owned / 
+			owed by trader i for product j. The quantity of product j is stored 
+			at index 0, and the value is stored at index 1.
+			For example, we have the product list [APPLES, STRAWBERRY] and 
+			two traders T0, T1. If you wanted to check how many APPLES T1 owns
+			you would access the match cache as follows: matches[1][0][0].
+			Breakdown: matches[1] --> access T1's matrix, matches[1][0] --> access
+			the product 0 (APPLES) position array, matches[1][0][0] --> access
+			the amount of APPLES owned by T1.
+	 */
 
 	// send MARKET OPEN; to all traders and signal SIGUSR1
 	trader *current = head;
@@ -265,6 +287,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		// initialize trader data fields
 		new_trader->trader_id = trader_id;
 		new_trader->process_id = forked_pid;
+		new_trader->max_order_id = 0;
 
 		// add the newly opened trader to the head of the list
 		new_trader->next = NULL;
@@ -356,6 +379,9 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			return 1;
 		} else if (price < ORDER_MIN || price > ORDER_MAX) {
 			return 1;
+		} else if (order_id > curr_trader->max_order_id + 1) {
+			// non-consecutive order ID
+			return 1;
 		}
 
 		// send appropriate message to all traders
@@ -395,6 +421,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		// make the new order
 		order *new_order = (order*)malloc(sizeof(order));
 		new_order->order_id = order_id;
+		new_order->trader_id = curr_trader->trader_id;
 		new_order->product = product;
 		new_order->product_index = product_index;
 		new_order->quantity = quantity;
@@ -523,6 +550,15 @@ void display_positions(trader *head, int ***matches, products *prods) {
 		printf("\n");
 		curr = curr->next;
 	}
+}
+
+int find_matches(int ****list, order ***buys, order ***sells, trader *head, int product_index) {
+	// we loop through the match cache and access each trader's position matrix
+	trader *curr = head;
+	while (curr != NULL) {
+
+	}
+	return 0;
 }
 
 trader *get_trader(pid_t pid, int trader_id, trader *head) {
