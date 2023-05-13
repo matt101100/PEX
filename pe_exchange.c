@@ -720,7 +720,7 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				(*matches)[prod_buys->trader_id][product_index][0] += prod_sells->quantity;
 				(*matches)[prod_buys->trader_id][product_index][1] -= trading_sum;
 				(*matches)[prod_sells->trader_id][product_index][0] -= prod_sells->quantity;
-				(*matches)[prod_sells->trader_id][product_index][1] += -(long)(trading_sum - trading_fee);
+				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
 
 				// print the results of the trade to stdout
 				printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
