@@ -551,6 +551,10 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 				break;
 			}
 		}
+		if (!break_flag) {
+			// no matching order was found
+			return 1;
+		}
 
 		// write and signal the trader
 		int msg_len = snprintf(NULL, 0, "CANCELLED %d;", order_id);
