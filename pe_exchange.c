@@ -729,9 +729,9 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 						trading_sum, trading_fee);
 
 				// send fill messages to traders involved
-				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
+				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
 				msg = malloc(msg_len + 1);
-				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
+				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
 				to_write = get_trader(-1, prod_buys->trader_id, head);
 				write(to_write->fd[1], msg, strlen(msg));
 				kill(to_write->process_id, SIGUSR1);
