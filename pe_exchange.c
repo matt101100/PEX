@@ -596,7 +596,7 @@ int find_matches(int ****list, order ***buys, order ***sells, trader *head, int 
 			 */
 		
 			if (prod_buys->quantity < prod_sells->quantity) {
-				return 1;
+				break;
 			}
 		}
 	}
