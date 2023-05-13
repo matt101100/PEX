@@ -610,7 +610,6 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 			 */
 		
 			if (prod_buys->quantity < prod_sells->quantity) {
-				printf("here\n");
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
 				long rounding = (long)(trading_fee + 0.5f);
@@ -637,9 +636,9 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				kill(to_write->process_id, SIGUSR1);
 				free(msg);
 
-				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_sells->order_id, prod_buys->quantity);
 				msg = malloc(msg_len + 1);
-				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_sells->quantity);
+				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_sells->order_id, prod_buys->quantity);
 				to_write = get_trader(-1, prod_sells->trader_id, head);
 				write(to_write->fd[1], msg, strlen(msg));
 				kill(to_write->process_id, SIGUSR1);
