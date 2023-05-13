@@ -621,14 +621,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				(*matches)[prod_buys->trader_id][product_index][0] += prod_buys->quantity;
 				(*matches)[prod_buys->trader_id][product_index][1] -= trading_sum;
 				(*matches)[prod_sells->trader_id][product_index][0] -= prod_buys->quantity;
-				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum);
-
-				// charge trader that made the newer with fees
-				if (prod_buys->order_id > prod_sells->order_id) {
-					(*matches)[prod_buys->trader_id][product_index][1] -= trading_fee;
-				} else {
-					(*matches)[prod_sells->trader_id][product_index][1] -= trading_fee;
-				}
+				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
 
 				// get the traders involved in the match
 				trader *buyer = get_trader(-1, prod_buys->trader_id, head);
@@ -687,14 +680,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				(*matches)[prod_buys->trader_id][product_index][0] += prod_buys->quantity;
 				(*matches)[prod_buys->trader_id][product_index][1] -= trading_sum;
 				(*matches)[prod_sells->trader_id][product_index][0] -= prod_sells->quantity;
-				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum);
-
-				// charge trader that made the newer with fees
-				if (prod_buys->order_id > prod_sells->order_id) {
-					(*matches)[prod_buys->trader_id][product_index][1] -= trading_fee;
-				} else {
-					(*matches)[prod_sells->trader_id][product_index][1] -= trading_fee;
-				}
+				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
 
 				// get the traders involved in the match
 				trader *buyer = get_trader(-1, prod_buys->trader_id, head);
@@ -740,7 +726,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 
 			} else if (prod_buys->quantity > prod_sells->quantity) {
 				// compute price of the trade, this is based on the older order
-				if (prod_buys->order_id > prod_sells->order_id) {
+				if (prod_buys->order_id >= prod_sells->order_id) {
 					trading_sum = prod_sells->price * prod_sells->quantity;
 				} else {
 					trading_sum = prod_buys->price * prod_sells->quantity;
@@ -764,7 +750,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum);
 
 				// charge trader that made the newer with fees
-				if (prod_buys->order_id > prod_sells->order_id) {
+				if (prod_buys->order_id >= prod_sells->order_id) {
 					(*matches)[prod_buys->trader_id][product_index][1] -= trading_fee;
 				} else {
 					(*matches)[prod_sells->trader_id][product_index][1] -= trading_fee;
