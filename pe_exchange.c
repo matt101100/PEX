@@ -612,7 +612,7 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 			if (prod_buys->quantity < prod_sells->quantity) {
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
-				long rounding = (long)(trading_fee + 0.5f);
+				long rounding = (long)(trading_fee + 0.5f);// tes
 				trading_fee = (float)(rounding); // rounded to nearest decimal
 
 				// reduce the amount of product avaliable for this sell order
