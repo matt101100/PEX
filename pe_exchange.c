@@ -688,9 +688,9 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				free(to_delete);
 				prod_buys = (*buys)[product_index]; // move to the next order
 
-				order *to_delete = (*sells)[product_index];
+				order *to_delete_sell = (*sells)[product_index];
 				(*sells)[product_index] = ((*sells)[product_index])->next;
-				free(to_delete);
+				free(to_delete_sell);
 				prod_sells = (*sells)[product_index]; // move to the next order
 
 			} else if (prod_buys->quantity > prod_sells->quantity) {
