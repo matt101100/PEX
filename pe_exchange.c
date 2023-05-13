@@ -737,8 +737,8 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
-				// long rounding = (long)(trading_fee + 0.5f);
-				// trading_fee = (float)(rounding);
+				long rounding = (long)(trading_fee + 0.5f);
+				trading_fee = (double)(rounding);
 
 				// update the total trading fees sum
 				*total_trading_fees += trading_fee;
