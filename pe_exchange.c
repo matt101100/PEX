@@ -556,6 +556,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		int msg_len = snprintf(NULL, 0, "CANCELLED %d;", order_id);
 		char *msg = malloc(msg_len + 1);
 		snprintf(msg, msg_len + 1, "CANCELLED %d", order_id);
+		free(msg);
 		write(curr_trader->fd[1], msg, strlen(msg));
 		kill(curr_trader->process_id, SIGUSR1);
 	}
