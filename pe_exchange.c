@@ -615,6 +615,9 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				long rounding = (long)(trading_fee + 0.5f);
 				trading_fee = (float)(rounding); // rounded to nearest decimal
 
+				// reduce the amount of product avaliable for this sell order
+				prod_sells->quantity -= prod_buys->quantity;
+
 				// cache the details of the trade
 				(*matches)[prod_buys->trader_id][product_index][0] += prod_buys->quantity;
 				(*matches)[prod_buys->trader_id][product_index][1] += trading_sum;
