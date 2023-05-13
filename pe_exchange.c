@@ -724,8 +724,8 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				write(to_write->fd[1], msg, strlen(msg));
 				kill(to_write->process_id, SIGUSR1);
 				free(msg);
-
 			}
+			//tests
 		}
 	}
 
