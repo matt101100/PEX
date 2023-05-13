@@ -621,17 +621,11 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				(*matches)[prod_sells->trader_id][product_index][0] -= prod_buys->quantity;
 				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
 
-				// remove the BUY order from the list
-				order *to_delete = (*buys)[product_index];
-				(*buys)[product_index] = ((*buys)[product_index])->next;
-				free(to_delete);
-				prod_buys = (*buys)[product_index]; // move to the next order
-
 				// print the results of the trade to stdout
-				// printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
-				//  		LOG_PREFIX, prod_buys->order_id, prod_buys->trader_id, 
-				// 		prod_sells->order_id, prod_sells->trader_id, 
-				// 		trading_sum, trading_fee);
+				printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
+				 		LOG_PREFIX, prod_buys->order_id, prod_buys->trader_id, 
+						prod_sells->order_id, prod_sells->trader_id, 
+						trading_sum, trading_fee);
 
 				// send fill messages to traders involved
 				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
@@ -649,6 +643,12 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				write(to_write->fd[1], msg, strlen(msg));
 				kill(to_write->process_id, SIGUSR1);
 				free(msg);
+
+				// remove the BUY order from the list
+				order *to_delete = (*buys)[product_index];
+				(*buys)[product_index] = ((*buys)[product_index])->next;
+				free(to_delete);
+				prod_buys = (*buys)[product_index]; // move to the next order
 
 			} else if (prod_buys->quantity == prod_sells->quantity) {
 				// compute fee of the trade
@@ -662,17 +662,6 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				(*matches)[prod_sells->trader_id][product_index][0] -= prod_buys->quantity;
 				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
 
-				// remove both orders from their respective lists
-				order *to_delete = (*buys)[product_index];
-				(*buys)[product_index] = ((*buys)[product_index])->next;
-				free(to_delete);
-				prod_buys = (*buys)[product_index]; // move to the next order
-
-				to_delete = (*sells)[product_index];
-				(*sells)[product_index] = ((*sells)[product_index])->next;
-				free(to_delete);
-				prod_sells = (*sells)[product_index]; // move to the next order
-
 				// send fill messages to traders involved
 				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
 				msg = malloc(msg_len + 1);
@@ -689,6 +678,17 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				write(to_write->fd[1], msg, strlen(msg));
 				kill(to_write->process_id, SIGUSR1);
 				free(msg);
+
+				// remove both orders from their respective lists
+				order *to_delete = (*buys)[product_index];
+				(*buys)[product_index] = ((*buys)[product_index])->next;
+				free(to_delete);
+				prod_buys = (*buys)[product_index]; // move to the next order
+
+				to_delete = (*sells)[product_index];
+				(*sells)[product_index] = ((*sells)[product_index])->next;
+				free(to_delete);
+				prod_sells = (*sells)[product_index]; // move to the next order
 
 			} else if (prod_buys->quantity > prod_sells->quantity) {
 				// compute fee of the trade
@@ -702,12 +702,6 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				(*matches)[prod_sells->trader_id][product_index][0] -= prod_sells->quantity;
 				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
 
-				// remove SELL order from the list
-				order *to_delete = (*sells)[product_index];
-				(*sells)[product_index] = ((*sells)[product_index])->next;
-				free(to_delete);
-				prod_buys = (*sells)[product_index]; // move to the next order
-
 				// send fill messages to traders involved
 				msg_len = snprintf(NULL, 0, "FILL %d %d;", prod_buys->order_id, prod_buys->quantity);
 				msg = malloc(msg_len + 1);
@@ -724,6 +718,12 @@ float find_matches(int ****matches, order ***buys, order ***sells, trader *head,
 				write(to_write->fd[1], msg, strlen(msg));
 				kill(to_write->process_id, SIGUSR1);
 				free(msg);
+
+				// remove SELL order from the list
+				order *to_delete = (*sells)[product_index];
+				(*sells)[product_index] = ((*sells)[product_index])->next;
+				free(to_delete);
+				prod_buys = (*sells)[product_index]; // move to the next order
 			}
 		} else {
 			// no trades possible
