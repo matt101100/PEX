@@ -701,9 +701,9 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				free(to_delete);
 				prod_buys = (*buys)[product_index]; // move to the next order
 
-				order *to_delete_sell = (*sells)[product_index];
+				to_delete = (*sells)[product_index];
 				(*sells)[product_index] = ((*sells)[product_index])->next;
-				free(to_delete_sell);
+				free(to_delete);
 				prod_sells = (*sells)[product_index]; // move to the next order
 
 			} else if (prod_buys->quantity > prod_sells->quantity) {
@@ -742,9 +742,6 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				msg = malloc(msg_len + 1);
 				snprintf(msg, msg_len + 1, "FILL %d %d;", prod_buys->order_id, prod_sells->quantity);
 				to_write = get_trader(-1, prod_buys->trader_id, head);
-				if (to_write == NULL) {
-					printf("here\n");
-				}
 				write(to_write->fd[1], msg, strlen(msg));
 				kill(to_write->process_id, SIGUSR1);
 				free(msg);
