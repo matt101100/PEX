@@ -732,7 +732,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 					trading_sum = prod_buys->price * prod_sells->quantity;
 				}
 
-				// reduce the amount of product avaliable for this sell order
+				// reduce the amount of product avaliable for this buy order
 				prod_buys->quantity -= prod_sells->quantity;
 
 				// compute fee of the trade
@@ -747,7 +747,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				(*matches)[prod_buys->trader_id][product_index][0] += prod_sells->quantity;
 				(*matches)[prod_buys->trader_id][product_index][1] -= trading_sum;
 				(*matches)[prod_sells->trader_id][product_index][0] -= prod_sells->quantity;
-				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum - trading_fee);
+				(*matches)[prod_sells->trader_id][product_index][1] += (long)(trading_sum);
 
 				// get the traders involved in the match
 				trader *buyer = get_trader(-1, prod_buys->trader_id, head);
