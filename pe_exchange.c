@@ -434,6 +434,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		new_order->order_id = order_id;
 		new_order->trader_id = curr_trader->trader_id;
 		new_order->product = product;
+		printf("%s\n", new_order->product);
 		new_order->product_index = *product_index;
 		new_order->quantity = quantity;
 		new_order->price = price;
