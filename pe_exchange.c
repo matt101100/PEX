@@ -118,6 +118,7 @@ int main(int argc, char **argv) {
 				kill(curr_trader->process_id, SIGUSR1);
 				continue;
 			}
+			//test
 			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, message_in);
 			cmd_type = determine_cmd_type(message_in);
 			res = execute_command(curr_trader, message_in, cmd_type, &prods, &product_index, &total_order_num, &buys, &sells, head);
@@ -327,7 +328,7 @@ int read_and_format_message(trader *curr_trader, char *message_in) {
 
 	// put the string into proper format
 	int delim_index = 0;
-    for (int i = 0; i < 256; i++) {
+    for (int i = 0; i < BUF_SIZE; i++) {
         // look for the ; delimiter
         if (message_in[i] == ';') {
             delim_index = i;
