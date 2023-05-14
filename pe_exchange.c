@@ -416,7 +416,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 				curr = curr->next;
 			}
 		}
-
+//test
 		// send appropriate message to all traders
 		int msg_len;
 		char *msg;
