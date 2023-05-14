@@ -1,4 +1,5 @@
 #include "pe_trader.h"
+#include <time.h>
 
 volatile sig_atomic_t sigusr1 = 0; // flag set when sigusr1 sent from exchange
 
@@ -39,16 +40,23 @@ int main(int argc, char ** argv) {
         return 1;
     }
 
-    // set up select
-    // fd_set readfds;
-    // FD_ZERO(&readfds);
-    // FD_SET(write_fd, &readfds);
+    sigset_t signalSet;
+    sigemptyset(&signalSet);
+    sigaddset(&signalSet, SIGUSR1);
 
-    // struct timeval timeout;
-    // timeout.tv_sec = 5;
-    // timeout.tv_usec = 0;
+    // Set up the timer for every 2 seconds
+    struct timespec interval;
+    interval.tv_sec = 2;
+    interval.tv_nsec = 0;
 
-    // int ready_fds;
+    // Start the timer
+    struct timespec remainingTime;
+    timer_t timerId;
+    timer_create(CLOCK_REALTIME, NULL, &timerId);
+    struct itimerspec timerSpec;
+    timerSpec.it_interval = interval;
+    timerSpec.it_value = interval;
+    timer_settime(timerId, 0, &timerSpec, NULL);
 
     // event loop:
     while (1) {
@@ -70,19 +78,17 @@ int main(int argc, char ** argv) {
 
         // Signal parent process that buy order has been sent
         kill(getppid(), SIGUSR1);
-        // while (!sigusr1) {
-        //     kill(getppid(), SIGUSR1);
-        //     ready_fds = select(write_fd + 1, &readfds, NULL, NULL, &timeout);
-        //     if (ready_fds > 0) {
-        //         if (FD_ISSET(write_fd, &readfds)) {
-        //             break;
-        //         }
-        //     }
-        //     usleep(100000);
-        // }
+        while (!sigusr1) {
+            int res = sigtimedwait(&signalSet, NULL, &remainingTime);
+            if (res == SIGUSR1) {
+                break;
+            }
+            kill(getppid(), SIGUSR1);
+        }
     }
 
     // clear buffers and delete fifos
+    timer_delete(timerId);
     fsync(read_fd);
     fsync(write_fd);
     close(read_fd);
