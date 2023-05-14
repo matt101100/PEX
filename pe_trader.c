@@ -1,5 +1,4 @@
 #include "pe_trader.h"
-#include <time.h>
 
 volatile sig_atomic_t sigusr1 = 0; // flag set when sigusr1 sent from exchange
 
@@ -40,24 +39,6 @@ int main(int argc, char ** argv) {
         return 1;
     }
 
-    sigset_t signalSet;
-    sigemptyset(&signalSet);
-    sigaddset(&signalSet, SIGUSR1);
-
-    // Set up the timer for every 2 seconds
-    struct timespec interval;
-    interval.tv_sec = 2;
-    interval.tv_nsec = 0;
-
-    // Start the timer
-    struct timespec remainingTime;
-    timer_t timerId;
-    timer_create(CLOCK_REALTIME, NULL, &timerId);
-    struct itimerspec timerSpec;
-    timerSpec.it_interval = interval;
-    timerSpec.it_value = interval;
-    timer_settime(timerId, 0, &timerSpec, NULL);
-
     // event loop:
     while (1) {
         // Wait for SIGUSR1 from parent process
@@ -78,17 +59,9 @@ int main(int argc, char ** argv) {
 
         // Signal parent process that buy order has been sent
         kill(getppid(), SIGUSR1);
-        while (!sigusr1) {
-            int res = sigtimedwait(&signalSet, NULL, &remainingTime);
-            if (res == SIGUSR1) {
-                break;
-            }
-            kill(getppid(), SIGUSR1);
-        }
     }
 
     // clear buffers and delete fifos
-    timer_delete(timerId);
     fsync(read_fd);
     fsync(write_fd);
     close(read_fd);
