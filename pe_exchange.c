@@ -726,32 +726,36 @@ int count_order_levels(order **list, int product_index) {
 }
 
 void display_orders(order **list, int product_index, int order_type) {
-	order *curr = list[product_index];
-	int count = 1;
-	long total_qty;
-	while (curr != NULL) {
-		order *runner = curr->next;
-		count = 1;
-		total_qty = curr->quantity;
-		while (runner != NULL && runner->quantity == curr->quantity && runner->price == curr->price) {
-			count++;
-			total_qty += runner->quantity;
-			runner = runner->next;
-		}
-		if (count > 1) {
-			if (order_type == BUY) {
-				printf("%s\t\tBUY %ld @ $%ld (%d orders)\n", LOG_PREFIX, total_qty, curr->price, count);
-			} else if (order_type == SELL) {
-				printf("%s\t\tSELL %ld @ $%ld (%d orders)\n", LOG_PREFIX, total_qty, curr->price, count);
+	if (order_type == BUY) {
+		order *curr = list[product_index];
+		int count = 1;
+		long total_qty;
+		while (curr != NULL) {
+			order *runner = curr->next;
+			count = 1;
+			total_qty = curr->quantity;
+			while (runner != NULL && runner->quantity == curr->quantity && runner->price == curr->price) {
+				count++;
+				total_qty += runner->quantity;
+				runner = runner->next;
 			}
-		} else if (count == 1) {
-			if (order_type == BUY) {
-				printf("%s\t\tBUY %ld @ $%ld (%d order)\n", LOG_PREFIX, total_qty, curr->price, count);
-			} else if (order_type == SELL) {
-				printf("%s\t\tSELL %ld @ $%ld (%d order)\n", LOG_PREFIX, total_qty, curr->price, count);
+			if (count > 1) {
+				if (order_type == BUY) {
+					printf("%s\t\tBUY %ld @ $%ld (%d orders)\n", LOG_PREFIX, total_qty, curr->price, count);
+				} else if (order_type == SELL) {
+					printf("%s\t\tSELL %ld @ $%ld (%d orders)\n", LOG_PREFIX, total_qty, curr->price, count);
+				}
+			} else if (count == 1) {
+				if (order_type == BUY) {
+					printf("%s\t\tBUY %ld @ $%ld (%d order)\n", LOG_PREFIX, total_qty, curr->price, count);
+				} else if (order_type == SELL) {
+					printf("%s\t\tSELL %ld @ $%ld (%d order)\n", LOG_PREFIX, total_qty, curr->price, count);
+				}
 			}
+			curr = runner;
 		}
-		curr = runner;
+	} else if (order_type == SELL) {
+		print_linked_list_reverse(list, product_index);
 	}
 }
 
@@ -1065,6 +1069,59 @@ int get_product_index(products *prods, char *product) {
 	}
 
 	return -1;
+}
+
+void print_linked_list_reverse(order **list, int product_index) {
+	order *reversed_head = NULL;
+
+	// reverse the sell orders
+	order *current = list[product_index];
+	while (current != NULL) {
+		// make a new node for the reversed list and copy all data fields
+		order *new = (order*)malloc(sizeof(order));
+		new->order_id = current->order_id;
+		new->trader_id = current->trader_id;
+		new->global_order_num = current->global_order_num;
+		new->product = current->product;
+		new->product_index = current->product_index;
+		new->quantity = current->quantity;
+		new->price = current->price;
+	
+		// update next and head pointers so reversed order is ensure
+		new->next = reversed_head;
+		reversed_head = new;
+
+		current = current->next;
+	}
+
+	// print the sell orders to stdout
+	order *reversed_curr = reversed_head;
+	int count;
+	long total_qty;
+	while (reversed_curr != NULL) {
+		order *runner = reversed_curr->next;
+		count = 1;
+		total_qty = reversed_curr->quantity;
+		while (runner != NULL && runner->quantity == reversed_curr->quantity && runner->price == reversed_curr->price) {
+			count++;
+			total_qty += runner->quantity;
+			runner = runner->next;
+		}
+		if (count > 1) {
+			printf("%s\t\tSELL %ld @ $%ld (%d orders)\n", LOG_PREFIX, total_qty, reversed_curr->price, count);
+		} else if (count == 1) {
+			printf("%s\t\tSELL %ld @ $%ld (%d order)\n", LOG_PREFIX, total_qty, reversed_curr->price, count);
+		}
+		reversed_curr = runner;
+	}
+
+	// delete the reversed clone
+	order *temp;
+	while (reversed_head != NULL) {
+		temp = reversed_head;
+		reversed_head = reversed_head->next;
+		free(temp);
+	}
 }
 
 void free_structs(products *prods, trader *head, order **buys, order **sells) {
