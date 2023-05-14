@@ -752,7 +752,7 @@ void display_orders(order **list, int product_index, int order_type) {
 			curr = runner;
 		}
 	} else if (order_type == SELL) {
-		print_linked_list_reverse(list, product_index);
+		print_sell_orders_reverse(list, product_index);
 	}
 }
 
@@ -1068,7 +1068,7 @@ int get_product_index(products *prods, char *product) {
 	return -1;
 }
 
-void print_linked_list_reverse(order **list, int product_index) {
+void print_sell_orders_reverse(order **list, int product_index) {
 	order *reversed_head = NULL;
 
 	// reverse the sell orders

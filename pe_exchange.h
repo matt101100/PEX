@@ -185,7 +185,7 @@ int get_product_index(products *prods, char *product);
  * Desc: Used specifically for printing the sell order list in reverse order.
  * Params: The list to loop through, the product index
  */
-void print_linked_list_reverse(order **list, int product_index);
+void print_sell_orders_reverse(order **list, int product_index);
 
 /*
  * Desc: calls all free functions to free allocated memory used for the 
