@@ -894,10 +894,10 @@ void find_matches(long ****matches, order ***buys, order ***sells, trader *head,
 	// store the head of the BUY and SELL lists for the most recently added prod
 	order *prod_buys = (*buys)[product_index];
 	order *prod_sells = (*sells)[product_index];
-	printf("here\n");
 
 	if (prod_buys == NULL || prod_sells == NULL) {
 		// empty BUY or SELL list for this product
+		printf("here\n");
 		return;
 	}
 
