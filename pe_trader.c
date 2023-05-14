@@ -39,6 +39,17 @@ int main(int argc, char ** argv) {
         return 1;
     }
 
+    // set up select
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(write_fd, &readfds);
+
+    struct timeval timeout;
+    timeout.tv_sec = 5;
+    timeout.tv_usec = 0;
+
+    int ready_fds;
+
     // event loop:
     while (1) {
         // Wait for SIGUSR1 from parent process
@@ -59,9 +70,12 @@ int main(int argc, char ** argv) {
 
         // Signal parent process that buy order has been sent
         while (!sigusr1) {
-            int ret = kill(getppid(), SIGUSR1);
-            if (!ret) {
-                break;
+            kill(getppid(), SIGUSR1);
+            ready_fds = select(write_fd + 1, &readfds, NULL, NULL, &timeout);
+            if (ready_fds > 0) {
+                if (FD_ISSET(write_fd, &readfds)) {
+                    break;
+                }
             }
             sleep(120);
         }

@@ -2,6 +2,8 @@
 #define PE_TRADER_H
 
 #include "pe_common.h"
+#include <sys/time.h>
+#include <sys/select.h>
 
 #define BUY "BUY %d %s %d %d;"
 #define SELL "SELL %d %s %d %d;"
