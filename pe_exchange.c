@@ -781,10 +781,17 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				trader *seller = get_trader(-1, prod_sells->trader_id, head);
 
 				// print the results of the trade to stdout
-				printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
+				if (prod_buys->global_order_num > prod_sells->global_order_num) {
+					printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
+				 		LOG_PREFIX, prod_sells->order_id, prod_sells->trader_id, 
+						prod_buys->order_id, prod_buys->trader_id, 
+						trading_sum, trading_fee);
+				} else {
+					printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
 				 		LOG_PREFIX, prod_buys->order_id, prod_buys->trader_id, 
 						prod_sells->order_id, prod_sells->trader_id, 
 						trading_sum, trading_fee);
+				}
 
 				// send fill messages to traders involved
 				if (!(buyer->disconnected)) {
@@ -847,10 +854,17 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				trader *seller = get_trader(-1, prod_sells->trader_id, head);
 
 				// print the results of the trade to stdout
-				printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
+				if (prod_buys->global_order_num > prod_sells->global_order_num) {
+					printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
+				 		LOG_PREFIX, prod_sells->order_id, prod_sells->trader_id, 
+						prod_buys->order_id, prod_buys->trader_id, 
+						trading_sum, trading_fee);
+				} else {
+					printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
 				 		LOG_PREFIX, prod_buys->order_id, prod_buys->trader_id, 
 						prod_sells->order_id, prod_sells->trader_id, 
 						trading_sum, trading_fee);
+				}
 
 				// send fill messages to traders involved
 				if (!(buyer->disconnected)) {
