@@ -186,11 +186,11 @@ int init_product_list(char products_file[], products *prods) {
 		return 1;
 	}
 
-	char line[PRODUCT_STR_LEN]; // holds a single product string
+	char line[PRODUCT_STR_LEN + 1]; // holds a single product string
 	int count = 0;
 	prods->product_strings = malloc(prods->size * sizeof(char*));
 	// read each product string into array
-	while (fgets(line, PRODUCT_STR_LEN, fp) != NULL) {
+	while (fgets(line, PRODUCT_STR_LEN + 1, fp) != NULL) {
 		line[strcspn(line, "\n")] = '\0'; // remove trailing newline
 
 		char *new_line = malloc(strlen(line) + 1);
