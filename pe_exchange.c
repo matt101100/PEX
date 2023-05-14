@@ -524,6 +524,18 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		long price;
 		sscanf(message_in, "%s %d %ld %ld", cmd, &order_id, &quantity, &price);
 
+		// hacky way to ignore trailing arguments
+		char qty_buf[BUF_SIZE];
+		char price_buf[BUF_SIZE];
+		char oid_buf[BUF_SIZE];
+		sprintf(qty_buf, "%ld", quantity);
+		sprintf(price_buf, "%ld", price);
+		sprintf(oid_buf, "%d", order_id);
+		long total_len = strlen(cmd) + strlen(qty_buf) + strlen(price_buf) + strlen(oid_buf) + 4;
+		if (total_len < strlen(message_in)) {
+			return 1;
+		}
+
 		if (order_id < OID_MIN || order_id > OID_MAX) {
 			return 1;
 		} else if (quantity < ORDER_MIN || quantity > ORDER_MAX) {
@@ -678,6 +690,16 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		int order_id;
 		sscanf(message_in, "%s %d", cmd, &order_id);
 		if (order_id < OID_MIN || order_id > OID_MAX) {
+			return 1;
+		}
+
+		// hacky way to ignore trailing arguments
+		char oid_buf[BUF_SIZE];
+		sprintf(qty_buf, "%ld", quantity);
+		sprintf(price_buf, "%ld", price);
+		sprintf(oid_buf, "%d", order_id);
+		long total_len = strlen(cmd) + strlen(oid_buf) + 4;
+		if (total_len < strlen(message_in)) {
 			return 1;
 		}
 
