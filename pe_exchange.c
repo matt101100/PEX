@@ -597,7 +597,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 				}
 				curr = curr->next;
 			}
-
+//test
 			if (break_flag) {
 				break;
 			}
