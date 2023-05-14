@@ -735,11 +735,11 @@ void display_orders(order **list, int product_index, int order_type) {
 			count = 1;
 			total_qty = curr->quantity;
 			while (runner != NULL && runner->quantity == curr->quantity && runner->price == curr->price) {
+				printf("here\n");
 				count++;
 				total_qty += runner->quantity;
 				runner = runner->next;
 			}
-			printf("here\n");
 			if (count > 1) {
 				printf("%s\t\tBUY %ld @ $%ld (%d orders)\n", LOG_PREFIX, total_qty, curr->price, count);
 			} else if (count == 1) {
