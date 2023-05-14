@@ -58,7 +58,10 @@ int main(int argc, char ** argv) {
         }
 
         // Signal parent process that buy order has been sent
-        kill(getppid(), SIGUSR1);
+        while (!sigusr1) {
+            kill(getppid(), SIGUSR1);
+            sleep(5);
+        }
     }
 
     // clear buffers and delete fifos
