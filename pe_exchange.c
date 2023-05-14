@@ -213,11 +213,11 @@ int init_product_list(char products_file[], products *prods) {
 }
 
 void init_matches(int ****matches, int num_traders, int prods_size) {
-	*matches = (int***)malloc(num_traders * sizeof(int**));
+	*matches = (long***)malloc(num_traders * sizeof(long**));
 	for (int i = 0; i < num_traders; i++) {
-		(*matches)[i] = (int**)calloc(prods_size, sizeof(int*));
+		(*matches)[i] = (long**)calloc(prods_size, sizeof(long*));
 		for (int j = 0; j < prods_size; j++) {
-			(*matches)[i][j] = (int*)calloc(2, sizeof(long));
+			(*matches)[i][j] = (long*)calloc(2, sizeof(long));
 		}
 	}
 }
@@ -584,8 +584,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			kill(cursor->process_id, SIGUSR1);
 			cursor = cursor->next;
 		}
-		//tests
-
 
 	} else if (cmd_type == CANCEL) {
 		char cmd[CMD_LEN];
