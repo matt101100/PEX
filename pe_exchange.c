@@ -118,7 +118,6 @@ int main(int argc, char **argv) {
 				kill(curr_trader->process_id, SIGUSR1);
 				continue;
 			}
-			//test
 			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, message_in);
 			cmd_type = determine_cmd_type(message_in);
 			res = execute_command(curr_trader, message_in, cmd_type, &prods, &product_index, &total_order_num, &buys, &sells, head);
@@ -396,6 +395,26 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		} else if (order_id != curr_trader->max_order_id) {
 			// non-consecutive order ID
 			return 1;
+		}
+
+		// check that OID is not a duplicate
+		if (cmd_type == BUY) {
+			order *curr = (*buys)[*product_index];
+			while (curr != NULL) {
+				if (curr->order_id == order_id) {
+					return 1;
+				}
+				curr = curr->next;
+			}
+
+		} else if (cmd_type == SELL) {
+			order *curr = (*sells)[*product_index];
+			while (curr != NULL) {
+				if (curr->order_id == order_id) {
+					return 1;
+				}
+				curr = curr->next;
+			}
 		}
 
 		// send appropriate message to all traders
