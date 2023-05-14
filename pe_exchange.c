@@ -897,7 +897,6 @@ void find_matches(long ****matches, order ***buys, order ***sells, trader *head,
 
 	if (prod_buys == NULL || prod_sells == NULL) {
 		// empty BUY or SELL list for this product
-		printf("here\n");
 		return;
 	}
 
