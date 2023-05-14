@@ -731,16 +731,13 @@ void display_orders(order **list, int product_index, int order_type) {
 		int count = 1; // orders with identical quantity and price (same level)
 		long total_qty;
 		while (curr != NULL) {
-			order *runner = curr->next;
+			order *runner = curr
 			count = 1;
 			total_qty = curr->quantity;
 			while (runner != NULL && runner->quantity == curr->quantity && runner->price == curr->price) {
 				count++;
 				total_qty += runner->quantity;
 				runner = runner->next;
-			}
-			if (runner == NULL) {
-				printf("here\n");
 			}
 			if (count > 1) {
 				printf("%s\t\tBUY %ld @ $%ld (%d orders)\n", LOG_PREFIX, total_qty, curr->price, count);
