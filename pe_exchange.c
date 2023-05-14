@@ -531,7 +531,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		sprintf(qty_buf, "%ld", quantity);
 		sprintf(price_buf, "%ld", price);
 		sprintf(oid_buf, "%d", order_id);
-		long total_len = strlen(cmd) + strlen(qty_buf) + strlen(price_buf) + strlen(oid_buf) + 4;
+		long total_len = strlen(cmd) + strlen(qty_buf) + strlen(price_buf) + strlen(oid_buf) + 3;
 		if (total_len < strlen(message_in)) {
 			return 1;
 		}
@@ -696,7 +696,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		// hacky way to ignore trailing arguments
 		char oid_buf[BUF_SIZE];
 		sprintf(oid_buf, "%d", order_id);
-		long total_len = strlen(cmd) + strlen(oid_buf) + 4;
+		long total_len = strlen(cmd) + strlen(oid_buf) + 1;
 		if (total_len < strlen(message_in)) {
 			return 1;
 		}
