@@ -608,9 +608,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 						break;
 					} else {
 						// order is not head of list
-						if (prev == NULL) {
-							printf("here\n");
-						}
 						prev->next = curr->next;
 						strcpy(product, prods->product_strings[i]);
 						free(curr);
@@ -619,6 +616,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 						break;
 					}
 				}
+				prev = curr;
 				curr = curr->next;
 			}
 
@@ -651,6 +649,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 						break;
 					}
 				}
+				prev = curr;
 				curr = curr->next;
 			}
 
