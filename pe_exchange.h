@@ -93,7 +93,7 @@ int init_product_list(char product_file[], products *prods);
  * Desc: Initializes the matches matrix and sets all entries to default values.
  * Params: The matches matrix, the number of traders and the number of products.
  */
-void init_matches(int ****matches, int num_traders, int prods_size);
+void init_matches(long ****matches, int num_traders, int prods_size);
 
 /*
  * Desc: Creates named pipes, launches trader process and connects to the
@@ -137,7 +137,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
  * Params: Pointers to the match, buy, sell and trader lists the index of the product
            to find matches for.
  */
-void find_matches(int ****matches, order ***buys, order ***sells, trader *head, double *total_trading_fees, int product_index);
+void find_matches(long ****matches, order ***buys, order ***sells, trader *head, double *total_trading_fees, int product_index);
 
 /*
  * Desc: Prints the orderbook to stdout.
@@ -166,7 +166,7 @@ void display_orders(order **list, int product_index, int order_type);
  * Params: A pointer to the head of the traders list, the matches matrix and 
            a pointer to the products struct.
  */
-void display_positions(trader *head, int ***matches, products *prods);
+void display_positions(trader *head, long ***matches, products *prods);
 
 /*
  * Desc: Gets the trader with matching PID or trader ID.
@@ -212,7 +212,7 @@ void free_order_list(order **order_list, products *prods);
  * Desc: Frees all allocated dimensions used by the matches matrix.
  * Param: The matches matrix, the number of traders and the number of products.
  */
-void free_matches(int ***matches, int num_traders, int prods_size);
+void free_matches(long ***matches, int num_traders, int prods_size);
 
 /*
  * Desc: Closes and deletes FIFOs, frees memory used by the trader with matching

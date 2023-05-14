@@ -763,14 +763,14 @@ void display_orders(order **list, int product_index, int order_type) {
 	}
 }
 
-void display_positions(trader *head, int ***matches, products *prods) {
+void display_positions(trader *head, long ***matches, products *prods) {
 	// loop through and print each trader's positions for each product
 	printf("%s\t--POSITIONS--\n", LOG_PREFIX);
 	trader *curr = head;
 	while (curr != NULL) {
 		printf("%s\tTrader %d: ", LOG_PREFIX, curr->trader_id);
 		for (int i = 0; i < prods->size; i++) {
-			printf("%s %d ($%d)", prods->product_strings[i], matches[curr->trader_id][i][0], matches[curr->trader_id][i][1]);
+			printf("%s %ld ($%ld)", prods->product_strings[i], matches[curr->trader_id][i][0], matches[curr->trader_id][i][1]);
 			if (i != prods->size - 1) {
 				printf(", ");
 			}
@@ -780,7 +780,7 @@ void display_positions(trader *head, int ***matches, products *prods) {
 	}
 }
 
-void find_matches(int ****matches, order ***buys, order ***sells, trader *head, double *total_trading_fees, int product_index) {
+void find_matches(long ****matches, order ***buys, order ***sells, trader *head, double *total_trading_fees, int product_index) {
 	// store the head of the BUY and SELL lists for the most recently added prod
 	order *prod_buys = (*buys)[product_index];
 	order *prod_sells = (*sells)[product_index];
@@ -1111,7 +1111,7 @@ void free_order_list(order **order_list, products *prods) {
 	free(order_list);
 }
 
-void free_matches(int ***matches, int num_traders, int prods_size) {
+void free_matches(long ***matches, int num_traders, int prods_size) {
 	for (int i = 0; i < num_traders; i++) {
 		for (int j = 0; j < prods_size; j++) {
 			free(matches[i][j]);
