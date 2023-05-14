@@ -111,7 +111,13 @@ int main(int argc, char **argv) {
 
 			// parse input of trader that sent sigusr1 and return corresponding output
 			curr_trader = get_trader(pid, -1, head);
-			read_and_format_message(curr_trader, message_in);
+			res = read_and_format_message(curr_trader, message_in);
+			if (res) {
+				// notify trader of invalid message
+				write(curr_trader->fd[1], "INVALID;", strlen("INVALID;"));
+				kill(curr_trader->process_id, SIGUSR1);
+				continue;
+			}
 			printf("%s [T%d] Parsing command: <%s>\n", LOG_PREFIX, curr_trader->trader_id, message_in);
 			cmd_type = determine_cmd_type(message_in);
 			res = execute_command(curr_trader, message_in, cmd_type, &prods, &product_index, &total_order_num, &buys, &sells, head);
@@ -250,7 +256,6 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		// create the fifos and print corresponding creation notification
 		int res = mkfifo(exchange_fifo_path, 0666);
 		if (res < 0) {
-			printf("here2\n");
 			free(exchange_fifo_path);
 			free(trader_fifo_path);
 			return 1;
@@ -259,7 +264,6 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 
 		res = mkfifo(trader_fifo_path, 0666);
 		if (res < 0) {
-			printf("here\n");
 			free(exchange_fifo_path);
 			free(trader_fifo_path);
 			return 1;
