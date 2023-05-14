@@ -77,7 +77,7 @@ int main(int argc, char ** argv) {
                     break;
                 }
             }
-            usleep(1);
+            usleep(100000);
         }
     }
 
