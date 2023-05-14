@@ -38,7 +38,6 @@ struct order {
     long quantity;
     long price;
     order *next;
-    order *prev;
 };
 
 /*
