@@ -560,6 +560,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					curr->global_order_num = ++(*total_order_num);
 					curr->quantity = quantity;
 					curr->price = price;
+					
 
 					// remove the updated order from the list
 					if (curr == (*buys)[i]) {
@@ -591,7 +592,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 
 					strcpy(product, prods->product_strings[i]);
 					break_flag = 1;
-					order_flag = 0;
+					order_flag = 1;
 					break;
 				}
 				curr = curr->next;
