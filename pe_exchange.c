@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 	order **sells = (order**)calloc(prods.size, sizeof(order*));
 
 	// initialize the match cache
-	int ***matches = NULL;
+	long ***matches = NULL;
 	init_matches(&matches, num_traders, prods.size);
 
 	/*
@@ -212,7 +212,7 @@ int init_product_list(char products_file[], products *prods) {
 	return 0;
 }
 
-void init_matches(int ****matches, int num_traders, int prods_size) {
+void init_matches(long ****matches, int num_traders, int prods_size) {
 	*matches = (long***)malloc(num_traders * sizeof(long**));
 	for (int i = 0; i < num_traders; i++) {
 		(*matches)[i] = (long**)calloc(prods_size, sizeof(long*));
