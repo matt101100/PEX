@@ -285,7 +285,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		trader *new_trader = malloc(sizeof(trader));
 		new_trader->fd[1] = open(exchange_fifo_path, O_WRONLY);
 		printf("%s Connected to %s\n", LOG_PREFIX, exchange_fifo_path);
-		new_trader->fd[0] = open(trader_fifo_path, O_RDONLY);
+		new_trader->fd[0] = open(trader_fifo_path, O_RDONLY | O_NONBLOCK);
 		printf("%s Connected to %s\n", LOG_PREFIX, trader_fifo_path);
 		if (new_trader->fd[0] < 0 || new_trader->fd[1] < 0) {
 			return 1;
@@ -808,7 +808,6 @@ void display_orders(order **list, int product_index, int order_type) {
 	} else if (order_type == SELL) {
 		print_sell_orders_reverse(list, product_index);
 	}
-	//test
 }
 
 void display_positions(trader *head, long ***matches, products *prods) {
