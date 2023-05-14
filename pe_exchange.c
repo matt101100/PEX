@@ -475,7 +475,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			} else {
 				// insert between prev and current
 				prev->next = new_order;
-				new_order->prev = prev;
 				new_order->next = curr;
 			}
 		}
