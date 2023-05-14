@@ -373,23 +373,18 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		long price;
 		int res = sscanf(message_in, "%s %d %s %ld %ld", cmd, &order_id, product, &quantity, &price);
 		if (res < 5) {
-			printf("here\n");
 			return 1;
 		}
 
 		// validate order
 		*product_index = get_product_index(prods, product);
 		if (*product_index == -1) {
-			printf("here1\n");
 			return 1;
 		} else if (order_id < OID_MIN || order_id > OID_MAX) {
-			printf("here2\n");
 			return 1;
 		} else if (quantity < ORDER_MIN || quantity > ORDER_MAX) {
-			printf("here3\n");
 			return 1;
 		} else if (price < ORDER_MIN || price > ORDER_MAX) {
-			printf("here4\n");
 			return 1;
 		} else if (order_id > curr_trader->max_order_id + 1 || order_id < curr_trader->max_order_id) {
 			// non-consecutive order ID
