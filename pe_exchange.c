@@ -557,7 +557,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			while (curr != NULL) {
 				if (curr->trader_id == curr_trader->trader_id && curr->order_id == order_id) {
 					// update the qty and price
-					curr->global_order_num = (*total_order_num)++;
+					curr->global_order_num = ++(*total_order_num);
 					curr->quantity = quantity;
 					curr->price = price;
 
@@ -605,7 +605,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			while (curr != NULL) {
 				if (curr->trader_id == curr_trader->trader_id && curr->order_id == order_id) {
 					// update qty and price
-					curr->global_order_num = (*total_order_num)++;
+					curr->global_order_num = ++(*total_order_num);
 					curr->quantity = quantity;
 					curr->price = price;
 
