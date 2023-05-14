@@ -437,11 +437,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 
 		// update the maximum order ID tracker
 		curr_trader->max_order_id++;
-		// if (cmd_type == BUY) {
-		// 	curr_trader->max_buy_order_id++;
-		// } else if (cmd_type == SELL) {
-		// 	curr_trader->max_sell_order_id++;
-		// }
 
 		// add the order to the corresponding list
 		if (cmd_type == BUY) {
