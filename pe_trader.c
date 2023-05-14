@@ -62,6 +62,7 @@ int main(int argc, char ** argv) {
             kill(getppid(), SIGUSR1);
             usleep(1);
         }
+        //test
     }
 
     // clear buffers and delete fifos
