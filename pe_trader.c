@@ -69,16 +69,17 @@ int main(int argc, char ** argv) {
         }
 
         // Signal parent process that buy order has been sent
-        while (!sigusr1) {
-            kill(getppid(), SIGUSR1);
-            ready_fds = select(write_fd + 1, &readfds, NULL, NULL, &timeout);
-            if (ready_fds > 0) {
-                if (FD_ISSET(write_fd, &readfds)) {
-                    break;
-                }
-            }
-            usleep(100000);
-        }
+        kill(getppid(), SIGUSR1);
+        // while (!sigusr1) {
+        //     kill(getppid(), SIGUSR1);
+        //     ready_fds = select(write_fd + 1, &readfds, NULL, NULL, &timeout);
+        //     if (ready_fds > 0) {
+        //         if (FD_ISSET(write_fd, &readfds)) {
+        //             break;
+        //         }
+        //     }
+        //     usleep(100000);
+        // }
     }
 
     // clear buffers and delete fifos
