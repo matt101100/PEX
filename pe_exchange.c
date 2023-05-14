@@ -433,8 +433,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		order *new_order = (order*)malloc(sizeof(order));
 		new_order->order_id = order_id;
 		new_order->trader_id = curr_trader->trader_id;
-		// new_order->product = product;
-		strcpy(new_order->product, product);
+		new_order->product = product;
 		new_order->product_index = *product_index;
 		new_order->quantity = quantity;
 		new_order->price = price;
@@ -516,7 +515,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					curr->quantity = quantity;
 					curr->price = price;
 					curr->global_order_num = ++(*total_order_num);
-					strcpy(product, curr->product);
+					strcpy(product, prods->product_strings[i]);
 					break_flag = 1;
 					order_flag = 0;
 					break;
@@ -611,9 +610,9 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					if (curr == (*buys)[i]) {
 						// order to remove is the head
 						(*buys)[i] = curr->next;
-						printf("%s\n", temp->product);
+						printf("%s\n", prods->product_strings[i]);
 						printf("%s\n", product);
-						strcpy(product, temp->product);
+						strcpy(product, prods->product_strings[i]);
 						printf("%s\n", product);
 						free(temp);
 						break_flag = 1;
