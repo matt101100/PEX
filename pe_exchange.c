@@ -505,7 +505,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		// check BUY and SELL orders for every product
 		int break_flag = 0;
 		int order_flag = -1; // 0 --> BUY, 1 --> SELL
-		char product[PRODUCT_STR_LEN];
+		char product_str[PRODUCT_STR_LEN];
 		for (int i = 0; i < prods->size; i++) {
 			order *curr = (*buys)[i];
 			while (curr != NULL) {
@@ -514,7 +514,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					curr->quantity = quantity;
 					curr->price = price;
 					curr->global_order_num = ++(*total_order_num);
-					strcpy(product, curr->product);
+					strcpy(product_str, curr->product);
 					break_flag = 1;
 					order_flag = 0;
 					break;
@@ -533,7 +533,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					curr->quantity = quantity;
 					curr->price = price;
 					curr->global_order_num = ++(*total_order_num);
-					strcpy(product, curr->product);
+					strcpy(product_str, curr->product);
 					break_flag = 1;
 					order_flag = 1;
 					break;
@@ -566,16 +566,16 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 				// let the other traders now about the new order
 				if (!order_flag) {
 					// send MARKET BUY
-					msg_len = snprintf(NULL, 0, "MARKET BUY %s %d %d;", product, quantity, price);
+					msg_len = snprintf(NULL, 0, "MARKET BUY %s %d %d;", product_str, quantity, price);
 					msg = malloc(msg_len + 1);
-					snprintf(msg, msg_len + 1, "MARKET BUY %s %d %d;", product, quantity, price);
+					snprintf(msg, msg_len + 1, "MARKET BUY %s %d %d;", product_str, quantity, price);
 					write(cursor->fd[1], msg, strlen(msg));
 					free(msg);
 				} else if (order_flag) {
 					// send MARKET SELL
-					msg_len = snprintf(NULL, 0, "MARKET SELL %s %d %d;", product, quantity, price);
+					msg_len = snprintf(NULL, 0, "MARKET SELL %s %d %d;", product_str, quantity, price);
 					msg = malloc(msg_len + 1);
-					snprintf(msg, msg_len + 1, "MARKET SELL %s %d %d;", product, quantity, price);
+					snprintf(msg, msg_len + 1, "MARKET SELL %s %d %d;", product_str, quantity, price);
 					write(cursor->fd[1], msg, strlen(msg));
 					free(msg);
 				}
@@ -596,7 +596,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		// check BUY and SELL orders for every product
 		int break_flag = 0;
 		int order_flag = -1; // 0 --> BUY, 1 --> SELL
-		char product[PRODUCT_STR_LEN];
+		char product_str[PRODUCT_STR_LEN];
 		for (int i = 0; i < prods->size; i++) {
 			// search the BUY orders
 			order *curr = (*buys)[i];
@@ -607,8 +607,8 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					// delete the matching buy order
 					if (curr == (*buys)[i]) {
 						// order to remove is the head
-						strcpy(product, curr->product);
 						(*buys)[i] = curr->next;
+						strcpy(product_str, temp->product);
 						free(temp);
 						break_flag = 1;
 						order_flag = 0;
@@ -616,7 +616,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					} else {
 						// order is not head of list
 						prev->next = curr->next;
-						strcpy(product, curr->product);
+						strcpy(product_str, curr->product);
 						free(curr);
 						break_flag = 1;
 						order_flag = 0;
@@ -640,7 +640,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					if (curr == (*sells)[i]) {
 						// order to remove is the head
 						(*sells)[i] = curr->next;
-						strcpy(product, temp->product);
+						strcpy(product_str, temp->product);
 						free(temp);
 						break_flag = 1;
 						order_flag = 1;
@@ -648,7 +648,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					} else {
 						// order is not head of list
 						prev->next = curr->next;
-						strcpy(product, curr->product);
+						strcpy(product_str, curr->product);
 						free(curr);
 						break_flag = 1;
 						order_flag = 1;
@@ -683,16 +683,16 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 				// let the other traders now about the new order
 				if (!order_flag) {
 					// send MARKET BUY
-					msg_len = snprintf(NULL, 0, "MARKET BUY %s 0 0;", product);
+					msg_len = snprintf(NULL, 0, "MARKET BUY %s 0 0;", product_str);
 					msg = malloc(msg_len + 1);
-					snprintf(msg, msg_len + 1, "MARKET BUY %s 0 0;", product);
+					snprintf(msg, msg_len + 1, "MARKET BUY %s 0 0;", product_str);
 					write(cursor->fd[1], msg, strlen(msg));
 					free(msg);
 				} else if (order_flag) {
 					// send MARKET SELL
-					msg_len = snprintf(NULL, 0, "MARKET SELL %s 0 0;", product);
+					msg_len = snprintf(NULL, 0, "MARKET SELL %s 0 0;", product_str);
 					msg = malloc(msg_len + 1);
-					snprintf(msg, msg_len + 1, "MARKET SELL %s 0 0;", product);
+					snprintf(msg, msg_len + 1, "MARKET SELL %s 0 0;", product_str);
 					write(cursor->fd[1], msg, strlen(msg));
 					free(msg);
 				}
