@@ -59,7 +59,10 @@ int main(int argc, char ** argv) {
 
         // Signal parent process that buy order has been sent
         while (!sigusr1) {
-            kill(getppid(), SIGUSR1);
+            int ret = kill(getppid(), SIGUSR1);
+            if (!ret) {
+                break;
+            }
             usleep(100000);
         }
     }
