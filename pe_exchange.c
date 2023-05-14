@@ -381,6 +381,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		if (res < 5) {
 			return 1;
 		} else if (message_in[res] != ';') {
+			printf("%s\n", message_in);
 			return 1;
 		}
 
