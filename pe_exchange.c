@@ -726,11 +726,11 @@ int count_order_levels(order **list, int product_index) {
 }
 
 void display_orders(order **list, int product_index, int order_type) {
-	order *temp = list[product_index];
-	while(temp != NULL) {
-		printf("oid: %d, q: %ld, p: %ld\n", temp->order_id, temp->quantity, temp->price);
-		temp = temp->next;
-	}
+	// order *temp = list[product_index];
+	// while(temp != NULL) {
+	// 	printf("oid: %d, q: %ld, p: %ld\n", temp->order_id, temp->quantity, temp->price);
+	// 	temp = temp->next;
+	// }
 	if (order_type == BUY) {
 		order *curr = list[product_index];
 		int count = 1; // orders with identical quantity and price (same level)
@@ -739,8 +739,7 @@ void display_orders(order **list, int product_index, int order_type) {
 			order *runner = curr->next;
 			count = 1;
 			total_qty = curr->quantity;
-			while (runner != NULL && runner->quantity == curr->quantity && runner->price == curr->price) {
-				printf("HERE\n");
+			while (runner != NULL && runner->price == curr->price) {
 				count++;
 				total_qty += runner->quantity;
 				runner = runner->next;
