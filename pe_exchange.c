@@ -808,6 +808,7 @@ void display_orders(order **list, int product_index, int order_type) {
 	} else if (order_type == SELL) {
 		print_sell_orders_reverse(list, product_index);
 	}
+	//test
 }
 
 void display_positions(trader *head, long ***matches, products *prods) {
