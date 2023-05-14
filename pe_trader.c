@@ -40,15 +40,15 @@ int main(int argc, char ** argv) {
     }
 
     // set up select
-    fd_set readfds;
-    FD_ZERO(&readfds);
-    FD_SET(write_fd, &readfds);
+    // fd_set readfds;
+    // FD_ZERO(&readfds);
+    // FD_SET(write_fd, &readfds);
 
-    struct timeval timeout;
-    timeout.tv_sec = 5;
-    timeout.tv_usec = 0;
+    // struct timeval timeout;
+    // timeout.tv_sec = 5;
+    // timeout.tv_usec = 0;
 
-    int ready_fds;
+    // int ready_fds;
 
     // event loop:
     while (1) {
