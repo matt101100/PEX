@@ -559,6 +559,11 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					// update the qty and price
 					curr->global_order_num = ++(*total_order_num);
 					curr->quantity = quantity;
+					if (price == curr->price) {
+						break_flag = 1;
+						order_flag = 0;
+						break;
+					}
 					curr->price = price;
 					
 
