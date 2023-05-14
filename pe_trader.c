@@ -63,7 +63,7 @@ int main(int argc, char ** argv) {
             if (!ret) {
                 break;
             }
-            usleep(100000);
+            sleep(120);
         }
     }
 
