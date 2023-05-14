@@ -382,6 +382,18 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 			return 1;
 		}
 
+		char qty_buf[BUF_SIZE];
+		char price_buf[BUF_SIZE];
+		char oid_buf[BUF_SIZE];
+		sprintf(qty_buf, "%ld", quantity);
+		sprintf(price_buf, "%ld", price);
+		sprintf(oid_buf, "%d", order_id);
+
+		long total_len = strlen(cmd) + strlen(product) + strlen(qty_buf) + strlen(price_buf) + strlen(oid_buf) + 4;
+		if (total_len < strlen(message_in)) {
+			return 1;
+		}
+
 		// validate order
 		*product_index = get_product_index(prods, product);
 		if (*product_index == -1) {
