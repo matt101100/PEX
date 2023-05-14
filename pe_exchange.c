@@ -1099,7 +1099,7 @@ void print_linked_list_reverse(order **list, int product_index) {
 		order *runner = reversed_curr->next;
 		count = 1;
 		total_qty = reversed_curr->quantity;
-		while (runner != NULL && runner->quantity == reversed_curr->quantity && runner->price == reversed_curr->price) {
+		while (runner != NULL && runner->price == reversed_curr->price) {
 			count++;
 			total_qty += runner->quantity;
 			runner = runner->next;
