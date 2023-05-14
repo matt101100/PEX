@@ -250,6 +250,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		// create the fifos and print corresponding creation notification
 		int res = mkfifo(exchange_fifo_path, 0666);
 		if (res < 0) {
+			printf("here2\n");
 			free(exchange_fifo_path);
 			free(trader_fifo_path);
 			return 1;
