@@ -534,7 +534,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					curr->quantity = quantity;
 					curr->price = price;
 					curr->global_order_num = ++(*total_order_num);
-					strcpy(product, curr->product);
+					strcpy(product, prods->product_strings[i]);
 					break_flag = 1;
 					order_flag = 1;
 					break;
@@ -610,10 +610,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					if (curr == (*buys)[i]) {
 						// order to remove is the head
 						(*buys)[i] = curr->next;
-						printf("%s\n", prods->product_strings[i]);
-						printf("%s\n", product);
 						strcpy(product, prods->product_strings[i]);
-						printf("%s\n", product);
 						free(temp);
 						break_flag = 1;
 						order_flag = 0;
@@ -621,7 +618,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					} else {
 						// order is not head of list
 						prev->next = curr->next;
-						strcpy(product, curr->product);
+						strcpy(product, prods->product_strings[i]);
 						free(curr);
 						break_flag = 1;
 						order_flag = 0;
@@ -645,7 +642,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					if (curr == (*sells)[i]) {
 						// order to remove is the head
 						(*sells)[i] = curr->next;
-						strcpy(product, temp->product);
+						strcpy(product, prods->product_strings[i]);
 						free(temp);
 						break_flag = 1;
 						order_flag = 1;
@@ -653,7 +650,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					} else {
 						// order is not head of list
 						prev->next = curr->next;
-						strcpy(product, curr->product);
+						strcpy(product, prods->product_strings[i]);
 						free(curr);
 						break_flag = 1;
 						order_flag = 1;
