@@ -596,7 +596,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		// check BUY and SELL orders for every product
 		int break_flag = 0;
 		int order_flag = -1; // 0 --> BUY, 1 --> SELL
-		char *product = NULL;
+		char *product;
 		for (int i = 0; i < prods->size; i++) {
 			// search the BUY orders
 			order *curr = (*buys)[i];
