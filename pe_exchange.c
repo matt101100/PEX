@@ -258,6 +258,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 
 		res = mkfifo(trader_fifo_path, 0666);
 		if (res < 0) {
+			printf("here\n");
 			free(exchange_fifo_path);
 			free(trader_fifo_path);
 			return 1;
