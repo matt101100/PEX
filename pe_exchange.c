@@ -401,7 +401,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		if (cmd_type == BUY) {
 			order *curr = (*buys)[*product_index];
 			while (curr != NULL) {
-				if (curr->order_id == order_id) {
+				if (curr->order_id == order_id && curr->trader_id == curr_trader->trader_id) {
 					return 1;
 				}
 				curr = curr->next;
@@ -410,13 +410,13 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		} else if (cmd_type == SELL) {
 			order *curr = (*sells)[*product_index];
 			while (curr != NULL) {
-				if (curr->order_id == order_id) {
+				if (curr->order_id == order_id && curr->trader_id == curr_trader->trader_id) {
 					return 1;
 				}
 				curr = curr->next;
 			}
 		}
-//test
+
 		// send appropriate message to all traders
 		int msg_len;
 		char *msg;
