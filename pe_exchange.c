@@ -622,7 +622,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					// find correct position after updating and remove order
 					order *insert_after = NULL;
 					order *insert_before = (*sells)[i];
-					while (insert_before != NULL && insert_before->price < price) {
+					while (insert_before != NULL && insert_before->price <= price) {
 						insert_after = insert_before;
 						insert_before = insert_before->next;
 					}
