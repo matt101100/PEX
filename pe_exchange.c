@@ -511,6 +511,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					// update the qty and price
 					curr->quantity = quantity;
 					curr->price = price;
+					curr->global_order_num = ++(*total_order_num);
 					break_flag = 1;
 					break;
 				}
@@ -527,6 +528,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					// update qty and price
 					curr->quantity = quantity;
 					curr->price = price;
+					curr->global_order_num = ++(*total_order_num);
 					break_flag = 1;
 					break;
 				}
@@ -919,7 +921,7 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 				trader *seller = get_trader(-1, prod_sells->trader_id, head);
 
 				// print the results of the trade to stdout
-				if (prod_buys->order_id >= prod_sells->order_id) {
+				if (prod_buys->global_order_num > prod_sells->global_order_num) {
 					printf("%s Match: Order %d [T%d], New Order %d [T%d], value: $%ld, fee: $%.0f.\n",
 				 		LOG_PREFIX, prod_sells->order_id, prod_sells->trader_id, 
 						prod_buys->order_id, prod_buys->trader_id, 
