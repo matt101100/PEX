@@ -380,9 +380,6 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		int res = sscanf(message_in, "%s %d %s %ld %ld", cmd, &order_id, product, &quantity, &price);
 		if (res < 5) {
 			return 1;
-		} else if (message_in[res] != ';') {
-			printf("%s\n", message_in);
-			return 1;
 		}
 
 		// validate order
