@@ -728,7 +728,7 @@ int count_order_levels(order **list, int product_index) {
 void display_orders(order **list, int product_index, int order_type) {
 	if (order_type == BUY) {
 		order *curr = list[product_index];
-		int count = 1;
+		int count = 1; // orders with identical quantity and price (same level)
 		long total_qty;
 		while (curr != NULL) {
 			order *runner = curr->next;
@@ -739,6 +739,7 @@ void display_orders(order **list, int product_index, int order_type) {
 				total_qty += runner->quantity;
 				runner = runner->next;
 			}
+			printf("here\n");
 			if (count > 1) {
 				printf("%s\t\tBUY %ld @ $%ld (%d orders)\n", LOG_PREFIX, total_qty, curr->price, count);
 			} else if (count == 1) {
