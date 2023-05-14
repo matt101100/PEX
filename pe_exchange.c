@@ -728,7 +728,7 @@ int count_order_levels(order **list, int product_index) {
 void display_orders(order **list, int product_index, int order_type) {
 	if (order_type == BUY) {
 		order *curr = list[product_index];
-		int count; // orders with identical quantity and price (same level)
+		int count = 1; // orders with identical quantity and price (same level)
 		long total_qty;
 		while (curr != NULL) {
 			order *runner = curr->next;
