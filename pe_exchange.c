@@ -217,7 +217,7 @@ void init_matches(int ****matches, int num_traders, int prods_size) {
 	for (int i = 0; i < num_traders; i++) {
 		(*matches)[i] = (int**)calloc(prods_size, sizeof(int*));
 		for (int j = 0; j < prods_size; j++) {
-			(*matches)[i][j] = (int*)calloc(2, sizeof(int));
+			(*matches)[i][j] = (int*)calloc(2, sizeof(long));
 		}
 	}
 }
@@ -824,8 +824,8 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
-				// long rounding = (long)(trading_fee + 0.5f);
-				// trading_fee = (double)(rounding); // rounded to nearest decimal
+				long rounding = (long)(trading_fee + 0.5f);
+				trading_fee = (double)(rounding); // rounded to nearest decimal
 
 				// update the total trading fees sum
 				*total_trading_fees += trading_fee;
@@ -900,8 +900,8 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
-				// long rounding = (long)(trading_fee + 0.5f);
-				// trading_fee = (double)(rounding);
+				long rounding = (long)(trading_fee + 0.5f);
+				trading_fee = (double)(rounding);
 
 				// update the total trading fees sum
 				*total_trading_fees += trading_fee;
@@ -981,8 +981,8 @@ void find_matches(int ****matches, order ***buys, order ***sells, trader *head, 
 
 				// compute fee of the trade
 				trading_fee = trading_sum * FEE_PERCENTAGE;
-				// long rounding = (long)(trading_fee + 0.5f);
-				// trading_fee = (double)(rounding);
+				long rounding = (long)(trading_fee + 0.5f);
+				trading_fee = (double)(rounding);
 
 				// update the total trading fees sum
 				*total_trading_fees += trading_fee;
