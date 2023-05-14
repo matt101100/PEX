@@ -506,6 +506,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		int break_flag = 0;
 		int order_flag = -1; // 0 --> BUY, 1 --> SELL
 		char product[PRODUCT_STR_LEN];
+		//test
 		for (int i = 0; i < prods->size; i++) {
 			order *curr = (*buys)[i];
 			while (curr != NULL) {
