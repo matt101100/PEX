@@ -93,7 +93,7 @@ int init_product_list(char product_file[], products *prods);
  * Desc: Initializes the matches matrix and sets all entries to default values.
  * Params: The matches matrix, the number of traders and the number of products.
  */
-void init_matches(long ****matches, int num_traders, int prods_size);
+void init_matches(int ****matches, int num_traders, int prods_size);
 
 /*
  * Desc: Creates named pipes, launches trader process and connects to the
