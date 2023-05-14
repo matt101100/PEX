@@ -561,33 +561,33 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					curr->quantity = quantity;
 					curr->price = price;
 					
-					// // remove the updated order from the list
-					// if (curr == (*buys)[i]) {
-					// 	(*buys)[i] = curr->next;
-					// } else {
-					// 	order *prev = (*buys)[i];
-					// 	while (prev->next != curr) {
-					// 		prev = prev->next;
-					// 	}
-					// 	prev->next = curr->next;
-					// }
+					// remove the updated order from the list
+					if (curr == (*buys)[i]) {
+						(*buys)[i] = curr->next;
+					} else {
+						order *prev = (*buys)[i];
+						while (prev->next != curr) {
+							prev = prev->next;
+						}
+						prev->next = curr->next;
+					}
 
-					// // find correct position after updating and remove order
-					// order *insert_after = NULL;
-					// order *insert_before = (*buys)[i];
-					// while (insert_before != NULL && insert_before->price > price) {
-					// 	insert_after = insert_before;
-					// 	insert_before = insert_before->next;
-					// }
+					// find correct position after updating and remove order
+					order *insert_after = NULL;
+					order *insert_before = (*buys)[i];
+					while (insert_before != NULL && insert_before->price > price) {
+						insert_after = insert_before;
+						insert_before = insert_before->next;
+					}
 
-					// // insert the order at its new position
-					// if (insert_after == NULL) {
-					// 	curr->next = (*buys)[i];
-					// 	(*buys)[i] = curr;
-					// } else {
-					// 	curr->next = insert_before;
-					// 	insert_after->next = curr;
-					// }
+					// insert the order at its new position
+					if (insert_after == NULL) {
+						curr->next = (*buys)[i];
+						(*buys)[i] = curr;
+					} else {
+						curr->next = insert_before;
+						insert_after->next = curr;
+					}
 
 					strcpy(product, prods->product_strings[i]);
 					break_flag = 1;
@@ -609,33 +609,33 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					curr->quantity = quantity;
 					curr->price = price;
 
-					// // remove the updated order from the list
-					// if (curr == (*sells)[i]) {
-					// 	(*sells)[i] = curr->next;
-					// } else {
-					// 	order *prev = (*sells)[i];
-					// 	while (prev->next != curr) {
-					// 		prev = prev->next;
-					// 	}
-					// 	prev->next = curr->next;
-					// }
+					// remove the updated order from the list
+					if (curr == (*sells)[i]) {
+						(*sells)[i] = curr->next;
+					} else {
+						order *prev = (*sells)[i];
+						while (prev->next != curr) {
+							prev = prev->next;
+						}
+						prev->next = curr->next;
+					}
 
-					// // find correct position after updating and remove order
-					// order *insert_after = NULL;
-					// order *insert_before = (*sells)[i];
-					// while (insert_before != NULL && insert_before->price < price) {
-					// 	insert_after = insert_before;
-					// 	insert_before = insert_before->next;
-					// }
+					// find correct position after updating and remove order
+					order *insert_after = NULL;
+					order *insert_before = (*sells)[i];
+					while (insert_before != NULL && insert_before->price < price) {
+						insert_after = insert_before;
+						insert_before = insert_before->next;
+					}
 
-					// // insert the order at its new position
-					// if (insert_after == NULL) {
-					// 	curr->next = (*sells)[i];
-					// 	(*sells)[i] = curr;
-					// } else {
-					// 	curr->next = insert_before;
-					// 	insert_after->next = curr;
-					// }
+					// insert the order at its new position
+					if (insert_after == NULL) {
+						curr->next = (*sells)[i];
+						(*sells)[i] = curr;
+					} else {
+						curr->next = insert_before;
+						insert_after->next = curr;
+					}
 
 					strcpy(product, prods->product_strings[i]);
 					break_flag = 1;
