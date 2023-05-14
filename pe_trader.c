@@ -60,7 +60,7 @@ int main(int argc, char ** argv) {
         // Signal parent process that buy order has been sent
         while (!sigusr1) {
             kill(getppid(), SIGUSR1);
-            usleep(100);
+            usleep(1000);
         }
     }
 
