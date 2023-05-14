@@ -751,7 +751,7 @@ void display_orders(order **list, int product_index, int order_type) {
 			if (order_type == BUY) {
 				printf("%s\t\tBUY %ld @ $%ld (%d orders)\n", LOG_PREFIX, total_qty, curr->price, count);
 			} else if (order_type == SELL) {
-				printf("%s\t\tSELL %ld @ $%d (%ld orders)\n", LOG_PREFIX, total_qty, curr->price, count);
+				printf("%s\t\tSELL %ld @ $%ld (%d orders)\n", LOG_PREFIX, total_qty, curr->price, count);
 			}
 		} else if (count == 1) {
 			if (order_type == BUY) {
