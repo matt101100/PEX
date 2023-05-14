@@ -293,8 +293,7 @@ int spawn_and_communicate(int num_traders, char **argv, trader **head) {
 		// initialize trader data fields
 		new_trader->trader_id = trader_id;
 		new_trader->process_id = forked_pid;
-		new_trader->max_buy_order_id = 0;
-		new_trader->max_sell_order_id = 0;
+		new_trader->max_order_id = 0;
 		new_trader->disconnected = 0;
 
 		// add the newly opened trader to the head of the list
@@ -392,15 +391,10 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		} else if (price < ORDER_MIN || price > ORDER_MAX) {
 			printf("here4\n");
 			return 1;
-		} else if (cmd_type == BUY && (order_id > curr_trader->max_buy_order_id + 1 || order_id < curr_trader->max_buy_order_id)) {
-			printf("here5\n");
-			// non-consecutive BUY order ID
+		} else if (order_id > curr_trader->max_order_id + 1 || order_id < curr_trader->max_order_id) {
+			// non-consecutive order ID
 			return 1;
-		} else if (cmd_type == SELL && (order_id > curr_trader->max_sell_order_id + 1 || order_id < curr_trader->max_sell_order_id)) {
-			printf("her6\n");
-			// non-consecutive SELL order ID
-			return 1;
-		}
+		} 
 
 		// send appropriate message to all traders
 		int msg_len;
@@ -447,11 +441,12 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		new_order->global_order_num = ++(*total_order_num);
 
 		// update the maximum order ID tracker
-		if (cmd_type == BUY) {
-			curr_trader->max_buy_order_id++;
-		} else if (cmd_type == SELL) {
-			curr_trader->max_sell_order_id++;
-		}
+		curr_trader->max_order_id++;
+		// if (cmd_type == BUY) {
+		// 	curr_trader->max_buy_order_id++;
+		// } else if (cmd_type == SELL) {
+		// 	curr_trader->max_sell_order_id++;
+		// }
 
 		// add the order to the corresponding list
 		if (cmd_type == BUY) {

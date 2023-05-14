@@ -48,8 +48,7 @@ struct order {
 typedef struct trader trader;
 struct trader {
     int trader_id; // main identifier
-    int max_buy_order_id; // ensures BUY OIDs are consecutive
-    int max_sell_order_id; // ensures SELL OIDs are consecutive
+    int max_order_id; // ensures OIDs are consecutive
     int disconnected; // flag set when trader disconnects
     pid_t process_id; // get this from the fork() call
     int fd[2]; // fd[0] = trader fifo, fd[1] = exchange fifo
