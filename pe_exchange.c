@@ -522,7 +522,10 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		int order_id;
 		long quantity;
 		long price;
-		sscanf(message_in, "%s %d %ld %ld", cmd, &order_id, &quantity, &price);
+		int res = sscanf(message_in, "%s %d %ld %ld", cmd, &order_id, &quantity, &price);
+		if (res < 4) {
+			return 1;
+		}
 
 		// hacky way to ignore trailing arguments
 		char qty_buf[BUF_SIZE];
@@ -688,8 +691,10 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 	} else if (cmd_type == CANCEL) {
 		char cmd[CMD_LEN];
 		int order_id;
-		sscanf(message_in, "%s %d", cmd, &order_id);
+		int res = sscanf(message_in, "%s %d", cmd, &order_id);
 		if (order_id < OID_MIN || order_id > OID_MAX) {
+			return 1;
+		} else if (res < 2) {
 			return 1;
 		}
 
