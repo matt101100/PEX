@@ -35,8 +35,8 @@ struct order {
     int global_order_num; // tracks the total number of orders ever made
     char *product;
     int product_index; // index of the product string in the string array
-    int quantity;
-    int price;
+    long quantity;
+    long price;
     order *next;
 };
 
