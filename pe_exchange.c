@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 	order **sells = (order**)calloc(prods.size, sizeof(order*));
 
 	// initialize the match cache
-	int ***matches = NULL;
+	long ***matches = NULL;
 	init_matches(&matches, num_traders, prods.size);
 
 	/*
