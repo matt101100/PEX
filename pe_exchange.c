@@ -433,7 +433,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		order *new_order = (order*)malloc(sizeof(order));
 		new_order->order_id = order_id;
 		new_order->trader_id = curr_trader->trader_id;
-		// strcpy(new_order->product, product);
+		new_order->product = product;
 		new_order->product_index = *product_index;
 		new_order->quantity = quantity;
 		new_order->price = price;
