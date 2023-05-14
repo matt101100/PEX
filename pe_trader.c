@@ -62,7 +62,6 @@ int main(int argc, char ** argv) {
     }
 
     // clear buffers and delete fifos
-    timer_delete(timerId);
     fsync(read_fd);
     fsync(write_fd);
     close(read_fd);
