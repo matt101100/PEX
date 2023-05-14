@@ -640,6 +640,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					if (curr == (*sells)[i]) {
 						// order to remove is the head
 						(*sells)[i] = curr->next;
+						product = temp->product;
 						free(temp);
 						break_flag = 1;
 						order_flag = 1;
@@ -647,6 +648,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 					} else {
 						// order is not head of list
 						prev->next = curr->next;
+						product = curr->product;
 						free(curr);
 						break_flag = 1;
 						order_flag = 1;
