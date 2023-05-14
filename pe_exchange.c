@@ -740,17 +740,9 @@ void display_orders(order **list, int product_index, int order_type) {
 				runner = runner->next;
 			}
 			if (count > 1) {
-				if (order_type == BUY) {
-					printf("%s\t\tBUY %ld @ $%ld (%d orders)\n", LOG_PREFIX, total_qty, curr->price, count);
-				} else if (order_type == SELL) {
-					printf("%s\t\tSELL %ld @ $%ld (%d orders)\n", LOG_PREFIX, total_qty, curr->price, count);
-				}
+				printf("%s\t\tBUY %ld @ $%ld (%d orders)\n", LOG_PREFIX, total_qty, curr->price, count);
 			} else if (count == 1) {
-				if (order_type == BUY) {
-					printf("%s\t\tBUY %ld @ $%ld (%d order)\n", LOG_PREFIX, total_qty, curr->price, count);
-				} else if (order_type == SELL) {
-					printf("%s\t\tSELL %ld @ $%ld (%d order)\n", LOG_PREFIX, total_qty, curr->price, count);
-				}
+				printf("%s\t\tBUY %ld @ $%ld (%d order)\n", LOG_PREFIX, total_qty, curr->price, count);
 			}
 			curr = runner;
 		}
