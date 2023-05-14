@@ -27,7 +27,6 @@ int main(int argc, char **argv) {
     }
 
 	int res = 0; // stores result of init functions for error checking
-	// int bytes_read = -1;
 	int bytes_written = -1;
 	int num_traders = argc - TRADERS_START;
 
@@ -68,7 +67,7 @@ int main(int argc, char **argv) {
 
 	/*
 	 * Explanation of how the 'match cache' works:
-	 		Each trader, i, has a num_products x 2 matrix associated to it.
+	 	    Each trader, i, has a num_products x 2 matrix associated to it.
 			Each index j represents an array of size 2 that stores the amount of
 			product j owned / owed by trader i and the amount of money owned / 
 			owed by trader i for product j. The quantity of product j is stored 
@@ -76,9 +75,9 @@ int main(int argc, char **argv) {
 			For example, we have the product list [APPLES, STRAWBERRY] and 
 			two traders T0, T1. If you wanted to check how many APPLES T1 owns
 			you would access the match cache as follows: matches[1][0][0].
-			Breakdown: matches[1] --> access T1's matrix, matches[1][0] --> access
-			the product 0 (APPLES) position array, matches[1][0][0] --> access
-			the amount of APPLES owned by T1.
+			Breakdown: matches[1] --> access T1's matrix, matches[1][0] --> 
+			access the product 0 (APPLES) position array, matches[1][0][0] --> 
+			access the amount of APPLES owned by T1.
 	 */
 
 	// send MARKET OPEN; to all traders and signal SIGUSR1
