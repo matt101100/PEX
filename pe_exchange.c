@@ -372,7 +372,7 @@ int execute_command(trader *curr_trader, char *message_in, int cmd_type, product
 		int order_id;
 		long quantity;
 		long price;
-		int res = sscanf(message_in, "%s %d %s %d %d", cmd, &order_id, product, &quantity, &price);
+		int res = sscanf(message_in, "%s %d %s %ld %ld", cmd, &order_id, product, &quantity, &price);
 		if (res < 5) {
 			return 1;
 		}
