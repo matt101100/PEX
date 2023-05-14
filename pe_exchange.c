@@ -728,7 +728,7 @@ int count_order_levels(order **list, int product_index) {
 void display_orders(order **list, int product_index, int order_type) {
 	order *temp = list[product_index];
 	while(temp != NULL) {
-		printf("oid: %d, q: %d, p: %d\n", temp->order_id, temp->quantity, temp->price);
+		printf("oid: %d, q: %ld, p: %ld\n", temp->order_id, temp->quantity, temp->price);
 		temp = temp->next;
 	}
 	if (order_type == BUY) {
