@@ -14,3 +14,11 @@ This runs the program with the supplied trader binaries. For example, to use ```
 ```
 $ make run pe_trader
 ```
+You can also use
+```
+$ ./pe_exchange pe_trader
+```
+The above two commands are equivalent.
+
+## Cleaning
+You can clean the workspace of any unwanted binaries by using ```$ make clean```.
